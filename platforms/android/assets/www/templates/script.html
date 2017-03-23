@@ -1,0 +1,31 @@
+<ion-view view-title="Scripts" align-title="left">
+ <ion-content ng-class="{expanded:$scope.isExpanded}">
+ <div class="content has-header">
+   <button  ng-click="openFridge()" class="button button-full icon-left ion-ios-lightbulb-outline button-positive"> Ouvrir le frigo manuellement</button>
+   <button ng-click="openRegister()" class="button button-full icon-left ion-power button-assertive"> Ouvrir la caisse manuellement</button>
+
+
+    <div class="tabs tabs-dark tabs-icon-top static animate-fade-slide-in-right">
+
+        <a class="tab-item" ui-sref="app.order">
+          <i class="icon ion-beer"  ></i> Commandes
+        </a>
+      <a class="tab-item" ui-sref="app.activity" nav-clear>
+        <i class="icon ion-arrow-graph-up-right"></i>  Activités
+      </a>
+        <a class="tab-item" ui-sref="app.money_flow">
+          <i class="icon ion-cash"></i> Money
+        </a>
+         <a  ng-show='showPrivilege("ROLE_ADMIN")' class="tab-item" ui-sref="app.script">
+          <i class="icon ion-social-tux"></i> Scripts
+        </a>
+        <a  class="tab-item" ui-sref="app.statistic">
+          <i class="icon ion-pie-graph"></i> Statistiques
+        </a>
+        <a  class="tab-item" ui-sref="app.edit">
+          <i class="icon ion-gear-b"></i> Editer
+        </a>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

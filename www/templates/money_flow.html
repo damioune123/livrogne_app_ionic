@@ -1,0 +1,255 @@
+<ion-view view-title="Transferts" align-title="left">
+ <ion-content ng-class="{expanded:$scope.isExpanded}">
+ <div class="content has-header">
+   <div ng-show='showPrivilege("ROLE_ADMIN")' class="card">
+     <div class="item item-divider">
+       Recharger mon compte
+     </div>
+     <div class="item item-text-wrap">
+        Mon cash vers caisse et mon compte barman vers mon compte perso.
+     </div>
+     <button ng-click="persistMoneyFlow(currentUserPersonnalAccountId,currentUserCashRegisterAccountId,amount1,'Recharge du compte personnel via propre compte barman')" class="button button-full icon-left ion-social-euro button-positive">Recharger mon compte</button>
+     <div class="item item-divider">
+       <label class="item item-input">
+         <span class="input-label">Montant</span>
+         <input ng-model="amount1" type="number">
+       </label>
+     </div>
+   </div>
+
+   <div class="card">
+     <div class="item item-divider">
+       Faire un virement personnel
+     </div>
+     <div class="item item-text-wrap">
+       Mon compte personnel vers autre compte personnel.
+     </div>
+     <button ng-click="persistMoneyFlow(getUserPersonnalAccount(selectedClient2),currentUserPersonnalAccountId,amount2,'Virement Personnel :'+ description2)"
+             class="button button-full icon-left ion-social-euro button-assertive">Faire un virement personnel</button>
+     <div class="item item-divider">
+       <label class="item item-input">
+         <span class="input-label">Montant</span>
+         <input ng-model="amount2"  type="number">
+       </label>
+     </div>
+     <div class="item item-divider">
+       <div class="list">
+         <label class="item item-input item-select">
+           <div class="input-label">
+             Destinataire
+           </div>
+           <select ng-options="user as user.credential for user in users track by user.id" ng-model="selectedClient2"></select>
+         </label>
+       </div>
+     </div>
+     <div class="item item-divider">
+       <label class="item item-input">
+         <span class="input-label">Description (facultatif): </span>
+         <input ng-model="description2" placeholder="Votre description" type="text">
+       </label>
+     </div>
+   </div>
+   <div ng-show='showPrivilege("ROLE_ADMIN")'>
+     <div class="card">
+       <div class="item item-divider">
+         Recharger compte d'un client par caisse
+       </div>
+       <div class="item item-text-wrap">
+         Cash client vers caisse et mon compte barman vers compte personnel client.
+       </div>
+       <button ng-click="persistMoneyFlow(getUserPersonnalAccount(selectedClient3),currentUserCashRegisterAccountId,amount3,'Rechargement compte client par caisse :'+ description3)"
+         class="button button-full icon-left ion-social-euro button-positive">Recharger compte client</button>
+       <div class="item item-divider">
+         <label class="item item-input">
+           <span class="input-label">Montant</span>
+           <input ng-model="amount3" type="number">
+         </label>
+       </div>
+       <div class="item item-divider">
+         <div class="list">
+           <label class="item item-input item-select">
+             <div class="input-label">
+               Destinataire
+             </div>
+             <select ng-options="user as user.credential for user in users track by user.id" ng-model="selectedClient3"></select>
+           </label>
+         </div>
+       </div>
+       <div class="item item-divider">
+         <label class="item item-input">
+           <span class="input-label">Description (facultatif): </span>
+           <input ng-model="description3" placeholder="Votre description" type="text">
+         </label>
+       </div>
+     </div>
+
+     <div class="card">
+       <div class="item item-divider">
+         Rembourser compte d'un client par caisse
+       </div>
+       <div class="item item-text-wrap">
+         Cash caisse vers client et compte personnel client vers mon compte barman.
+       </div>
+       <button  ng-click="persistMoneyFlow(currentUserCashRegisterAccountId,getUserPersonnalAccount(selectedClient4),amount4,'Remboursement compte client par caisse :'+ description4)"
+         class="button button-full icon-left ion-social-euro button-assertive"> Rembourser compte client</button>
+       <div class="item item-divider">
+         <label class="item item-input">
+           <span class="input-label">Montant</span>
+           <input ng-model="amount4" type="number">
+         </label>
+       </div>
+       <div class="item item-divider">
+         <div class="list">
+           <label class="item item-input item-select">
+             <div class="input-label">
+               Destinataire
+             </div>
+             <select ng-options="user as user.credential for user in users track by user.id" ng-model="selectedClient4"></select>
+           </label>
+         </div>
+       </div>
+       <div class="item item-divider">
+         <label class="item item-input">
+           <span class="input-label">Description (facultatif): </span>
+           <input ng-model="description4" placeholder="Votre description" type="text">
+         </label>
+       </div>
+     </div>
+   </div>
+   <div ng-show='showPrivilege("ROLE_SUPER_ADMIN")'>
+     <div class="card">
+       <div class="item item-divider">
+         Recharger compte d'un client par banque
+       </div>
+       <div class="item item-text-wrap">
+         Virement bancaire du client vers "vrai" compte bancaire et mon compte banque vers compte personnel client.
+         <br>
+         Attention seulement super-admin.
+       </div>
+       <button  ng-click="persistMoneyFlow(getUserPersonnalAccount(selectedClient5),currentUserBankAccountId,amount5,'Rechargement compte client par banque :'+ description5)"
+         class="button button-full icon-left ion-social-euro button-positive"> Recharger compte client</button>
+       <div class="item item-divider">
+         <label class="item item-input">
+           <span class="input-label">Montant</span>
+           <input ng-model="amount5" type="number">
+         </label>
+       </div>
+       <div class="item item-divider">
+         <div class="list">
+           <label class="item item-input item-select">
+             <div class="input-label">
+               Destinataire
+             </div>
+             <select ng-options="user as user.credential for user in users track by user.id" ng-model="selectedClient5"></select>
+           </label>
+         </div>
+       </div>
+       <div class="item item-divider">
+         <label class="item item-input">
+           <span class="input-label">Description (facultatif): </span>
+           <input ng-model="description5" placeholder="Votre description" type="text">
+         </label>
+       </div>
+     </div>
+     <div class="card">
+       <div class="item item-divider">
+         Rembourser compte d'un client par banque
+       </div>
+       <div class="item item-text-wrap">
+         Virement bancaire effectué au client et mon compte banque vers compte personnel client.<br>
+         Attention seulement super-admin
+       </div>
+       <button ng-click="persistMoneyFlow(currentUserBankAccountId,getUserPersonnalAccount(selectedClient6),amount6,'Remboursement compte client par banque :'+ description6)"
+         class="button button-full icon-left ion-social-euro button-assertive">Rembourser compte client</button>
+       <div class="item item-divider">
+         <label class="item item-input">
+           <span class="input-label">Montant</span>
+           <input ng-model="amount6" type="number">
+         </label>
+       </div>
+       <div class="item item-divider">
+         <div class="list">
+           <label class="item item-input item-select">
+             <div class="input-label">
+               Destinataire
+             </div>
+             <select ng-options="user as user.credential for user in users track by user.id" ng-model="selectedClient6"></select>
+           </label>
+         </div>
+       </div>
+       <div class="item item-divider">
+         <label class="item item-input">
+           <span class="input-label">Description (facultatif): </span>
+           <input ng-model="description6" placeholder="Votre description" type="text">
+         </label>
+       </div>
+     </div>
+     <div class="card">
+       <div class="item item-divider">
+         Enregister un achat de marchandises
+       </div>
+       <div class="item item-text-wrap">
+         Ce compte permet de tenir compte des achats de marchandises pour le calcul des bénéfices.
+       </div>
+       <button ng-click="persistMoneyFlow(spendingAccountId,currentUserBankAccountId,amount7,'Achat marchandises :'+ description7)"
+               class="button button-full icon-left ion-social-euro button-calm"> Enregister un achat </button>
+       <div class="item item-divider">
+         <label class="item item-input">
+           <span class="input-label">Montant</span>
+           <input ng-model="amount7" type="number">
+         </label>
+       </div>
+       <div class="item item-divider">
+         <label class="item item-input">
+           <span class="input-label">Description (facultatif): </span>
+           <input ng-model="description7" placeholder="Votre description" type="text">
+         </label>
+       </div>
+     </div>
+     <div class="card">
+       <div class="item item-divider">
+         Enregister une perte/vol
+       </div>
+       <div class="item item-text-wrap">
+         Ce compte permet de tenir compte des pertes/vol pour le calcul des bénéfices.
+       </div>
+       <button ng-click="persistMoneyFlow(lostAccountId,currentUserBankAccountId,amount8,'Achat marchandises :'+ description8)"
+               class="button button-full icon-left ion-social-euro button-calm">Enregister une perte/vol</button>
+       <div class="item item-divider">
+         <label class="item item-input">
+           <span class="input-label">Montant</span>
+           <input ng-model="amount8" type="number">
+         </label>
+       </div>
+       <div class="item item-divider">
+         <label class="item item-input">
+           <span class="input-label">Description (facultatif): </span>
+           <input ng-model="description8" placeholder="Votre description" type="text">
+         </label>
+       </div>
+     </div>
+   </div>
+   <div class="tabs tabs-dark tabs-icon-top static animate-fade-slide-in-right">
+
+      <a class="tab-item" ui-sref="app.order">
+        <i class="icon ion-beer"  ></i> Commandes
+      </a>
+     <a class="tab-item" ui-sref="app.activity" nav-clear>
+       <i class="icon ion-arrow-graph-up-right"></i>  Activités
+     </a>
+      <a class="tab-item" ui-sref="app.money_flow">
+        <i class="icon ion-cash"></i> Money
+      </a>
+       <a  ng-show='showPrivilege("ROLE_ADMIN")' class="tab-item" ui-sref="app.script">
+        <i class="icon ion-social-tux"></i> Scripts
+      </a>
+      <a  class="tab-item" ui-sref="app.statistic">
+        <i class="icon ion-pie-graph"></i> Statistiques
+      </a>
+      <a  class="tab-item" ui-sref="app.edit">
+        <i class="icon ion-gear-b"></i> Editer
+      </a>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>
