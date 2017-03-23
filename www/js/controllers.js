@@ -3,7 +3,6 @@
 angular.module('livrogne-app.controllers',[])
 
 .controller('AppCtrl', function($scope,$state, $ionicModal,$ionicHistory,$ionicPopup, $ionicPopover, $timeout, AuthService, UserService, AUTH_EVENTS, USER_ROLES) {
-
   $scope.isExpanded = false;
   $scope.hasHeaderFabLeft = false;
   $scope.hasHeaderFabRight = false;
@@ -26,7 +25,6 @@ angular.module('livrogne-app.controllers',[])
     if(number>=0) return "postiive";
     else return "negative";
   };
-//
   var navIcons = document.getElementsByClassName('ion-navicon');
     for (var i = 0; i < navIcons.length; i++) {
         navIcons.addEventListener('click', function() {
@@ -49,21 +47,6 @@ angular.module('livrogne-app.controllers',[])
      $ionicHistory.clearCache().then(function(){
        setTimeout(function(){$state.go('app.login');},0);
      });
-
-/*
-      var confirmPopup = $ionicPopup.confirm({
-        title: 'Déconnexion',
-        template: 'Etes-vous sûr de vouloir vous déconnecter ?'
-      });
-
-      confirmPopup.then(function(res) {
-        if(res) {
-
-          setTimeout(function(){ AuthService.logout();},200);
-
-
-        }
-      });*/
 
     };
     $scope.getPersonnalAccount = function(accounts){
@@ -143,7 +126,6 @@ angular.module('livrogne-app.controllers',[])
             fabs[0].remove();
         }
     };
-
 })
 
 .controller('LoginCtrl', function($scope,  $state, $timeout, $ionicPopup, AuthService, $ionicHistory, $http,USER_ROLES,ionicMaterialInk, UserService, UserAccountService, PromotionService, RfidService) {
@@ -211,8 +193,6 @@ angular.module('livrogne-app.controllers',[])
     });
   };
 
-
-
   $scope.rfidSearch =function() {
     RfidService.getLastRfid().then(function (authToken) {
       console.log(authToken);
@@ -243,9 +223,6 @@ angular.module('livrogne-app.controllers',[])
       }, function (err){
         console.log("Erreur lors du chargement des promotions.")
       });
-
-
-
     },function (err) {
         var alertPopup = $ionicPopup.alert({
 
@@ -300,10 +277,6 @@ angular.module('livrogne-app.controllers',[])
       }, function (err){
         console.log("Erreur lors du chargement des promotions.")
       });
-
-
-
-
     });
   };
 
@@ -311,8 +284,6 @@ angular.module('livrogne-app.controllers',[])
 
 .controller('ActivityCtrl', function($scope, $state, $stateParams,$ionicPopup, $ionicHistory,$timeout, UserService,UserAccountService,OrderService,MoneyFlowService,
                         ionicMaterialMotion, ionicMaterialInk, AuthService, $q, USER_ROLES) {
-    $ionicHistory.clearCache();
-
 
   $scope.email=window.localStorage['email'];
   $scope.username=window.localStorage['username'];
@@ -370,8 +341,6 @@ angular.module('livrogne-app.controllers',[])
       });
     };
     getDetails();
-
-
     $scope.doRefresh = function() {
       getDetails();
       $scope.$broadcast('scroll.refreshComplete');
@@ -388,9 +357,6 @@ angular.module('livrogne-app.controllers',[])
         });
       });
     };
-
-
-
   $scope.paymentType = function(isPaidCash){
     if(isPaidCash) return "via cash";
     else return "via compte";
@@ -442,13 +408,9 @@ angular.module('livrogne-app.controllers',[])
           template: 'Une erreur est survenue lors de l\'annulation du transfert. Veuillez prendre contact avec un administrateur.'
           });
       });
-
      }
-
    });
   };
-
-
    $scope.goTo = function(state){
      $state.go(state);
   };
@@ -475,11 +437,9 @@ angular.module('livrogne-app.controllers',[])
   $scope.isUnderGroupShown = function(group) {
     return $scope.shownUnderGroup === group;
   };
-
     // Set Ink
     ionicMaterialInk.displayEffect();
 })
-
 .controller('OrderCtrl', function($scope, $state, $stateParams,$ionicPopup, $ionicHistory,$timeout, PromotionService,USER_ROLES, UserService,
                                   ProductCategoryService,OrderService,MoneyFlowService,OrderLineService, ionicMaterialMotion, ionicMaterialInk, AuthService, UserAccountService) {
    // Set Header
@@ -521,14 +481,12 @@ angular.module('livrogne-app.controllers',[])
                 }
               }
               $scope.productCategories = productCategories;
-              console.log(productCategories);
             });
           },function(err){
             console.log("erreur lors de la récupération du solde de l'utilisiateur");
           });
         });
       });
-
     };
     getInformation();
 
@@ -686,9 +644,10 @@ angular.module('livrogne-app.controllers',[])
     }, 300);
 
     // Set Motion
+    /*
     ionicMaterialMotion.fadeSlideInRight({
         selector: '.animate-fade-slide-in .item'
-    });
+    });*/
 
     $scope.showButtonBar =function (pcId, produCategoriesLength){
 
@@ -724,9 +683,10 @@ angular.module('livrogne-app.controllers',[])
 
 
     // Set Motion
+    /*
     ionicMaterialMotion.fadeSlideInRight({
         selector: '.animate-fade-slide-in .item'
-    });
+    });*/
     // Set Ink
     ionicMaterialInk.displayEffect();
 
@@ -855,9 +815,10 @@ angular.module('livrogne-app.controllers',[])
     }, 300);
 
     // Set Motion
+    /*
     ionicMaterialMotion.fadeSlideInRight({
         selector: '.animate-fade-slide-in .item'
-    });
+    });*/
 
     // Set Ink
     ionicMaterialInk.displayEffect();
@@ -939,9 +900,10 @@ angular.module('livrogne-app.controllers',[])
     }, 300);
 
     // Set Motion
+    /*
     ionicMaterialMotion.fadeSlideInRight({
         selector: '.animate-fade-slide-in .item'
-    });
+    });*/
   //testd
 
     // Set Ink
@@ -1053,9 +1015,10 @@ angular.module('livrogne-app.controllers',[])
     }, 300);
 
     // Set Motion
+    /*
     ionicMaterialMotion.fadeSlideInRight({
         selector: '.animate-fade-slide-in .item'
-    });
+    });*/
 
     // Set Ink
     ionicMaterialInk.displayEffect();
