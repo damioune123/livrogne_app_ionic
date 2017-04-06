@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/home/damien/Documents/repos/livrogne-app/platforms/android/CordovaLib/src/main/shaders"/></dataSet><dataSet config="debug"><source path="/home/damien/Documents/repos/livrogne-app/platforms/android/CordovaLib/src/debug/shaders"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="/home/damien/repos/livrogne_app_ionic/platforms/android/CordovaLib/src/main/shaders"/></dataSet><dataSet config="debug"><source path="/home/damien/repos/livrogne_app_ionic/platforms/android/CordovaLib/src/debug/shaders"/></dataSet></merger>

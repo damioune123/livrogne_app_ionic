@@ -23,25 +23,44 @@ angular.module('livrogne-app')
      window.localStorage["email"]= user.email;
      window.localStorage["isAuthenticated"]= true;
      if(user.role==USER_ROLES.super_admin){
-       window.localStorage["userPersonnalAccountId"]=user.user_accounts[0].id;
-       window.localStorage["userCashRegisterAccountId"]=user.user_accounts[1].id;
-       window.localStorage["userBankAccountId"]=user.user_accounts[2].id;
+         console.log(user.user_accounts);
+       for(var i =0; i < user.user_accounts.length ; i++){
+         if(user.user_accounts[i].type=="somebody"){
+           window.localStorage["userPersonnalAccountId"]=user.user_accounts[i].id;
+         }
+         else if(user.user_accounts[i].type=="cash-register"){
+           window.localStorage["userCashRegisterAccountId"]=user.user_accounts[i].id;
+         }
+         else if(user.user_accounts[i].type=="bank"){
+           window.localStorage["userBankAccountId"]=user.user_accounts[i].id;
+         }
+         console.log(user.user_accounts[i].id);
+       }
      }
      if(user.role==USER_ROLES.admin){
-       window.localStorage["userPersonnalAccountId"]=user.user_accounts[0].id;
-       window.localStorage["userCashRegisterAccountId"]=user.user_accounts[1].id;
+       for(var i =0; i < user.user_accounts.length ; i++) {
+         if (user.user_accounts[i].type == "somebody") {
+           window.localStorage["userPersonnalAccountId"] = user.user_accounts[i].id;
+         }
+         else if (user.user_accounts[i].type == "cash-register") {
+           window.localStorage["userCashRegisterAccountId"] = user.user_accounts[i].id;
+         }
+       }
      }
      if(user.role==USER_ROLES.user){
-       window.localStorage["userPersonnalAccountId"]=user.user_accounts[0].id;
+       for(var i =0; i < user.user_accounts.length ; i++) {
+         if (user.user_accounts[i].type == "somebody") {
+           window.localStorage["userPersonnalAccountId"] = user.user_accounts[i].id;
+         }
+       }
        window.localStorage["godfatherId"]=user.godfather;
        window.localStorage["moneyLimit"]=user.money_limit;
+
      }
+     console.log(window.localStorage);
      $http.defaults.headers.common['X-Auth-Token'] = token;
 
    }
-
-
-
   function destroyUserCredentials() {
     $http.defaults.headers.common['X-Auth-Token'] = undefined;
     window.localStorage.clear();
@@ -62,7 +81,7 @@ angular.module('livrogne-app')
       while(window.localStorage["userId"] == null && window.localStorage["userId"]!=authToken.user.id)
         storeUserCredentials(authToken.value, authToken.user);
 
-      console.log(window.localStorage["userId"]);
+
       deferred.resolve( authToken);
     },function (err) {
       deferred.resolve(err);
@@ -96,18 +115,7 @@ angular.module('livrogne-app')
     logout: logout,
     storeUserCredentials: function(token, user) {return user},
     isAuthorized: isAuthorized,
-    isAuthenticated: function() {return isAuthenticated;},
-    username: function() { return username;},
-    role: function() {return role;},
-    email: function() {return email;},
-    firstName: function() {return firstName;},
-    lastName: function() {return lastName;},
-    userId: function() {return userId;},
-    godfatherId: function() {return godfatherId;},
-    moneyLimit: function() {return moneyLimit;},
-    userPersonnalAccountId: function() {return userPersonnalAccountId;},
-    userCashRegisterAccountId: function() {return userCashRegisterAccountId;},
-    userBankAccountId: function() {return userBankAccountId;}
+    isAuthenticated: function() {return window.localStorage["isAuthenticated"];}
   };
 })
 
@@ -155,16 +163,35 @@ angular.module('livrogne-app')
       window.localStorage["email"]= user.email;
       window.localStorage["isAuthenticated"]= true;
       if(user.role==USER_ROLES.super_admin){
-        window.localStorage["userPersonnalAccountId"]=user.user_accounts[2].id;
-        window.localStorage["userCashRegisterAccountId"]=user.user_accounts[1].id;
-        window.localStorage["userBankAccountId"]=user.user_accounts[0].id;
+          for(var i =0; i < user.user_accounts.length ; i++) {
+              if (user.user_accounts[i].type == "somebody") {
+                  window.localStorage["userPersonnalAccountId"] = user.user_accounts[i].id;
+              }
+              else if (user.user_accounts[i].type == "cash-register") {
+                  window.localStorage["userCashRegisterAccountId"] = user.user_accounts[i].id;
+              }
+              else if (user.user_accounts[i].type == "bank") {
+                  window.localStorage["userBankAccountId"] = user.user_accounts[i].id;
+              }
+          }
       }
       if(user.role==USER_ROLES.admin){
-        window.localStorage["userPersonnalAccountId"]=user.user_accounts[1].id;
-        window.localStorage["userCashRegisterAccountId"]=user.user_accounts[0].id;
+          for(var i =0; i < user.user_accounts.length ; i++) {
+              if (user.user_accounts[i].type == "somebody") {
+                  window.localStorage["userPersonnalAccountId"] = user.user_accounts[i].id;
+              }
+              else if (user.user_accounts[i].type == "cash-register") {
+                  window.localStorage["userCashRegisterAccountId"] = user.user_accounts[i].id;
+              }
+
+          }
       }
       if(user.role==USER_ROLES.user){
-        window.localStorage["userPersonnalAccountId"]=user.user_accounts[0].id;
+          for(var i =0; i < user.user_accounts.length ; i++) {
+              if (user.user_accounts[i].type == "somebody") {
+                  window.localStorage["userPersonnalAccountId"] = user.user_accounts[i].id;
+              }
+          }
         window.localStorage["godfatherId"]=user.godfather;
         window.localStorage["moneyLimit"]=user.money_limit;
       }
