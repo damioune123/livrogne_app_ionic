@@ -244,7 +244,7 @@ angular.module('livrogne-app')
       {
         rfidCard: null
       };
-      return $http.patch(API.url+"/admin/users/"+userId, data,{headers: {'Content-Type': 'application/json'}}).then(function(response){
+      return $http.patch(API.url+"/users/"+userId, data,{headers: {'Content-Type': 'application/json'}}).then(function(response){
         user = response.data;
         return user;
       });
