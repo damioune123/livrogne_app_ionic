@@ -23,7 +23,6 @@ angular.module('livrogne-app')
      window.localStorage["email"]= user.email;
      window.localStorage["isAuthenticated"]= true;
      if(user.role==USER_ROLES.super_admin){
-         console.log(user.user_accounts);
        for(var i =0; i < user.user_accounts.length ; i++){
          if(user.user_accounts[i].type=="somebody"){
            window.localStorage["userPersonnalAccountId"]=user.user_accounts[i].id;
@@ -34,7 +33,6 @@ angular.module('livrogne-app')
          else if(user.user_accounts[i].type=="bank"){
            window.localStorage["userBankAccountId"]=user.user_accounts[i].id;
          }
-         console.log(user.user_accounts[i].id);
        }
      }
      if(user.role==USER_ROLES.admin){
@@ -57,7 +55,6 @@ angular.module('livrogne-app')
        window.localStorage["moneyLimit"]=user.money_limit;
 
      }
-     console.log(window.localStorage);
      $http.defaults.headers.common['X-Auth-Token'] = token;
 
    }
@@ -80,7 +77,6 @@ angular.module('livrogne-app')
       $http.defaults.headers.common['X-Auth-Token'] = authToken.value;
       while(window.localStorage["userId"] == null && window.localStorage["userId"]!=authToken.user.id)
         storeUserCredentials(authToken.value, authToken.user);
-
 
       deferred.resolve( authToken);
     },function (err) {
@@ -395,8 +391,7 @@ angular.module('livrogne-app')
     getUserBankAccount: function(){
       var userBankAccountId= window.localStorage["userBankAccountId"];
         return $http.get(API.url+"/user-accounts/"+userBankAccountId).then(function(response){
-          response.data.cash_register_orders = putInDescendindOrder(response.data.cash_register_orders);
-          response.data.orders = putInDescendindOrder(response.data.orders);
+          response.data.bankOrders = putInDescendindOrder(response.data.orders);
           response.data.positive_money_flows = putInDescendindOrder(response.data.positive_money_flows);
           response.data.negative_money_flows = putInDescendindOrder(response.data.negative_money_flows);
 
@@ -421,9 +416,11 @@ angular.module('livrogne-app')
       data.order={};
       data.orderlines = orderlines;
       data.order.cashRegisterAccount =cashRegisterAccount;
+      console.log("ici");
       console.log(data);
       return $http.post(API.url+"/admin/orders/cash", data ,{headers: {'Content-Type': 'application/json'}}).then(function(response){
         order = response.data;
+        console.log(order);
         return order;
       });
     },
@@ -448,6 +445,7 @@ angular.module('livrogne-app')
       console.log(data);
       return $http.post(API.url+"/client-self-order", data ,{headers: {'Content-Type': 'application/json'}}).then(function(response){
         order = response.data;
+        console.log(response.data);
         return order;
       });
     }

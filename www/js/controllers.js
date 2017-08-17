@@ -233,8 +233,6 @@ angular.module('livrogne-app.controllers',[])
         return;
     });
   };
-
-  console.log($ionicHistory.viewHistory());
     $scope.login = function(data) {
     AuthService.login(data.username, data.password).then(function(authenticated) {
       console.log(authenticated);
@@ -286,54 +284,100 @@ angular.module('livrogne-app.controllers',[])
 .controller('ActivityCtrl', function($scope, $state, $stateParams,$ionicPopup, $ionicHistory,$timeout, UserService,UserAccountService,OrderService,MoneyFlowService,
                         ionicMaterialMotion, ionicMaterialInk, AuthService, $q, USER_ROLES, $ionicLoading) {
 
-  $scope.email=window.localStorage['email'];
-  $scope.username=window.localStorage['username'];
-  $scope.firstName= window.localStorage['firstName'];
-  $scope.lastName= window.localStorage['lastName'];
-  $scope.userId = window.localStorage['userId'];
-  $scope.role= window.localStorage['role'];
-   // Set Header
+    $scope.email = window.localStorage['email'];
+    $scope.username = window.localStorage['username'];
+    $scope.firstName = window.localStorage['firstName'];
+    $scope.lastName = window.localStorage['lastName'];
+    $scope.userId = window.localStorage['userId'];
+    $scope.role = window.localStorage['role'];
+    // Set Header
     $scope.$parent.showHeader();
     $scope.$parent.clearFabs();
     $scope.isExpanded = false;
     $scope.$parent.setExpanded(false);
     $scope.$parent.setHeaderFab(false);
-    var currentUserId =window.localStorage['userId'];
+    var currentUserId = window.localStorage['userId'];
     var currentUserRole = window.localStorage['role'];
     $scope.currentUserRole = currentUserRole;
-    var promise1 = UserAccountService.getUserPersonnalAccount();
-    var promise2 = UserAccountService.getUserCashRegisterAccount();
-    var promise3 = UserService.getUser(currentUserId);
-    var promise4 = UserAccountService.getUserBankAccount()
-    $scope.show = function() {
+
+    $scope.show = function () {
         $ionicLoading.show({
             template: '<p>Loading...</p><ion-spinner></ion-spinner>'
         });
     };
 
-    $scope.hide = function(){
+    $scope.hide = function () {
         $ionicLoading.hide();
     };
 
 
-    var getDetails = function(){
-        $scope.show($ionicLoading);
-        $q.all([promise1, promise2, promise3, promise4]).then(function (data) {
-            var userPersonnalAccount = data[0];
-            var userCashRegisterAccount = data[1];
-            var user = data[2];
-            var userBankAccount = data[3];
+    var getDetails = function () {
+        console.log(window.localStorage['role']);
+        if (window.localStorage['role'] === "ROLE_SUPER_ADMIN") {
+            var promise1 = UserAccountService.getUserPersonnalAccount();
+            var promise2 = UserAccountService.getUserCashRegisterAccount();
+            var promise3 = UserService.getUser(currentUserId);
+            var promise4 = UserAccountService.getUserBankAccount();
+            $scope.show($ionicLoading);
+            $q.all([promise1, promise2, promise3, promise4]).then(function (data) {
+                var userPersonnalAccount = data[0];
+                var userCashRegisterAccount = data[1];
+                var user = data[2];
+                var userBankAccount = data[3];
 
-            $scope.userPersonnalMoney= userPersonnalAccount.money_balance;
-            if(userPersonnalAccount.money_balance>=0) $scope.classUserPeronnalMoney="positive";
-            else $scope.classUserPeronnalMoney="negative";
-            $scope.personnalOrders=userPersonnalAccount.orders;
-            $scope.personnalPositiveMoneyFlows=userPersonnalAccount.positive_money_flows;
-            $scope.personnalNegativeMoneyFlows=userPersonnalAccount.negative_money_flows;
-            if(userPersonnalAccount.godfather !=undefined)
-                $scope.godfatherCredentials = userPersonnalAccount.user.godfather.firstname +" "+userPersonnalAccount.user.godfather.lastname;
-            $scope.moneyLimit =  userPersonnalAccount.user.money_limit *(-1);
-            if(currentUserRole==USER_ROLES.super_admin || currentUserRole==USER_ROLES.admin ) {
+                $scope.userPersonnalMoney = userPersonnalAccount.money_balance;
+                if (userPersonnalAccount.money_balance >= 0) $scope.classUserPeronnalMoney = "positive";
+                else $scope.classUserPeronnalMoney = "negative";
+                $scope.personnalOrders = userPersonnalAccount.orders;
+                $scope.personnalPositiveMoneyFlows = userPersonnalAccount.positive_money_flows;
+                $scope.personnalNegativeMoneyFlows = userPersonnalAccount.negative_money_flows;
+                if (userPersonnalAccount.godfather != undefined)
+                    $scope.godfatherCredentials = userPersonnalAccount.user.godfather.firstname + " " + userPersonnalAccount.user.godfather.lastname;
+                $scope.moneyLimit = userPersonnalAccount.user.money_limit * (-1);
+
+                $scope.userCashRegisterMoney = userCashRegisterAccount.money_balance;
+                if (userCashRegisterAccount.money_balance >= 0) $scope.classUserCashRegisterMoney = "positive";
+                else $scope.classUserCashRegisterMoney = "negative";
+                $scope.cashRegisterOrders = userCashRegisterAccount.cash_register_orders;
+                $scope.cashRegisterPositiveMoneyFlows = userCashRegisterAccount.positive_money_flows;
+                $scope.cashRegisterMoneyNegativeFlows = userCashRegisterAccount.negative_money_flows;
+                $scope.nefews = user.nefews;
+                for (var i = 0; i < $scope.nefews.length; i++) {
+                    $scope.nefews[i].money_limit = Math.abs($scope.nefews[i].money_limit);
+                }
+
+
+                $scope.userBankMoney = userBankAccount.money_balance;
+                if (userBankAccount.money_balance >= 0) $scope.classUserBankMoney = "positive";
+                else $scope.classUserBankMoney = "negative";
+                $scope.bankPositiveMoneyFlows = userBankAccount.positive_money_flows;
+                $scope.bankOrders = userBankAccount.bankOrders;
+                $scope.bankNegativeFlows = userBankAccount.negative_money_flows;
+                $scope.hide($ionicLoading);
+
+            }, function (err) {
+                console.log("erreur lors de la récupération du solde de l'utilisiateur");
+            })
+        }
+        else if (window.localStorage['role']== "ROLE_ADMIN") {
+            var promise1 = UserAccountService.getUserPersonnalAccount();
+            var promise2 = UserAccountService.getUserCashRegisterAccount();
+            var promise3 = UserService.getUser(currentUserId);
+            $scope.show($ionicLoading);
+            $q.all([promise1, promise2, promise3]).then(function (data) {
+                var userPersonnalAccount = data[0];
+                var userCashRegisterAccount = data[1];
+                var user = data[2];
+                $scope.userPersonnalMoney = userPersonnalAccount.money_balance;
+                if (userPersonnalAccount.money_balance >= 0) $scope.classUserPeronnalMoney = "positive";
+                else $scope.classUserPeronnalMoney = "negative";
+                $scope.personnalOrders = userPersonnalAccount.orders;
+                $scope.personnalPositiveMoneyFlows = userPersonnalAccount.positive_money_flows;
+                $scope.personnalNegativeMoneyFlows = userPersonnalAccount.negative_money_flows;
+                if (userPersonnalAccount.godfather != undefined)
+                    $scope.godfatherCredentials = userPersonnalAccount.user.godfather.firstname + " " + userPersonnalAccount.user.godfather.lastname;
+                $scope.moneyLimit = userPersonnalAccount.user.money_limit * (-1);
+                if (currentUserRole == USER_ROLES.super_admin || currentUserRole == USER_ROLES.admin) {
                     $scope.userCashRegisterMoney = userCashRegisterAccount.money_balance;
                     if (userCashRegisterAccount.money_balance >= 0) $scope.classUserCashRegisterMoney = "positive";
                     else $scope.classUserCashRegisterMoney = "negative";
@@ -344,63 +388,39 @@ angular.module('livrogne-app.controllers',[])
                     for (var i = 0; i < $scope.nefews.length; i++) {
                         $scope.nefews[i].money_limit = Math.abs($scope.nefews[i].money_limit);
                     }
-            }
-            if(currentUserRole==USER_ROLES.super_admin){
-                    $scope.userBankMoney = userBankAccount.money_balance;
-                    if (userBankAccount.money_balance >= 0) $scope.classUserBankMoney = "positive";
-                    else $scope.classUserBankMoney = "negative";
-                    $scope.bankPositiveMoneyFlows = userBankAccount.positive_money_flows;
-                    $scope.bankNegativeFlows = userBankAccount.negative_money_flows;
-            }
-            $scope.hide($ionicLoading);
+                }
 
-        },function(err){
-            console.log("erreur lors de la récupération du solde de l'utilisiateur");
-        })
+                $scope.hide($ionicLoading);
+
+            }, function (err) {
+                console.log("erreur lors de la récupération du solde de l'utilisiateur");
+            })
+        }
+        else {
+            var promise1 = UserAccountService.getUserPersonnalAccount();
+            var promise2 = UserService.getUser(currentUserId);
+            $scope.show($ionicLoading);
+            $q.all([promise1, promise2]).then(function (data) {
+                var userPersonnalAccount = data[0];
+                var user = data[2];
+                $scope.userPersonnalMoney = userPersonnalAccount.money_balance;
+                if (userPersonnalAccount.money_balance >= 0) $scope.classUserPeronnalMoney = "positive";
+                else $scope.classUserPeronnalMoney = "negative";
+                $scope.personnalOrders = userPersonnalAccount.orders;
+                $scope.personnalPositiveMoneyFlows = userPersonnalAccount.positive_money_flows;
+                $scope.personnalNegativeMoneyFlows = userPersonnalAccount.negative_money_flows;
+                if (userPersonnalAccount.godfather != undefined)
+                    $scope.godfatherCredentials = userPersonnalAccount.user.godfather.firstname + " " + userPersonnalAccount.user.godfather.lastname;
+                $scope.moneyLimit = userPersonnalAccount.user.money_limit * (-1);
+                $scope.hide($ionicLoading);
+
+            }, function (err) {
+                console.log("erreur lors de la récupération du solde de l'utilisiateur");
+            })
+
+        }
     };
     getDetails();
-
-/*
-    var getDetails = function(){
-      UserAccountService.getUserPersonnalAccount().then(function(userPersonnalAccount){
-        $scope.userPersonnalMoney= userPersonnalAccount.money_balance;
-        if(userPersonnalAccount.money_balance>=0) $scope.classUserPeronnalMoney="positive";
-        else $scope.classUserPeronnalMoney="negative";
-        $scope.personnalOrders=userPersonnalAccount.orders;
-        $scope.personnalPositiveMoneyFlows=userPersonnalAccount.positive_money_flows;
-        $scope.personnalNegativeMoneyFlows=userPersonnalAccount.negative_money_flows;
-        if(userPersonnalAccount.godfather !=undefined)
-          $scope.godfatherCredentials = userPersonnalAccount.user.godfather.firstname +" "+userPersonnalAccount.user.godfather.lastname;
-        $scope.moneyLimit =  userPersonnalAccount.user.money_limit *(-1);
-        if(currentUserRole==USER_ROLES.super_admin || currentUserRole==USER_ROLES.admin ) {
-          UserAccountService.getUserCashRegisterAccount().then(function (userCashRegisterAccount) {
-            $scope.userCashRegisterMoney = userCashRegisterAccount.money_balance;
-            if (userCashRegisterAccount.money_balance >= 0) $scope.classUserCashRegisterMoney = "positive";
-            else $scope.classUserCashRegisterMoney = "negative";
-            $scope.cashRegisterOrders = userCashRegisterAccount.cash_register_orders;
-            $scope.cashRegisterPositiveMoneyFlows = userCashRegisterAccount.positive_money_flows;
-            $scope.cashRegisterMoneyNegativeFlows = userCashRegisterAccount.negative_money_flows;
-          });
-          UserService.getUser(currentUserId).then(function (user) {
-            $scope.nefews = user.nefews;
-            for (var i = 0; i < $scope.nefews.length; i++) {
-              $scope.nefews[i].money_limit = Math.abs($scope.nefews[i].money_limit);
-            }
-          });
-        }
-        if(currentUserRole==USER_ROLES.super_admin){
-          UserAccountService.getUserBankAccount().then(function(userBankAccount) {
-            $scope.userBankMoney = userBankAccount.money_balance;
-            if (userBankAccount.money_balance >= 0) $scope.classUserBankMoney = "positive";
-            else $scope.classUserBankMoney = "negative";
-            $scope.bankPositiveMoneyFlows = userBankAccount.positive_money_flows;
-            $scope.bankNegativeFlows = userBankAccount.negative_money_flows;
-          });
-        }
-      });
-    };
-    getDetails();
-    */
     $scope.doRefresh = function() {
       getDetails();
       $scope.$broadcast('scroll.refreshComplete');
@@ -435,6 +455,9 @@ angular.module('livrogne-app.controllers',[])
           title: 'Commande annulée avec succès!',
           template: 'Les comptes concernés ont été débités/crédités, vous trouverez l\'annulaton de commande dans les transferts d\'argents.'
           });
+          setTimeout(getDetails(), 3000);
+
+
 
 
         }, function(error){
@@ -460,8 +483,7 @@ angular.module('livrogne-app.controllers',[])
           title: 'Transfert annulé avec succès!',
           template: 'Les comptes concernés ont été débités/crédités. Vous trouverez une nouvelle entrée dans les comptes de transferts correspondants.'
           });
-
-
+            setTimeout(getDetails(), 5000);
         }, function(error){
           var alertPopup = $ionicPopup.alert({
           title: 'Erreur lors de l\'annulation du transfert!',
@@ -525,13 +547,14 @@ angular.module('livrogne-app.controllers',[])
     $scope.hide = function(){
         $ionicLoading.hide();
     };
-    var promise1 =PromotionService.getPromotions();
-    var promise2 = UserService.getLimitedUsers();
-    var promise3 = UserAccountService.getUserPersonnalAccount();
-    var promise4 = ProductCategoryService.getProductCategories();
+
 
 
     var getInformation = function(){
+        var promise1 =PromotionService.getPromotions();
+        var promise2 = UserService.getLimitedUsers();
+        var promise3 = UserAccountService.getUserPersonnalAccount();
+        var promise4 = ProductCategoryService.getProductCategories();
         $scope.show($ionicLoading);
         $q.all([promise1, promise2, promise3, promise4]).then(function (data) {
             var promotions = data[0];
@@ -564,39 +587,6 @@ angular.module('livrogne-app.controllers',[])
         })
     };
     getInformation();
-    /*var getInformation = function(){
-      PromotionService.getPromotions().then(function(promotions) {
-
-        for(var i=0; i<promotions.length; i++){
-          if(promotions[i].promotion_name=="admin")$scope.adminPromotion=promotions[i].user_promotion;
-          if(promotions[i].promotion_name=="simple")$scope.simplePromotion=promotions[i].user_promotion;
-        }
-        UserService.getLimitedUsers().then(function(result){
-          $scope.users= result;
-          for(var i =$scope.users.length -1; i >=0  ; i--){
-            if (currentUserId == $scope.users[i].id)
-              $scope.users.splice(i,1);
-            else $scope.users[i].credential=$scope.users[i].firstname +" "+$scope.users[i].lastname;
-          }
-          UserAccountService.getUserPersonnalAccount().then(function(currentUserPersonalAccount) {
-            currentUserMoneyBalance = currentUserPersonalAccount.money_balance;
-            ProductCategoryService.getProductCategories().then(function(productCategories){
-              $scope.productCategories=[];
-
-              for (var i = 0; i < productCategories.length; i++) {
-                for(var j=0 ; j< productCategories[i].products.length; j++){
-                  if(productCategories[i].products[j].name=="Autre") productCategories[i].products.selectedProduct=productCategories[i].products[j];
-                }
-              }
-              $scope.productCategories = productCategories;
-            });
-          },function(err){
-            console.log("erreur lors de la récupération du solde de l'utilisiateur");
-          });
-        });
-      });
-    };
-    getInformation();*/
 
 
     var computeOrderTotal = function(){
@@ -656,12 +646,14 @@ angular.module('livrogne-app.controllers',[])
             moneyLimit = currentUserMoneyLimit;
             simpleUserMoneyBalance = currentUserMoneyBalance;
           }
+
         if((simpleUserMoneyBalance-orderPrice)<moneyLimit){
           var alertPopup = $ionicPopup.alert({
             title: 'Le client est fauché !',
             template: 'La limite imposée par le parrain est atteinte (par défaut 0 si le client est non-sponsorisé).'
           });
           return;
+
         }
       }
 
@@ -750,12 +742,6 @@ angular.module('livrogne-app.controllers',[])
         $scope.isExpanded = true;
         $scope.$parent.setExpanded(true);
     }, 300);
-
-    // Set Motion
-    /*
-    ionicMaterialMotion.fadeSlideInRight({
-        selector: '.animate-fade-slide-in .item'
-    });*/
 
     $scope.showButtonBar =function (pcId, produCategoriesLength){
 
@@ -922,12 +908,6 @@ angular.module('livrogne-app.controllers',[])
         $scope.$parent.setExpanded(true);
     }, 300);
 
-    // Set Motion
-    /*
-    ionicMaterialMotion.fadeSlideInRight({
-        selector: '.animate-fade-slide-in .item'
-    });*/
-
     // Set Ink
     ionicMaterialInk.displayEffect();
 
@@ -1007,12 +987,6 @@ angular.module('livrogne-app.controllers',[])
         $scope.$parent.setExpanded(true);
     }, 300);
 
-    // Set Motion
-    /*
-    ionicMaterialMotion.fadeSlideInRight({
-        selector: '.animate-fade-slide-in .item'
-    });*/
-  //testd
 
     // Set Ink
     ionicMaterialInk.displayEffect();
@@ -1030,53 +1004,6 @@ angular.module('livrogne-app.controllers',[])
     $scope.hide = function(){
         $ionicLoading.hide();
     };
-    var promise1 =UserService.getUsers();
-
-
-
-    var getInformation = function(){
-        $scope.show($ionicLoading);
-        $q.all([promise1]).then(function (data) {
-           var users = data[0];
-            for (var i = users.length - 1; i >= 0; i--) {
-                if (users[i].role != USER_ROLES.user) {
-                    users.splice(i, 1);
-                }
-                else if(users[i].godfather != undefined){
-                    users.splice(i, 1);
-                }
-                else {
-                    users[i].totalDebt = $scope.getPersonnalAccount(users[i].user_accounts).money_balance;
-                    if(users[i].totalDebt>=0)$scope.totalPositiveBalance+=users[i].totalDebt;
-                    else $scope.totalNegativeBalance+=users[i].totalDebt;
-                    $scope.allUnsponsoredUsers=users;
-                }
-            }
-            $scope.allGodfathers=users;
-            for(var  i = $scope.allGodfathers.length -1; i>=0; i--){
-                if($scope.allGodfathers[i].role==USER_ROLES.user){
-                    $scope.allGodfathers.splice(i,1);
-                }
-                else{
-                    var totalDebt=$scope.getPersonnalAccount($scope.allGodfathers[i].user_accounts).money_balance;
-                    for(var j=0;j<$scope.allGodfathers[i].nefews.length;j++){
-                        totalDebt+=$scope.allGodfathers[i].nefews[j].user_accounts[0].money_balance;
-                    }
-                    $scope.allGodfathers[i].totalDebt=totalDebt;
-                    if(totalDebt>=0) $scope.totalPositiveBalance+=totalDebt;
-                    else $scope.totalNegativeBalance+=totalDebt
-                }
-            }
-            $scope.totalNegativeBalance = Math.abs($scope.totalNegativeBalance);
-           $scope.hide($ionicLoading);
-
-        },function(err){
-            console.log("erreur lors de la récupération du solde de l'utilisiateur");
-        })
-    };
-    if(currentUserRole != USER_ROLES.user)
-        getInformation();
-    /*
     var getAllUnsponsoredUsers = function(){
       UserService.getUsers().then(function(users) {
         for (var i = users.length - 1; i >= 0; i--) {
@@ -1095,8 +1022,7 @@ angular.module('livrogne-app.controllers',[])
         }
       });
     };
-    if(currentUserRole != USER_ROLES.user)
-      getAllUnsponsoredUsers();
+
     var getGodFathers = function(){
       UserService.getUsers().then(function(users){
         $scope.allGodfathers=users;
@@ -1117,9 +1043,15 @@ angular.module('livrogne-app.controllers',[])
         $scope.totalNegativeBalance = Math.abs($scope.totalNegativeBalance);
       });
     };
-    if(currentUserRole != USER_ROLES.user)
-      getGodFathersw();
-    */
+    if(currentUserRole != USER_ROLES.user){
+        $scope.show($ionicLoading);
+        getGodFathers();
+        getAllUnsponsoredUsers();
+        $scope.hide($ionicLoading);
+    }
+
+
+
     $scope.toggleGroup = function(group) {
       if ($scope.isGroupShown(group)) {
         $scope.shownGroup = null;
