@@ -19,7 +19,7 @@
       <div class="item item-divider">Solde compte personnel : <a class="{{classUserPeronnalMoney}}">{{userPersonnalMoney}} € </a></div>
       <div ng-hide="currentUserRole!='ROLE_USER'" class="item item-divider">Crédit autorisé : {{moneyLimit}} € </div>
       <button class="button button-full button-balanced" ng-click="toggleGroup(personnalPositiveMoneyFlows)" ng-class="{active: isGroupShown(personnalPositiveMoneyFlows)}">
-        <i class="icon" ng-class="isGroupShown(personnalPositiveMoneyFlows) ? 'ion-minus' : 'ion-plus'"></i> Entrées d'argents
+        <i class="icon" ng-class="isGroupShown(personnalPositiveMoneyFlows) ? 'ion-minus' : 'ion-plus'"></i> Débit compte
       </button>
       <ion-item class="item-accordion" ng-repeat="money_flow in personnalPositiveMoneyFlows" ng-show="isGroupShown(personnalPositiveMoneyFlows)">
         <div class="list ">
@@ -33,7 +33,7 @@
         </div>
       </ion-item>
       <button class="button button-full button-assertive" ng-click="toggleGroup(personnalNegativeMoneyFlows)" ng-class="{active: isGroupShown(personnalNegativeMoneyFlows)}">
-        <i class="icon" ng-class="isGroupShown(personnalNegativeMoneyFlows) ? 'ion-minus' : 'ion-plus'"></i> Sorties d'argents
+        <i class="icon" ng-class="isGroupShown(personnalNegativeMoneyFlows) ? 'ion-minus' : 'ion-plus'"></i> Crédit compte
       </button>
       <ion-item class="item-accordion" ng-repeat="money_flow in personnalNegativeMoneyFlows" ng-show="isGroupShown(personnalNegativeMoneyFlows)">
         <div class="list ">
@@ -46,8 +46,8 @@
             <button class="button button-clear button-balanced " ng-hide ='!money_flow.is_cancelled' >Transfert annulé</button>
         </div>
       </ion-item>
-      <button class="button button-full button-calm" ng-click="toggleGroup(personnalOrders)" ng-class="{active: isGroupShown(personnalOrders)}">
-        <i class="icon" ng-class="isGroupShown(personnalOrders) ? 'ion-minus' : 'ion-plus'"></i> Historiques commandes
+      <button class="button button-full button-assertive" ng-click="toggleGroup(personnalOrders)" ng-class="{active: isGroupShown(personnalOrders)}">
+        <i class="icon" ng-class="isGroupShown(personnalOrders) ? 'ion-minus' : 'ion-plus'"></i> Commandes
       </button>
       <ion-item class="item-accordion" ng-repeat="order in personnalOrders" ng-show="isGroupShown(personnalOrders)">
         <div class="list">
@@ -76,7 +76,7 @@
       <div ng-show='showPrivilege("ROLE_ADMIN")'>
         <div class="item item-divider">Solde compte caisse barman : <a class="{{classUserCashRegisterMoney}}">{{userCashRegisterMoney}} €</a></div>
         <button class="button button-full button-balanced" ng-click="toggleGroup(cashRegisterPositiveMoneyFlows)" ng-class="{active: isGroupShown(cashRegisterPositiveMoneyFlows)}">
-          <i class="icon" ng-class="isGroupShown(cashRegisterPositiveMoneyFlows) ? 'ion-minus' : 'ion-plus'"></i> Entrées d'argents
+          <i class="icon" ng-class="isGroupShown(cashRegisterPositiveMoneyFlows) ? 'ion-minus' : 'ion-plus'"></i> Débit compte
         </button>
         <ion-item class="item-accordion" ng-repeat="money_flow in cashRegisterPositiveMoneyFlows" ng-show="isGroupShown(cashRegisterPositiveMoneyFlows)">
           <div class="list">
@@ -90,7 +90,7 @@
           </div>
         </ion-item>
         <button class="button button-full button-assertive" ng-click="toggleGroup(cashRegisterMoneyNegativeFlows)" ng-class="{active: isGroupShown(cashRegisterMoneyNegativeFlows)}">
-            <i class="icon" ng-class="isGroupShown(cashRegisterMoneyNegativeFlows) ? 'ion-minus' : 'ion-plus'"></i> Sorties d'argents
+            <i class="icon" ng-class="isGroupShown(cashRegisterMoneyNegativeFlows) ? 'ion-minus' : 'ion-plus'"></i> Crédit compte
         </button>
         <ion-item class="item-accordion" ng-repeat="money_flow in cashRegisterMoneyNegativeFlows" ng-show="isGroupShown(cashRegisterMoneyNegativeFlows)">
           <div class="list ">
@@ -103,8 +103,8 @@
               <button class="button button-clear button-balanced " ng-hide ='!money_flow.is_cancelled' >Transfert annulé</button>
           </div>
         </ion-item>
-        <button class="button button-full button-calm" ng-click="toggleGroup(cashRegisterOrders)" ng-class="{active: isGroupShown(cashRegisterOrders)}">
-          <i class="icon" ng-class="isGroupShown(cashRegisterOrders) ? 'ion-minus' : 'ion-plus'"></i> Historiques commandes
+        <button class="button button-full button-assertive" ng-click="toggleGroup(cashRegisterOrders)" ng-class="{active: isGroupShown(cashRegisterOrders)}">
+          <i class="icon" ng-class="isGroupShown(cashRegisterOrders) ? 'ion-minus' : 'ion-plus'"></i> Commandes prises
         </button>
         <ion-item class="item-accordion" ng-repeat="order in cashRegisterOrders" ng-show="isGroupShown(cashRegisterOrders)">
           <div class="list">
@@ -133,7 +133,7 @@
       <div ng-show='showPrivilege("ROLE_SUPER_ADMIN")'>
         <div class="item item-divider">Solde compte banque : <a class="{{classUserBankMoney}}">{{userBankMoney}} € </a></div>
         <button class="button button-full button-balanced" ng-click="toggleGroup(bankPositiveMoneyFlows)" ng-class="{active: isGroupShown(bankPositiveMoneyFlows)}">
-          <i class="icon" ng-class="isGroupShown(bankPositiveMoneyFlows) ? 'ion-minus' : 'ion-plus'"></i> Entrées d'argents
+          <i class="icon" ng-class="isGroupShown(bankPositiveMoneyFlows) ? 'ion-minus' : 'ion-plus'"></i> Débit compte
         </button>
         <ion-item class="item-accordion" ng-repeat="money_flow in bankPositiveMoneyFlows" ng-show="isGroupShown(bankPositiveMoneyFlows)">
           <div class="list ">
@@ -146,8 +146,9 @@
               <button class="button button-clear button-balanced " ng-hide ='!money_flow.is_cancelled' >Transfert annulé</button>
           </div>
         </ion-item>
+
         <button class="button button-full button-assertive" ng-click="toggleGroup(bankNegativeFlows)" ng-class="{active: isGroupShown(bankNegativeFlows)}">
-          <i class="icon" ng-class="isGroupShown(bankNegativeFlows) ? 'ion-minus' : 'ion-plus'"></i> Sorties d'argents
+          <i class="icon" ng-class="isGroupShown(bankNegativeFlows) ? 'ion-minus' : 'ion-plus'"></i> Crédit compte
         </button>
         <ion-item class="item-accordion" ng-repeat="money_flow in bankNegativeFlows" ng-show="isGroupShown(bankNegativeFlows)">
           <div class="list ">
@@ -160,6 +161,32 @@
               <button class="button button-clear button-balanced " ng-hide ='!money_flow.is_cancelled' >Transfert annulé</button>
           </div>
         </ion-item>
+        <button class="button button-full button-assertive" ng-click="toggleGroup(bankOrders)" ng-class="{active: isGroupShown(bankOrders)}">
+          <i class="icon" ng-class="isGroupShown(bankOrders) ? 'ion-minus' : 'ion-plus'"></i> Commandes CASH
+        </button>
+        <ion-item class="item-accordion" ng-repeat="order in bankOrders" ng-show="isGroupShown(bankOrders)">
+          <div class="list">
+            <hr>
+            Numéro de commande : {{order.id}}
+            <hr>
+            Type paiement : {{paymentType(order.is_paid_cash)}}  <br>
+            Montant : {{order.order_price}} € <br>
+            Le : {{order.created_at.toLocaleDateString()}} à {{order.created_at.toLocaleTimeString()}}<br>
+            <button class="button button-clear button-assertive " ng-hide='!showPrivilege("ROLE_ADMIN") || order.is_cancelled' ng-click="showDeleteOrderConfirm(order.id)">Supprimer la commande</button>
+            <button class="button button-clear button-balanced " ng-hide='!order.is_cancelled'>Commande annulée</button><br>
+            <button class="button button-clear button-positive" ng-click="toggleUnderGroup(order.order_lines)" ng-class="{active: isUnderGroupShown(order.order_lines)}">
+              <i class="icon" ng-class="isUnderGroupShown(order.order_lines) ? 'ion-minus' : 'ion-plus'"></i> Voir détails
+            </button>
+            <ion-item class="item-accordion" ng-repeat="order_line in order.order_lines" ng-show="isUnderGroupShown(order.order_lines)">
+              <div class="list animate-fade-slide-in-right">
+                Nom produit : {{order_line.product.name}} <br>
+                Quantité: {{order_line.quantity}} <br>
+                Catégorie produit: {{order_line.product.product_category.category_name}} (prix/pièce ={{order_line.product.product_category.price}}€) <br>
+                Prix ligne commande : {{order_line.order_line_price}}
+              </div>
+          </div>
+        </ion-item>
+
       </div>
       <div ng-show='showPrivilege("ROLE_ADMIN")'>
         <div class="item item-divider">Comptes de mes filleuls</div>

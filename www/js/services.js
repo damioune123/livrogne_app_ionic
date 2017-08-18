@@ -556,7 +556,7 @@ angular.module('livrogne-app')
   return {
     turnBarOff: function () {
 
-      return $http.get(API.url + "/admin/scripts/turnBarOff")
+      return $http.get(API.url + "/scripts/relais/ALLrelaispriseOFF.py")
         .then(function (response) {
           backCode = response.data;
           return backCode;
@@ -564,28 +564,108 @@ angular.module('livrogne-app')
     },
     turnBarOn: function () {
 
-      return $http.get(API.url + "/admin/scripts/turnBarOn")
+      return $http.get(API.url + "/scripts/relais/ALLrelaispriseON.py")
         .then(function (response) {
           backCode = response.data;
           return backCode;
         });
     },
-    openFridge: function () {
+    turnFridgeOn: function () {
 
-      return $http.get(API.url + "/admin/scripts/relaisfrigo")
+      return $http.get(API.url + "/scripts/relais/relaisFrigoON.py")
         .then(function (response) {
           backCode = response.data;
           return backCode;
         });
+    },
+    turnFridgeOff: function () {
+
+        return $http.get(API.url + "/scripts/relais/relaisFrigoOFF.py")
+            .then(function (response) {
+                backCode = response.data;
+                return backCode;
+            });
     },
     openRegister: function () {
 
-      return $http.get(API.url + "/admin/scripts/relaiscaisse")
+      return $http.get(API.url + "/scripts/relais/relaisCaisseON.py")
         .then(function (response) {
           backCode = response.data;
           return backCode;
         });
-    }
+    },
+    closeRegister: function () {
+
+        return $http.get(API.url + "/scripts/relais/relaisCaisseOFF.py")
+            .then(function (response) {
+                backCode = response.data;
+                return backCode;
+            });
+    },
+    turnMusicOn: function () {
+
+        return $http.get(API.url + "/scripts/relais/relaisMusicON.py")
+            .then(function (response) {
+                backCode = response.data;
+                return backCode;
+            });
+    },
+    turnMusicOff: function () {
+
+        return $http.get(API.url + "/scripts/relais/relaisMusicOFF.py")
+            .then(function (response) {
+                backCode = response.data;
+                return backCode;
+            });
+    },
+    turnLightOff: function () {
+
+        return $http.get(API.url + "/scripts/relais/relaisLightOFF.py")
+            .then(function (response) {
+                backCode = response.data;
+                return backCode;
+            });
+    },
+    turnLightOn: function () {
+
+        return $http.get(API.url + "/scripts/relais/relaisLightON.py")
+            .then(function (response) {
+                backCode = response.data;
+                return backCode;
+            });
+    },
+    turnEcranOn: function () {
+
+        return $http.get(API.url + "/scripts/relais/relaisEcranON.py")
+            .then(function (response) {
+                backCode = response.data;
+                return backCode;
+            });
+    },
+    turnEcranOff: function () {
+
+        return $http.get(API.url + "/scripts/relais/relaisEcranOFF.py")
+            .then(function (response) {
+                backCode = response.data;
+                return backCode;
+            });
+    },
+    turnCocktailOn: function () {
+
+        return $http.get(API.url + "/scripts/relais/relaisCocktailON.py")
+            .then(function (response) {
+                backCode = response.data;
+                return backCode;
+            });
+    },
+    turnCocktailOff: function () {
+
+        return $http.get(API.url + "/scripts/relais/relaisCocktailOFF.py")
+            .then(function (response) {
+                backCode = response.data;
+                return backCode;
+            });
+    },
   }
 })
 .factory('RfidService', function($http,  API) {

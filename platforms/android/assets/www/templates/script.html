@@ -1,11 +1,25 @@
 <ion-view view-title="Scripts" align-title="left">
  <ion-content ng-class="{expanded:$scope.isExpanded}">
  <div class="content has-header">
-   <button  ng-click="openFridge()" class="button button-full icon-left ion-ios-lightbulb-outline button-positive"> Ouvrir le frigo manuellement</button>
-   <button ng-click="openRegister()" class="button button-full icon-left ion-power button-assertive"> Ouvrir la caisse manuellement</button>
+   <button ng-click="turnBarOn()" class="button button-full icon-left ion-ios-lightbulb-outline button-positive"> Allumer tout le bar </button>
+     <button ng-click="turnBarOff()" class="button button-full icon-left ion-power button-assertive"> Eteindre tout le bar </button>
+     <button  ng-click="turnFridgeOn()" class="button button-full icon-left ion-ios-lightbulb-outline button-positive"> Allumer frigo</button>
+     <button  ng-click="turnFridgeOff()" class="button button-full icon-left ion-power button-assertive">Eteindre frigo</button>
+     <button  ng-click="openRegister()" class="button button-full icon-left ion-ios-lightbulb-outline button-positive"> Ouvrir caisse (IN PROGRESS) </button>
+     <button  ng-click="closeRegister()" class="button button-full icon-left ion-power button-assertive">Fermer caisse (IN PROGRESS)</button>
+     <button  ng-click="turnMusicOn()" class="button button-full icon-left ion-ios-lightbulb-outline button-positive"> Allumer musique</button>
+     <button  ng-click="turnMusicOff()" class="button button-full icon-left ion-power button-assertive">Eteindre musique</button>
+     <button  ng-click="turnLightOn()" class="button button-full icon-left ion-ios-lightbulb-outline button-positive"> Allumer lumière</button>
+     <button  ng-click="turnLightOff()" class="button button-full icon-left ion-power button-assertive">Eteindre lumière</button>
+     <button  ng-click="turnEcranOn()" class="button button-full icon-left ion-ios-lightbulb-outline button-positive"> Allumer écrans</button>
+     <button  ng-click="turnEcranOff()" class="button button-full icon-left ion-power button-assertive">Eteindre écrans</button>
+     <button  ng-click="turnCocktailOn()" class="button button-full icon-left ion-ios-lightbulb-outline button-positive"> Allumer Cocktail Maker</button>
+     <button  ng-click="turnCocktailOff()" class="button button-full icon-left ion-power button-assertive">Eteindre Cocktail Maker</button>
 
 
-    <div class="tabs tabs-dark tabs-icon-top static animate-fade-slide-in-right">
+
+
+     <div class="tabs tabs-dark tabs-icon-top static animate-fade-slide-in-right">
 
         <a class="tab-item" ui-sref="app.order">
           <i class="icon ion-beer"  ></i> Commandes
