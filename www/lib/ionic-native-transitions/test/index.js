@@ -16,6 +16,5 @@ mod.config(Config);
 mod.controller('MainController', Controller);
 mod.run(($log) => {
     $log.info('test running');
-});
-
+})
 export default mod = mod.name;

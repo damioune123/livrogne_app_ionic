@@ -1,7 +1,6 @@
 'use strict';
 
 angular.module('livrogne-app.controllers', [])
-
     .controller('AppCtrl', function ($scope, $state, $ionicModal, $ionicHistory, $ionicPopup, $ionicPopover, $timeout, AuthService, UserService, AUTH_EVENTS, USER_ROLES) {
         $scope.isExpanded = false;
         $scope.hasHeaderFabLeft = false;
@@ -17,7 +16,7 @@ angular.module('livrogne-app.controllers', [])
                 }
             }
             if (window.localStorage.role === USER_ROLES.admin) {
-                if (privilege === USER_ROLES.admin){
+                if (privilege === USER_ROLES.admin) {
                     return true;
                 }
                 else if (privilege === USER_ROLES.super_admin) {
@@ -34,7 +33,7 @@ angular.module('livrogne-app.controllers', [])
             }
         };
         $scope.colourClass = function (number) {
-            if (number >= 0){
+            if (number >= 0) {
                 return "postiive";
             }
             else {
@@ -217,7 +216,7 @@ angular.module('livrogne-app.controllers', [])
                         });
                     }, 0);
                     $scope.showSignInF();
-                }, function (err) {
+                }, function (error) {
                     var alertPopup = $ionicPopup.alert({
                         title: 'Erreur lors de la création du compte !',
                         template: 'Contacter un admin'
@@ -240,11 +239,9 @@ angular.module('livrogne-app.controllers', [])
                 $http.defaults.headers.common['X-Auth-Token'] = authToken.value;
 
                 var promise1 = PromotionService.storePromotions();
-                var promise2 = UserAccountService.storeLostAccountId();
-                var promise3 = UserAccountService.storeSpendingAccountId();
-                var promise4 = UserService.storeUserCredentials(authToken.value, authToken.user);
+                var promise2 = UserService.storeUserCredentials(authToken.value, authToken.user);
                 $scope.show($ionicLoading);
-                $q.all([promise1, promise2, promise3, promise4]).then(function (data) {
+                $q.all([promise1, promise2]).then(function (data) {
                     $ionicHistory.nextViewOptions({
                         disableAnimate: false,
                         disableBack: true
@@ -253,12 +250,12 @@ angular.module('livrogne-app.controllers', [])
                         $state.go('app.order');
                     }, 0);
 
-                }, function (err) {
+                }, function (error) {
                     $scope.hide($ionicLoading);
                     console.log("Erreur lors du chargement des informations en cache");
                 });
             });
-        }
+        };
         $scope.login = function (data) {
             $scope.show($ionicLoading);
             AuthService.login(data.username, data.password).then(function (authenticated) {
@@ -281,9 +278,7 @@ angular.module('livrogne-app.controllers', [])
                     return;
                 }
                 var promise1 = PromotionService.storePromotions();
-                var promise2 = UserAccountService.storeLostAccountId();
-                var promise3 = UserAccountService.storeSpendingAccountId();
-                $q.all([promise1, promise2, promise3]).then(function (data) {
+                $q.all([promise1]).then(function (data) {
                     $scope.hide($ionicLoading);
                     $ionicHistory.nextViewOptions({
                         disableAnimate: false,
@@ -293,7 +288,7 @@ angular.module('livrogne-app.controllers', [])
                         $state.go('app.order');
                     }, 0);
 
-                }, function (err) {
+                }, function (error) {
                     $scope.hide($ionicLoading);
                     console.log("Erreur lors du chargement des informations en cache");
                 });
@@ -370,7 +365,7 @@ angular.module('livrogne-app.controllers', [])
                     $scope.bankNegativeFlows = userBankAccount.negative_money_flows;
                     $scope.hide($ionicLoading);
 
-                }, function (err) {
+                }, function (error) {
                     $scope.hide($ionicLoading);
                     console.log("erreur lors de la récupération du solde de l'utilisiateur");
                 });
@@ -407,10 +402,10 @@ angular.module('livrogne-app.controllers', [])
                     }
                     $scope.hide($ionicLoading);
 
-                }, function (err) {
+                }, function (error) {
                     $scope.hide($ionicLoading);
                     console.log("erreur lors de la récupération du solde de l'utilisiateur");
-                })
+                });
             }
             else {
                 var promise1 = UserAccountService.getUserPersonnalAccount();
@@ -433,7 +428,7 @@ angular.module('livrogne-app.controllers', [])
                 }, function (err) {
                     $scope.hide($ionicLoading);
                     console.log("erreur lors de la récupération du solde de l'utilisiateur");
-                })
+                });
 
             }
         };
@@ -447,7 +442,7 @@ angular.module('livrogne-app.controllers', [])
             value = value * (-1);
             UserService.patchUserMoneyLimit(userId, value).then(function (user) {
 
-            }, function (err) {
+            }, function (error) {
                 var alertPopup = $ionicPopup.alert({
                     title: 'Erreur lors du changement de la limite de crédit!',
                     template: 'Une erreur est survenue lors du changement de crédit. Veuillez prendre contact avec un administrateur.'
@@ -457,7 +452,7 @@ angular.module('livrogne-app.controllers', [])
         $scope.paymentType = function (isPaidCash) {
             if (isPaidCash) return "via cash";
             else return "via compte";
-        }
+        };
 
         $scope.showDeleteOrderConfirm = function (orderId) {
             var confirmPopup = $ionicPopup.confirm({
@@ -598,7 +593,7 @@ angular.module('livrogne-app.controllers', [])
                 $scope.productCategories = productCategories;
                 $scope.hide($ionicLoading);
 
-            }, function (err) {
+            }, function (error) {
                 $scope.hide($ionicLoading);
                 console.log("erreur lors de la récupération du solde de l'utilisiateur");
             })
@@ -694,7 +689,7 @@ angular.module('livrogne-app.controllers', [])
                                 title: 'Commande réalisée avec succès !',
                                 template: ''
                             });
-                        }, function (err) {
+                        }, function (error) {
                             $scope.hide($ionicLoading);
                             console.log("erreur lors de la récupération du solde de l'utilisiateur");
                         });
@@ -717,7 +712,7 @@ angular.module('livrogne-app.controllers', [])
                                 title: 'Commande réalisée avec succès !',
                                 template: ''
                             });
-                        }, function (err) {
+                        }, function (error) {
                             $scope.hide($ionicLoading);
                             console.log("erreur lors de la récupération du solde de l'utilisiateur");
                         });
@@ -731,7 +726,7 @@ angular.module('livrogne-app.controllers', [])
 
                 }
                 else {
-                    $scope.shpw($ionicLoading);
+                    $scope.show($ionicLoading);
                     OrderService.addCashOrder(userCashRegisterAccountId, ol).then(function (result) {
                         UserAccountService.getUserPersonnalAccount().then(function (currentUserPersonalAccount) {
                             $scope.hide($ionicLoading);
@@ -740,7 +735,7 @@ angular.module('livrogne-app.controllers', [])
                                 title: 'Commande réalisée avec succès !',
                                 template: ''
                             });
-                        }, function (err) {
+                        }, function (error) {
                             $scope.hide($ionicLoading);
                             console.log("erreur lors de la récupération du solde de l'utilisiateur");
                         });
@@ -790,6 +785,7 @@ angular.module('livrogne-app.controllers', [])
         $scope.currentUserPersonnalAccountId = window.localStorage['userPersonnalAccountId'];
         $scope.currentUserCashRegisterAccountId = window.localStorage['userCashRegisterAccountId'];
         $scope.currentUserBankAccountId = window.localStorage['userBankAccountId'];
+        var currentUserRole = window.localStorage['role'];
         // Delay expansion
         $timeout(function () {
             $scope.isExpanded = true;
@@ -835,8 +831,24 @@ angular.module('livrogne-app.controllers', [])
 
         getLimitedUsers();
 
-        $scope.lostAccountId = UserAccountService.getLostAccountId()
-        $scope.spendingAccountId = UserAccountService.getSpendingAccountId()
+        if(currentUserRole == "ROLE_ADMIN" ||currentUserRole == "ROLE_SUPER_ADMIN" ){
+            if(window.localStorage["lostAccountId"]===undefined || window.localStorage["spendingAccountId"]===undefined) {
+                var promise1 = UserAccountService.storeLostAccountId();
+                var promise2 = UserAccountService.storeSpendingAccountId();
+                $scope.show($ionicLoading);
+                $q.all([promise1, promise2]).then(function (data) {
+                    $scope.hide($ionicLoading);
+                }, function (error) {
+                    $scope.hide($ionicLoading);
+                    console.log("erreur lors de la récupération du solde des comptes de pertes et achats");
+                });
+            }
+            else{
+                $scope.lostAccountId = window.localStorage["lostAccountId"]
+                $scope.spendingAccountId = window.localStorage["spendingAccountId"]
+            }
+        }
+
         $scope.getUserPersonnalAccount = function (user) {
             if (user == undefined) return;
             for (var i = 0; i < user.user_accounts.length; i++) {
@@ -865,7 +877,6 @@ angular.module('livrogne-app.controllers', [])
                     return;
                 }
             }
-
             if (value == undefined) {
                 var alertPopup = $ionicPopup.alert({
                     title: 'Veuillez rentrer un montant',
@@ -914,8 +925,8 @@ angular.module('livrogne-app.controllers', [])
 
                         }, function (error) {
                             var alertPopup = $ionicPopup.alert({
-                                title: 'Erreur lors du transfert !',
-                                template: 'Veuillez contacter un web-admin :' + error
+                                title: 'Erreur lors du transfert',
+                                template: 'Code:' + error.data.code
                             });
                         });
                 }
@@ -951,15 +962,15 @@ angular.module('livrogne-app.controllers', [])
             $scope.show($ionicLoading);
             ScriptService.turnBarOn().then(function () {
                 $scope.hide($ionicLoading);
-            }, function (err) {
+            }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             });
 
-        }
+        };
 
         $scope.turnBarOff = function () {
             $scope.show($ionicLoading);
@@ -969,8 +980,8 @@ angular.module('livrogne-app.controllers', [])
             }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             })
         };
@@ -978,11 +989,11 @@ angular.module('livrogne-app.controllers', [])
             $scope.show($ionicLoading);
             ScriptService.turnFridgeOn().then(function () {
                 $scope.hide($ionicLoading);
-            }, function (err) {
+            }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             });
 
@@ -996,8 +1007,8 @@ angular.module('livrogne-app.controllers', [])
             }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             })
         };
@@ -1010,8 +1021,8 @@ angular.module('livrogne-app.controllers', [])
             }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             })
         };
@@ -1022,8 +1033,8 @@ angular.module('livrogne-app.controllers', [])
             }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             })
         };
@@ -1034,8 +1045,8 @@ angular.module('livrogne-app.controllers', [])
             }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             })
         };
@@ -1047,8 +1058,8 @@ angular.module('livrogne-app.controllers', [])
             }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             })
         };
@@ -1060,8 +1071,8 @@ angular.module('livrogne-app.controllers', [])
             }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             })
         };
@@ -1072,8 +1083,8 @@ angular.module('livrogne-app.controllers', [])
             }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             })
         };
@@ -1084,8 +1095,8 @@ angular.module('livrogne-app.controllers', [])
             }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             })
         };
@@ -1097,8 +1108,8 @@ angular.module('livrogne-app.controllers', [])
             }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             })
         };
@@ -1110,22 +1121,21 @@ angular.module('livrogne-app.controllers', [])
             }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             })
         };
         $scope.closeRegister = function () {
             $scope.show($ionicLoading);
-
             ScriptService.closeRegister().then(function (result) {
                 $scope.hide($ionicLoading);
 
             }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lorsde l\'exécution du script!',
-                    template: 'Veuillez contacter un web-admin :' + error
+                    title: 'Erreur lors de l\'exécution du script!',
+                    template: 'Code:' + error.data.code
                 });
             })
         };
@@ -1246,7 +1256,6 @@ angular.module('livrogne-app.controllers', [])
 
     })
 
-
     .controller('EditCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService,
                                       ionicMaterialMotion, ionicMaterialInk, AuthService, USER_ROLES, ProductCategoryService, PromotionService, ProductService, RfidService) {
         // Set Header
@@ -1357,10 +1366,10 @@ angular.module('livrogne-app.controllers', [])
                 window.localStorage['firstName'] = firstname;
                 window.localStorage['lastName'] = lastname;
                 window.localStorage['username'] = username;
-            }, function (err) {
+            }, function (error) {
                 var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lors du changement d\'info!',
-                    template: 'Veuillez contacter un admin'
+                    title: 'Erreur lors du changement des informations',
+                    template: 'Code:' + error.data.code
                 });
             });
 
@@ -1376,7 +1385,7 @@ angular.module('livrogne-app.controllers', [])
             }
             PromotionService.patchPromotion(simplePromotionName, simplePromotionRate).then(function (promotion) {
 
-            }, function (err) {
+            }, function (error) {
                 var alertPopup = $ionicPopup.alert({
                     title: 'Erreur lors du changement de réduction!',
                     template: 'Veuillez contacter un admin'
@@ -1387,7 +1396,7 @@ angular.module('livrogne-app.controllers', [])
                     title: 'Réductions changées!',
                     template: ''
                 });
-            }, function (err) {
+            }, function (error) {
                 var alertPopup = $ionicPopup.alert({
                     title: 'Erreur lors du changement de réduction!',
                     template: 'Veuillez contacter un admin'
@@ -1426,14 +1435,14 @@ angular.module('livrogne-app.controllers', [])
                                                 title: 'Utilisateur promu !',
                                                 template: ''
                                             });
-                                        }, function (err) {
+                                        }, function (error) {
                                             var alertPopup = $ionicPopup.alert({
                                                 title: 'Erreur lors de la promotion !',
                                                 template: 'Veuillez contacter un admin'
                                             });
 
                                         });
-                                    }, function (err) {
+                                    }, function (error) {
                                         var alertPopup = $ionicPopup.alert({
                                             title: 'Erreur lors de la promotion !',
                                             template: 'Veuillez contacter un admin'
@@ -1465,15 +1474,13 @@ angular.module('livrogne-app.controllers', [])
                             title: 'Parrain affecté !',
                             template: ''
                         });
-                    }, function (err) {
+                    }, function (error) {
                         var alertPopup = $ionicPopup.alert({
                             title: 'Erreur lors de l\'affection de parrain !',
                             template: 'Veuillez contacter un admin'
                         });
                     });
 
-                }, function (err) {
-                    return;
                 });
             }
             else {
@@ -1482,7 +1489,7 @@ angular.module('livrogne-app.controllers', [])
                         title: 'Parrain affecté !',
                         template: ''
                     });
-                }, function (err) {
+                }, function (error) {
                     var alertPopup = $ionicPopup.alert({
                         title: 'Erreur lors de l\'affection de parrain !',
                         template: 'Veuillez contacter un admin'
@@ -1507,7 +1514,7 @@ angular.module('livrogne-app.controllers', [])
                     title: 'Produit bien créé !',
                     template: ''
                 });
-            }, function (err) {
+            }, function (error) {
                 var alertPopup = $ionicPopup.alert({
                     title: 'Erreur lors de la création du produit !',
                     template: 'Veuillez contacter un admin'
@@ -1529,7 +1536,7 @@ angular.module('livrogne-app.controllers', [])
                     template: ''
                 });
                 window.localStorage['email'] = email;
-            }, function (err) {
+            }, function (error) {
                 var alertPopup = $ionicPopup.alert({
                     title: 'Erreur lors du changement de l\'email!',
                     template: 'Le champ est vide'
@@ -1565,7 +1572,7 @@ angular.module('livrogne-app.controllers', [])
                     template: ''
                 });
 
-            }, function (err) {
+            }, function (error) {
                 var alertPopup = $ionicPopup.alert({
                     title: 'Erreur lors du changement de mot de passe!',
                     template: 'Veuillez contacter un admin'
@@ -1592,17 +1599,17 @@ angular.module('livrogne-app.controllers', [])
                             title: 'Carte correctement ajoutée/modifiée !',
                             template: ''
                         });
-                    }, function (err) {
+                    }, function (error) {
                         var alertPopup = $ionicPopup.alert({
                             title: 'Erreur lors de la modification de la carte !',
-                            template: err
+                            template: error.data.code
                         });
                     })
 
                 });
             });
 
-        }
+        };
         $scope.removeRfid = function () {
             var confirmPopup1 = $ionicPopup.confirm({
                 title: 'Vous êtes sur le point de délier votre carte rfid de votre compte',

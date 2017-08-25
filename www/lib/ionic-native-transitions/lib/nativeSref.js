@@ -16,8 +16,7 @@ export default function($log, $ionicNativeTransitions, $state) {
         $attrs.$observe('nativeOptions', (newOptions) => {
             let evalOptions = $scope.$eval(newOptions);
             nativeOptions = angular.isObject(evalOptions) ? evalOptions : {};
-        });
-
+    })
         $element.on('click', (event) => {
             let ref = parseStateRef($attrs.nativeUiSref, $state.current.name);
             let params = angular.copy($scope.$eval(ref.paramExpr));
@@ -27,7 +26,7 @@ export default function($log, $ionicNativeTransitions, $state) {
             }
 
             $ionicNativeTransitions.stateGo(ref.state, params, stateOptions, nativeOptions);
-        });
+    })
     }
 }
 

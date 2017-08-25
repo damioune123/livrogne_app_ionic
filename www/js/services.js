@@ -370,12 +370,6 @@ angular.module('livrogne-app')
         return spendingAccount;
       });
     },
-    getLostAccountId: function(){
-      return window.localStorage["lostAccountId"];
-    },
-    getSpendingAccountId: function(){
-      return window.localStorage["spendingAccountId"];
-    },
     getUserCashRegisterAccount: function(){
       var userCashRegisterAccountId= window.localStorage["userCashRegisterAccountId"];
 
@@ -556,7 +550,7 @@ angular.module('livrogne-app')
   return {
     turnBarOff: function () {
 
-      return $http.get(API.url + "/scripts/relais/ALLrelaispriseOFF.py")
+      return $http.get(API.url + "/admin/scripts/ALLrelaispriseOFF.py")
         .then(function (response) {
           backCode = response.data;
           return backCode;
@@ -564,7 +558,7 @@ angular.module('livrogne-app')
     },
     turnBarOn: function () {
 
-      return $http.get(API.url + "/scripts/relais/ALLrelaispriseON.py")
+      return $http.get(API.url + "/admin/scripts/ALLrelaispriseON.py")
         .then(function (response) {
           backCode = response.data;
           return backCode;
@@ -572,7 +566,7 @@ angular.module('livrogne-app')
     },
     turnFridgeOn: function () {
 
-      return $http.get(API.url + "/scripts/relais/relaisFrigoON.py")
+      return $http.get(API.url + "/admin/scripts/relaisFrigoON.py")
         .then(function (response) {
           backCode = response.data;
           return backCode;
@@ -580,7 +574,7 @@ angular.module('livrogne-app')
     },
     turnFridgeOff: function () {
 
-        return $http.get(API.url + "/scripts/relais/relaisFrigoOFF.py")
+        return $http.get(API.url + "/admin/scripts/relaisFrigoOFF.py")
             .then(function (response) {
                 backCode = response.data;
                 return backCode;
@@ -588,7 +582,7 @@ angular.module('livrogne-app')
     },
     openRegister: function () {
 
-      return $http.get(API.url + "/scripts/relais/relaisCaisseON.py")
+      return $http.get(API.url + "/admin/scripts/relaisCaisseON.py")
         .then(function (response) {
           backCode = response.data;
           return backCode;
@@ -596,7 +590,7 @@ angular.module('livrogne-app')
     },
     closeRegister: function () {
 
-        return $http.get(API.url + "/scripts/relais/relaisCaisseOFF.py")
+        return $http.get(API.url + "/admin/scripts/relaisCaisseOFF.py")
             .then(function (response) {
                 backCode = response.data;
                 return backCode;
@@ -604,7 +598,7 @@ angular.module('livrogne-app')
     },
     turnMusicOn: function () {
 
-        return $http.get(API.url + "/scripts/relais/relaisMusicON.py")
+        return $http.get(API.url + "/admin/scripts/relaisMusicON.py")
             .then(function (response) {
                 backCode = response.data;
                 return backCode;
@@ -612,7 +606,7 @@ angular.module('livrogne-app')
     },
     turnMusicOff: function () {
 
-        return $http.get(API.url + "/scripts/relais/relaisMusicOFF.py")
+        return $http.get(API.url + "/admin/scripts/relaisMusicOFF.py")
             .then(function (response) {
                 backCode = response.data;
                 return backCode;
@@ -620,7 +614,7 @@ angular.module('livrogne-app')
     },
     turnLightOff: function () {
 
-        return $http.get(API.url + "/scripts/relais/relaisLightOFF.py")
+        return $http.get(API.url + "/admin/scripts/relaisLightOFF.py")
             .then(function (response) {
                 backCode = response.data;
                 return backCode;
@@ -628,7 +622,7 @@ angular.module('livrogne-app')
     },
     turnLightOn: function () {
 
-        return $http.get(API.url + "/scripts/relais/relaisLightON.py")
+        return $http.get(API.url + "/admin/scripts/relaisLightON.py")
             .then(function (response) {
                 backCode = response.data;
                 return backCode;
@@ -636,7 +630,7 @@ angular.module('livrogne-app')
     },
     turnEcranOn: function () {
 
-        return $http.get(API.url + "/scripts/relais/relaisEcranON.py")
+        return $http.get(API.url + "/admin/scripts/relaisEcranON.py")
             .then(function (response) {
                 backCode = response.data;
                 return backCode;
@@ -644,7 +638,7 @@ angular.module('livrogne-app')
     },
     turnEcranOff: function () {
 
-        return $http.get(API.url + "/scripts/relais/relaisEcranOFF.py")
+        return $http.get(API.url + "/admin/scripts/relaisEcranOFF.py")
             .then(function (response) {
                 backCode = response.data;
                 return backCode;
@@ -652,7 +646,7 @@ angular.module('livrogne-app')
     },
     turnCocktailOn: function () {
 
-        return $http.get(API.url + "/scripts/relais/relaisCocktailON.py")
+        return $http.get(API.url + "/admin/scripts/relaisCocktailON.py")
             .then(function (response) {
                 backCode = response.data;
                 return backCode;
@@ -660,7 +654,7 @@ angular.module('livrogne-app')
     },
     turnCocktailOff: function () {
 
-        return $http.get(API.url + "/scripts/relais/relaisCocktailOFF.py")
+        return $http.get(API.url + "/admin/scripts/réelaisCocktailOFF.py")
             .then(function (response) {
                 backCode = response.data;
                 return backCode;

@@ -10,8 +10,8 @@ angular.module('livrogne-app')
         admin: 'ROLE_ADMIN',
         user: 'ROLE_USER'
     })
-    .constant('API', {
-        url: 'http://192.168.0.210/ivrogne_api_raspberry/web/app.php/api'
-    });
+.constant('API', {
+    url: 'http://localhost/ivrogne_api_raspberry/web/app_dev.php/api'
+});
 //
 //

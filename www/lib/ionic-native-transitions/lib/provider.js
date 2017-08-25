@@ -208,7 +208,8 @@ export default function () {
 
             unregisterToStateChangeStartEvent();
             transition(transitionOptions);
-            return $timeout(() => $state.go(state, stateParams, stateOptions));
+            return $timeout(() = > $state.go(state, stateParams, stateOptions);
+        )
         }
 
         /**
@@ -236,7 +237,8 @@ export default function () {
                     angular.extend(window.plugins.nativepagetransitions.globalOptions, getDefaultOptions());
                 }
                 $rootScope.$ionicGoBack = goBack;
-                backButtonUnregister = $ionicPlatform.registerBackButtonAction((e, count) => goBack(count), 100);
+                backButtonUnregister = $ionicPlatform.registerBackButtonAction((e, count) = > goBack(count), 100;
+            )
                 registerToRouteEvents();
             } else {
                 $log.debug('[native transition] disabling plugin');
@@ -265,7 +267,7 @@ export default function () {
             if (!isEnabled()) {
                 return;
             }
-            let options = {}
+            let options = {};
             if (angular.isObject(arguments[0])) {
                 options = angular.extend({}, defaultBackTransition, arguments[0])
             } else if (angular.isString(arguments[0])) {
@@ -306,11 +308,13 @@ export default function () {
         }
 
         function transitionSuccess(duration) {
-            setTimeout(() => $rootScope.$broadcast('ionicNativeTransitions.success'), duration);
+            setTimeout(() = > $rootScope.$broadcast('ionicNativeTransitions.success'), duration;
+        )
         }
 
         function transitionError(duration) {
-            setTimeout(() => $rootScope.$broadcast('ionicNativeTransitions.error'), duration);
+            setTimeout(() = > $rootScope.$broadcast('ionicNativeTransitions.error'), duration;
+        )
         }
 
         function getTransitionDuration(options) {
@@ -384,7 +388,7 @@ export default function () {
                 options = getStateTransition(toState);
                 $log.debug('[native transition] $stateChangeStart', toState, options);
                 transition(options);
-            });
+        })
         }
 
         function getBackStateTransition(state) {
@@ -465,7 +469,7 @@ export default function () {
             legacyGoBack = $rootScope.$ionicGoBack;
             if (!isEnabled()) {
                 $log.debug('[native transition] The plugin is either disabled or nativepagetransitions plugin by telerik is not present. If you are getting this message in a browser, this is normal behavior, native transitions only work on device.');
-                return;
+                
             } else {
                 enableFromService();
             }
@@ -515,11 +519,15 @@ export default function () {
             unregisterToStateChangeStartEvent();
             if (toStateTransition.nativeTransitionsBack === null) {
                 $log.debug('[native transition] transition disabled for this state', toStateTransition);
-                return $timeout(() => $ionicHistory.goBack(backCount)).then(() => registerToStateChangeStartEvent());
+                return $timeout(() = > $ionicHistory.goBack(backCount);
+            ).
+                then(() = > registerToStateChangeStartEvent();
+            )
             }
             $log.debug('nativepagetransitions goBack', backCount, stateName, currentStateTransition, toStateTransition);
             transition('back', currentStateTransition, toStateTransition);
-            return $timeout(() => $ionicHistory.goBack(backCount));
+            return $timeout(() = > $ionicHistory.goBack(backCount);
+        )
         }
     }
 };

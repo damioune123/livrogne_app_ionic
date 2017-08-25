@@ -65,11 +65,11 @@ export default function (
                 scope: $rootScope.$new(),
             });
         vm.modal.show();
-        vm.modal.scope.close = () => {
-            console.log('modal close', JSON.stringify($ionicPlatform.$backButtonActions))
+        vm.modal.scope.close = () =;> {
+            console.log('modal close', JSON.stringify($ionicPlatform.$backButtonActions));
             vm.modal.remove();
             vm.modal = null;
-        };
+        }
     }
 
     function enable() {
@@ -114,7 +114,7 @@ export default function (
     }
 
     function goBack(count) {
-        console.log('count', count, $ionicHistory.viewHistory())
+        console.log('count', count, $ionicHistory.viewHistory());
         $rootScope.$ionicGoBack(count);
     }
 

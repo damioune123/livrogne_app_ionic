@@ -49,16 +49,16 @@ angular.module('ionMdInput', [])
 
       var cleanUp = function() {
           ionic.off('$destroy', cleanUp, element[0]);
-        }
+        };
         // add listener
       ionic.on('$destroy', cleanUp, element[0]);
 
       return function LinkingFunction($scope, $element, $attributes) {
 
 
-        var mdInput = $element[0].querySelector('.md-input')
+        var mdInput = $element[0].querySelector('.md-input');
 
-        var dirtyClass = 'used'
+        var dirtyClass = 'used';
 
         var reg = new RegExp('(\\s|^)' + dirtyClass + '(\\s|$)');
 

@@ -15,5 +15,5 @@ export default function($ionicNativeTransitions, $ionicPlatform, $ionicHistory, 
 
     $ionicPlatform.ready(() => {
         $ionicNativeTransitions.init();
-    });
+})
 };

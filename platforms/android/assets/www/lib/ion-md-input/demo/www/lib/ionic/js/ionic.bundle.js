@@ -40958,7 +40958,7 @@ var deprecated = {
       set: setter,
       enumerable: true
     });
-    return;
+
   }
 };
 

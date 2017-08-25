@@ -146,7 +146,7 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                 }
             }
         }
-    })
+    });
 
   $urlRouterProvider.otherwise('/app/login');
 })
@@ -173,5 +173,5 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
     }
 
   });
-})
+});
 

@@ -243,7 +243,7 @@ module.exports = function (angularApp) {
                     for (var a = 0; a < childrenLength; a++) {
                         if (el.children[a].className.indexOf('ink-ripple') !== -1) {
                             ripple = el.children[a];
-                            continue;
+
                         }
                     }
 

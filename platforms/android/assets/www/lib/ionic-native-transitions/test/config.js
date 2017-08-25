@@ -139,7 +139,7 @@ export default function ($ionicNativeTransitionsProvider, $stateProvider, $urlRo
                         ]
                     });
                     deferred.reject();
-                }, 1000)
+                }, 1000);
                 return deferred.promise;
             }
         });

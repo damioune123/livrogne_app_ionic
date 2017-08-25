@@ -16,4 +16,4 @@ angular.module('starter', ['ionic', 'ionMdInput'])
       StatusBar.styleDefault();
     }
   });
-})
+});

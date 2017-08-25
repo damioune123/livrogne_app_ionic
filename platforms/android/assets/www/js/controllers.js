@@ -1,7 +1,6 @@
 'use strict';
 
 angular.module('livrogne-app.controllers', [])
-
     .controller('AppCtrl', function ($scope, $state, $ionicModal, $ionicHistory, $ionicPopup, $ionicPopover, $timeout, AuthService, UserService, AUTH_EVENTS, USER_ROLES) {
         $scope.isExpanded = false;
         $scope.hasHeaderFabLeft = false;
@@ -17,7 +16,7 @@ angular.module('livrogne-app.controllers', [])
                 }
             }
             if (window.localStorage.role === USER_ROLES.admin) {
-                if (privilege === USER_ROLES.admin){
+                if (privilege === USER_ROLES.admin) {
                     return true;
                 }
                 else if (privilege === USER_ROLES.super_admin) {
@@ -34,7 +33,7 @@ angular.module('livrogne-app.controllers', [])
             }
         };
         $scope.colourClass = function (number) {
-            if (number >= 0){
+            if (number >= 0) {
                 return "postiive";
             }
             else {
@@ -258,7 +257,7 @@ angular.module('livrogne-app.controllers', [])
                     console.log("Erreur lors du chargement des informations en cache");
                 });
             });
-        }
+        };
         $scope.login = function (data) {
             $scope.show($ionicLoading);
             AuthService.login(data.username, data.password).then(function (authenticated) {
@@ -457,7 +456,7 @@ angular.module('livrogne-app.controllers', [])
         $scope.paymentType = function (isPaidCash) {
             if (isPaidCash) return "via cash";
             else return "via compte";
-        }
+        };
 
         $scope.showDeleteOrderConfirm = function (orderId) {
             var confirmPopup = $ionicPopup.confirm({
@@ -835,8 +834,8 @@ angular.module('livrogne-app.controllers', [])
 
         getLimitedUsers();
 
-        $scope.lostAccountId = UserAccountService.getLostAccountId()
-        $scope.spendingAccountId = UserAccountService.getSpendingAccountId()
+        $scope.lostAccountId = UserAccountService.getLostAccountId();
+        $scope.spendingAccountId = UserAccountService.getSpendingAccountId();
         $scope.getUserPersonnalAccount = function (user) {
             if (user == undefined) return;
             for (var i = 0; i < user.user_accounts.length; i++) {
@@ -865,7 +864,6 @@ angular.module('livrogne-app.controllers', [])
                     return;
                 }
             }
-
             if (value == undefined) {
                 var alertPopup = $ionicPopup.alert({
                     title: 'Veuillez rentrer un montant',
@@ -959,7 +957,7 @@ angular.module('livrogne-app.controllers', [])
                 });
             });
 
-        }
+        };
 
         $scope.turnBarOff = function () {
             $scope.show($ionicLoading);
@@ -1117,7 +1115,6 @@ angular.module('livrogne-app.controllers', [])
         };
         $scope.closeRegister = function () {
             $scope.show($ionicLoading);
-
             ScriptService.closeRegister().then(function (result) {
                 $scope.hide($ionicLoading);
 
@@ -1245,7 +1242,6 @@ angular.module('livrogne-app.controllers', [])
         };
 
     })
-
 
     .controller('EditCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService,
                                       ionicMaterialMotion, ionicMaterialInk, AuthService, USER_ROLES, ProductCategoryService, PromotionService, ProductService, RfidService) {
@@ -1473,7 +1469,7 @@ angular.module('livrogne-app.controllers', [])
                     });
 
                 }, function (err) {
-                    return;
+
                 });
             }
             else {
@@ -1602,7 +1598,7 @@ angular.module('livrogne-app.controllers', [])
                 });
             });
 
-        }
+        };
         $scope.removeRfid = function () {
             var confirmPopup1 = $ionicPopup.confirm({
                 title: 'Vous êtes sur le point de délier votre carte rfid de votre compte',

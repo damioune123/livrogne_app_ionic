@@ -600,7 +600,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            legacyGoBack = $rootScope.$ionicGoBack;
 	            if (!isEnabled()) {
 	                $log.debug('[native transition] The plugin is either disabled or nativepagetransitions plugin by telerik is not present. If you are getting this message in a browser, this is normal behavior, native transitions only work on device.');
-	                return;
+	                
 	            } else {
 	                enableFromService();
 	            }
@@ -664,9 +664,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 	};
-	
-	;
-	module.exports = exports['default'];
+
+        module.exports = exports['default'];
 
 /***/ },
 /* 2 */
@@ -754,9 +753,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    $ionicNativeTransitions.init();
 	  });
 	}];
-	
-	;
-	module.exports = exports['default'];
+
+        module.exports = exports['default'];
 	/**
 	 * @ngdoc service
 	 * @name ionic-native-transitions.$ionicNativeTransitionsProvider
@@ -767,5 +765,4 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ }
 /******/ ])
 });
-;
 //# sourceMappingURL=ionic-native-transitions.js.map
