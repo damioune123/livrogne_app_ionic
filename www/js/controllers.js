@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('livrogne-app.controllers', [])
     .controller('AppCtrl', function ($scope, $state, $ionicModal, $ionicHistory, $ionicPopup, $ionicPopover, $timeout, AuthService, UserService, AUTH_EVENTS, USER_ROLES) {
         $scope.isExpanded = false;
@@ -23,6 +21,18 @@ angular.module('livrogne-app.controllers', [])
                     return false;
                 }
             }
+            if (window.localStorage.role === USER_ROLES.barman) {
+                if (privilege === USER_ROLES.barman) {
+                    return true;
+                }
+                else if (privilege === USER_ROLES.super_admin) {
+                    return false;
+                }
+                else if (privilege === USER_ROLES.admin) {
+                    return false;
+                }
+            }
+
             if (window.localStorage.role === USER_ROLES.super_admin) {
                 if (privilege === USER_ROLES.admin) {
                     return true;
@@ -65,13 +75,6 @@ angular.module('livrogne-app.controllers', [])
                 }, 0);
             });
 
-        };
-        $scope.getPersonnalAccount = function (accounts) {
-            for (var i = 0; i < accounts.length; i++) {
-                if (accounts[i].type === "somebody") {
-                    return accounts[i];
-                }
-            }
         };
         $scope.valAbs = function (number) {
             return Math.abs(number);
@@ -145,11 +148,33 @@ angular.module('livrogne-app.controllers', [])
                 fabs[0].remove();
             }
         };
+        $scope.getPersonnalAccount = function (accounts) {
+            for (var i = 0; i < accounts.length; i++) {
+                if (accounts[i].type === "somebody") {
+                    return accounts[i];
+                }
+            }
+        };
+
     })
 
 
     .controller('LoginCtrl', function ($scope, $state, $timeout, $ionicPopup, AuthService, $ionicHistory, $http, USER_ROLES, ionicMaterialInk, UserService, UserAccountService, PromotionService, RfidService, $ionicLoading, $q) {
         $scope.data = {};
+
+        //$state.reload();
+        $ionicHistory.clearHistory();
+        $ionicHistory.clearCache();
+        $scope.$parent.clearFabs();
+        $scope.$parent.hideHeader();
+        $timeout(function () {
+            $scope.$parent.hideHeader();
+        }, 0);
+
+        ionicMaterialInk.displayEffect();
+        window.localStorage.clear();
+        $scope.showSignIn = true;
+        $scope.showSignUp = false;
         $scope.show = function () {
             $ionicLoading.show({
                 template: '<p>Loading...</p><ion-spinner></ion-spinner>'
@@ -159,18 +184,6 @@ angular.module('livrogne-app.controllers', [])
         $scope.hide = function () {
             $ionicLoading.hide();
         };
-        //$state.reload();
-        $ionicHistory.clearHistory();
-        $ionicHistory.clearCache();
-        $scope.$parent.clearFabs();
-        $scope.$parent.hideHeader();
-        $timeout(function () {
-            $scope.$parent.hideHeader();
-        }, 0);
-        ionicMaterialInk.displayEffect();
-        window.localStorage.clear();
-        $scope.showSignIn = true;
-        $scope.showSignUp = false;
 
         $scope.showSignUpF = function () {
             $scope.showSignIn = false;
@@ -207,20 +220,18 @@ angular.module('livrogne-app.controllers', [])
             }
             $scope.show($ionicLoading);
             UserService.postUser(data, String(data.password2)).then(function (newUser) {
-                UserAccountService.postUserPersonnalAccount(newUser.id).then(function (userAccount) {
-                    $scope.hide($ionicLoading);
-                    setTimeout(function () {
-                        var alertPopup = $ionicPopup.alert({
-                            title: 'Votre compte a été créé',
-                            template: 'Bienvenue à l\'ivrogne ' + userAccount.user.firstname
-                        });
-                    }, 0);
-                    $scope.showSignInF();
-                }, function (error) {
+                $scope.hide($ionicLoading);
+                setTimeout(function () {
                     var alertPopup = $ionicPopup.alert({
-                        title: 'Erreur lors de la création du compte !',
-                        template: 'Contacter un admin'
+                        title: 'Votre compte a été créé',
+                        template: 'Bienvenue à l\'ivrogne ' + userAccount.user.firstname
                     });
+                }, 0);
+                $scope.showSignInF();
+            }, function (error) {
+                var alertPopup = $ionicPopup.alert({
+                    title: 'Erreur lors de la création du compte !',
+                    template: 'Contacter un admin'
                 });
             });
         };
@@ -236,12 +247,9 @@ angular.module('livrogne-app.controllers', [])
                     });
                     return;
                 }
-                $http.defaults.headers.common['X-Auth-Token'] = authToken.value;
-
-                var promise1 = PromotionService.storePromotions();
-                var promise2 = UserService.storeUserCredentials(authToken.value, authToken.user);
+                var promise1 = RfidService.login(authToken);
                 $scope.show($ionicLoading);
-                $q.all([promise1, promise2]).then(function (data) {
+                $q.all([promise1]).then(function (data) {
                     $ionicHistory.nextViewOptions({
                         disableAnimate: false,
                         disableBack: true
@@ -277,21 +285,15 @@ angular.module('livrogne-app.controllers', [])
                     });
                     return;
                 }
-                var promise1 = PromotionService.storePromotions();
-                $q.all([promise1]).then(function (data) {
-                    $scope.hide($ionicLoading);
-                    $ionicHistory.nextViewOptions({
-                        disableAnimate: false,
-                        disableBack: true
-                    });
-                    setTimeout(function () {
-                        $state.go('app.order');
-                    }, 0);
-
-                }, function (error) {
-                    $scope.hide($ionicLoading);
-                    console.log("Erreur lors du chargement des informations en cache");
+                $scope.hide($ionicLoading);
+                $ionicHistory.nextViewOptions({
+                    disableAnimate: false,
+                    disableBack: true
                 });
+                setTimeout(function () {
+                    $state.go('app.order');
+                }, 0);
+
             });
         };
     })
@@ -537,7 +539,7 @@ angular.module('livrogne-app.controllers', [])
         ionicMaterialInk.displayEffect();
     })
     .controller('OrderCtrl', function ($scope, $state, $stateParams, $ionicPopup, $ionicHistory, $timeout, PromotionService, USER_ROLES, UserService,
-                                       ProductCategoryService, OrderService, MoneyFlowService, OrderLineService, ionicMaterialMotion, ionicMaterialInk, AuthService, UserAccountService, $q, $ionicLoading) {
+                                       ProductCategoryService, OrderService, MoneyFlowService, ionicMaterialMotion, ionicMaterialInk, AuthService, UserAccountService, $q, $ionicLoading) {
         // Set Header
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
@@ -548,30 +550,29 @@ angular.module('livrogne-app.controllers', [])
         $scope.simplePromotion = 0.0;
         var currentUserId = window.localStorage['userId'];
         var currentUserRole = window.localStorage['role'];
-        var currentUserMoneyLimit = window.localStorage['moneyLimit'];
-        var currentUserMoneyBalance = 0.0;
+        var currentUserMoneyAvailable = 0.0;
         var userPersonnalAccountId = window.localStorage["userPersonnalAccountId"];
-        var userCashRegisterAccountId = window.localStorage["userCashRegisterAccountId"];
         $scope.show = function () {
             $ionicLoading.show({
                 template: '<p>Loading...</p><ion-spinner></ion-spinner>'
             });
         };
 
+        UserAccountService.getUserPersonnalAccountOrders(1).then(function (response) {
+            console.log(response);
+        });
         $scope.hide = function () {
             $ionicLoading.hide();
         };
         var getInformation = function () {
             var promise1 = PromotionService.getPromotions();
             var promise2 = UserService.getLimitedUsers();
-            var promise3 = UserAccountService.getUserPersonnalAccount();
-            var promise4 = ProductCategoryService.getProductCategories();
+            var promise3 = ProductCategoryService.getProductCategories();
             $scope.show($ionicLoading);
-            $q.all([promise1, promise2, promise3, promise4]).then(function (data) {
+            $q.all([promise1, promise2, promise3]).then(function (data) {
                 var promotions = data[0];
                 var result = data[1];
-                var currentUserPersonalAccount = data[2];
-                var productCategories = data[3];
+                var productCategories = data[2];
 
                 for (var i = 0; i < promotions.length; i++) {
                     if (promotions[i].promotion_name == "admin") $scope.adminPromotion = promotions[i].user_promotion;
@@ -583,7 +584,7 @@ angular.module('livrogne-app.controllers', [])
                         $scope.users.splice(i, 1);
                     else $scope.users[i].credential = $scope.users[i].firstname + " " + $scope.users[i].lastname;
                 }
-                currentUserMoneyBalance = currentUserPersonalAccount.money_balance;
+
 
                 for (var i = 0; i < productCategories.length; i++) {
                     for (var j = 0; j < productCategories[i].products.length; j++) {
@@ -600,11 +601,24 @@ angular.module('livrogne-app.controllers', [])
         };
         getInformation();
 
+        var totalAdminOrderLine = function(ol){
+            $price=ol.admin_price*ol.quantity;
+            $price = $price - (($scope.adminPromotion/100)*$price);
+            return $price;
+        };
+        var totalUserOrderLine = function(ol){
+            $price=ol.user_price*ol.quantity;
+            $price = $price - (($scope.simplePromotion/100)*$price);
+            return $price;
+        };
         var computeOrderTotal = function () {
-            $scope.orderTotal = 0;
-            for (var l = 0; l < $scope.orderLines.length; l++) {
-                $scope.orderTotal += ($scope.orderLines[l].pc.price * $scope.orderLines[l].quantity);
+            $scope.totalAdmin=0.0;
+            $scope.totalUser=0.0;
+            for (var k = 0; k < $scope.orderLines.length; k++) {
+                $scope.totalAdmin+=$scope.orderLines[k].totalAdmin;
+                $scope.totalUser+=$scope.orderLines[k].totalUser;
             }
+
         };
 
         $scope.addNewOrderLine = function (pc, selectedProduct) {
@@ -612,14 +626,22 @@ angular.module('livrogne-app.controllers', [])
             for (var k = 0; k < $scope.orderLines.length; k++) {
                 if ($scope.orderLines[k].pc.id == pc.id && $scope.orderLines[k].product.barcode == selectedProduct.barcode) {
                     $scope.orderLines[k].quantity++;
-                    newOrder = false;
+                    $scope.orderLines[k].totalAdmin=totalAdminOrderLine($scope.orderLines[k]);
+                    $scope.orderLines[k].totalUser=totalUserOrderLine($scope.orderLines[k]);
+                    computeOrderTotal();
+                    newOrder=false;
+                    break;
+
                 }
             }
-            if (newOrder) {
-                var orderLine = {pc: pc, product: selectedProduct, quantity: 1};
+            if(newOrder){
+                console.log(selectedProduct);
+                var orderLine = {pc: pc, product: selectedProduct, quantity: 1, user_price: selectedProduct.price_with_promotion_user, admin_price: selectedProduct.price_with_promotion_admin};
+                orderLine.totalAdmin=totalAdminOrderLine(orderLine);
+                orderLine.totalUser=totalUserOrderLine(orderLine);
                 $scope.orderLines.push(orderLine);
+                computeOrderTotal();
             }
-            computeOrderTotal();
         };
 
         $scope.removeOrderLine = function (pcId, productBarcode) {
@@ -634,42 +656,41 @@ angular.module('livrogne-app.controllers', [])
 
 
         $scope.persistOrder = function (type, client) {
-            var priceCoeff = 1.0;
-            if (type == "someoneElse" && client.role == USER_ROLES.user) {
-                priceCoeff = $scope.simplePromotion;
-            }
-            else if (type == "self" && currentUserRole == USER_ROLES.user) priceCoeff = $scope.simplePromotion;
-            else priceCoeff = $scope.adminPromotion;
-            var orderPrice = $scope.orderTotal * (100 - priceCoeff) / 100;
 
-            if ((type == "someoneElse" && client.role == USER_ROLES.user) || (type == "self" && currentUserRole == USER_ROLES.user )) {
-                var moneyLimit = 0.0;
-                var godfatherId = window.localStorage['godfatherId'];
-                var simpleUserMoneyBalance = undefined;
-                if (type == "someoneElse") {
-                    simpleUserMoneyBalance = $scope.getPersonnalAccount(client.user_accounts).money_balance;
-                    if (client.godfather != undefined) {
-                        moneyLimit = client.money_limit;
-                    }
-                }
-                else {
-                    moneyLimit = currentUserMoneyLimit;
-                    simpleUserMoneyBalance = currentUserMoneyBalance;
-                }
-
-                if ((simpleUserMoneyBalance - orderPrice) < moneyLimit) {
-                    var alertPopup = $ionicPopup.alert({
-                        title: 'Le client est fauché !',
-                        template: 'La limite imposée par le parrain est atteinte (par défaut 0 si le client est non-sponsorisé).'
+            if(type=="someoneElse"){
+                if(client.role==="ROLE_USER"){
+                    var confirmPopup = $ionicPopup.confirm({
+                        title: 'Passer une commande',
+                        template: 'Etes-vous sûr de vouloir passer la commande pour un total de ' + $scope.totalUser + ' € ?'
                     });
-                    return;
-
+                }
+                else{
+                    var confirmPopup = $ionicPopup.confirm({
+                        title: 'Passer une commande',
+                        template: 'Etes-vous sûr de vouloir passer la commande pour un total de ' + $scope.totalAdmin+ ' € ?'
+                    });
                 }
             }
-            var confirmPopup = $ionicPopup.confirm({
-                title: 'Passer une commande',
-                template: 'Etes-vous sûr de vouloir passer la commande pour un total de ' + orderPrice + ' € ?'
-            });
+            else if(type=="self"){
+                if(currentUserRole!="ROLE_USER"){
+                    var confirmPopup = $ionicPopup.confirm({
+                        title: 'Passer une commande',
+                        template: 'Etes-vous sûr de vouloir passer la commande pour un total de ' + $scope.totalAdmin+ ' € ?'
+                    });
+                }
+                else{
+                    var confirmPopup = $ionicPopup.confirm({
+                        title: 'Passer une commande',
+                        template: 'Etes-vous sûr de vouloir passer la commande pour un total de ' + $scope.totalUser + ' € ?'
+                    });
+                }
+            }
+            else{
+                var confirmPopup = $ionicPopup.confirm({
+                    title: 'Passer une commande',
+                    template: 'Etes-vous sûr de vouloir passer la commande pour un total de ' + $scope.totalUser + ' € ?'
+                });
+            }
 
             confirmPopup.then(function (res) {
                 var ol = [];
@@ -681,43 +702,52 @@ angular.module('livrogne-app.controllers', [])
                 }
                 if (type == "self") {
                     $scope.show($ionicLoading);
-                    OrderService.addSelfOrder(userPersonnalAccountId, ol).then(function (result) {
-                        UserAccountService.getUserPersonnalAccount().then(function (currentUserPersonalAccount) {
-                            $scope.hide($ionicLoading);
-                            currentUserMoneyBalance = currentUserPersonalAccount.money_balance;
+                    OrderService.addSelfOrder(ol).then(function (result) {
+                        $scope.hide($ionicLoading);
+                        if(result.INSUFFICIENT_CASH==true){
+                            var alertPopup = $ionicPopup.alert({
+                                title: 'Sole disonible insuffisant !',
+                                template: 'Solde disponible :'+result.available_balance+"€. Total commande :"+result.order_total+"€"
+                            });
+                        }
+                        else {
                             var alertPopup = $ionicPopup.alert({
                                 title: 'Commande réalisée avec succès !',
                                 template: ''
                             });
-                        }, function (error) {
-                            $scope.hide($ionicLoading);
-                            console.log("erreur lors de la récupération du solde de l'utilisiateur");
-                        });
+                        }
+
                     }, function (error) {
                         $scope.hide($ionicLoading);
+                        console.log(error);
                         var alertPopup = $ionicPopup.alert({
                             title: 'Erreur lors de la création de la commande!',
                             template: 'Une erreur est survenue lors de la création de la commande. Veuillez contacter un admin.'
                         });
+
+
                     });
                 }
                 else if (type == "someoneElse") {
                     $scope.show($ionicLoading);
-                    OrderService.addSEOrder(client.user_accounts[0].id, userCashRegisterAccountId, ol).then(function (result) {
-                        UserAccountService.getUserPersonnalAccount().then(function (currentUserPersonalAccount) {
-                            $scope.hide($ionicLoading);
-                            currentUserMoneyBalance = currentUserPersonalAccount.money_balance;
-
+                    console.log(client);
+                    OrderService.addSEOrder(client.user_accounts[0].id, ol).then(function (result) {
+                        $scope.hide($ionicLoading);
+                        if(result.INSUFFICIENT_CASH==true){
+                            var alertPopup = $ionicPopup.alert({
+                                title: 'Sole disonible insuffisant !',
+                                template: 'Solde disponible :'+result.available_balance+"€. Total commande :"+result.order_total+"€"
+                            });
+                        }
+                        else {
                             var alertPopup = $ionicPopup.alert({
                                 title: 'Commande réalisée avec succès !',
                                 template: ''
                             });
-                        }, function (error) {
-                            $scope.hide($ionicLoading);
-                            console.log("erreur lors de la récupération du solde de l'utilisiateur");
-                        });
+                        }
                     }, function (error) {
                         $scope.hide($ionicLoading);
+                        console.log(error);
                         var alertPopup = $ionicPopup.alert({
                             title: 'Erreur lors de la création de la commande!',
                             template: 'Une erreur est survenue lors de la création de la commande. Veuillez contacter un admin.'
@@ -727,26 +757,28 @@ angular.module('livrogne-app.controllers', [])
                 }
                 else {
                     $scope.show($ionicLoading);
-                    OrderService.addCashOrder(userCashRegisterAccountId, ol).then(function (result) {
-                        UserAccountService.getUserPersonnalAccount().then(function (currentUserPersonalAccount) {
-                            $scope.hide($ionicLoading);
-                            currentUserMoneyBalance = currentUserPersonalAccount.money_balance;
+                    OrderService.addCashOrder( ol).then(function (result) {
+                        $scope.hide($ionicLoading);
+                        if(result.INSUFFICIENT_CASH==true){
+                            var alertPopup = $ionicPopup.alert({
+                                title: 'Sole disonible insuffisant !',
+                                template: 'Solde disponible :'+result.available_balance+"€. Total commande :"+result.order_total+"€"
+                            });
+                        }
+                        else {
                             var alertPopup = $ionicPopup.alert({
                                 title: 'Commande réalisée avec succès !',
                                 template: ''
                             });
-                        }, function (error) {
-                            $scope.hide($ionicLoading);
-                            console.log("erreur lors de la récupération du solde de l'utilisiateur");
-                        });
+                        }
                     }, function (error) {
                         $scope.hide($ionicLoading);
+                        console.log(error);
                         var alertPopup = $ionicPopup.alert({
                             title: 'Erreur lors de la création de la commande!',
                             template: 'Une erreur est survenue lors de la création de la commande. Veuillez contacter un admin.'
                         });
                     });
-
                 }
                 $scope.orderLines = [];
                 getInformation();
@@ -776,7 +808,7 @@ angular.module('livrogne-app.controllers', [])
     })
 
     .controller('MoneyFlowCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService, ProductCategoryService, MoneyFlowService, AuthService,
-                                           ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading) {
+                                           ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading, $q) {
         // Set Header
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
@@ -1296,7 +1328,7 @@ angular.module('livrogne-app.controllers', [])
         });
         $scope.simpleSponsorisedUsers = {};
         var getSimpleSponsorisedUsers = function () {
-            UserService.getUsers().then(function (result) {
+            UserService.getLimitedUsers().then(function (result) {
                 $scope.simpleSponsorisedUsers = result;
                 for (var i = $scope.simpleSponsorisedUsers.length - 1; i >= 0; i--) {
                     if (currentUserId == $scope.simpleSponsorisedUsers[i].id)
@@ -1311,28 +1343,11 @@ angular.module('livrogne-app.controllers', [])
         };
         if (currentUserRole != USER_ROLES.user)
             getSimpleSponsorisedUsers();
-        $scope.simpleUnsponsorisedUsers = {};
-        var getSimpleUnsponsorisedUsers = function () {
-            UserService.getUsers().then(function (result) {
-                $scope.simpleUnsponsorisedUsers = result;
-                for (var i = $scope.simpleUnsponsorisedUsers.length - 1; i >= 0; i--) {
-                    if (currentUserId == $scope.simpleUnsponsorisedUsers[i].id)
-                        $scope.simpleUnsponsorisedUsers.splice(i, 1);
-                    else if ($scope.simpleUnsponsorisedUsers[i].godfather != undefined)
-                        $scope.simpleUnsponsorisedUsers.splice(i, 1);
-                    else if ($scope.simpleUnsponsorisedUsers[i].role == USER_ROLES.admin || $scope.simpleUnsponsorisedUsers[i].role == USER_ROLES.super_admin)
-                        $scope.simpleUnsponsorisedUsers.splice(i, 1);
-                    else $scope.simpleUnsponsorisedUsers[i].credential = $scope.simpleUnsponsorisedUsers[i].firstname + " " + $scope.simpleUnsponsorisedUsers[i].lastname;
-                }
-            });
-        };
-        if (currentUserRole != USER_ROLES.user)
-            getSimpleUnsponsorisedUsers();
 
         $scope.admins = {};
 
         var getAdmins = function () {
-            UserService.getUsers().then(function (result) {
+            UserService.getLimitedUsers().then(function (result) {
                 $scope.admins = result;
                 for (var i = $scope.admins.length - 1; i >= 0; i--) {
                     if ($scope.admins[i].role == USER_ROLES.user)
