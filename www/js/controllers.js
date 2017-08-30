@@ -1,5 +1,5 @@
 angular.module('livrogne-app.controllers', [])
-    .controller('AppCtrl', function ($scope, $state, $ionicModal, $ionicHistory, $ionicPopup, $ionicPopover, $timeout, AuthService, UserService, AUTH_EVENTS, USER_ROLES) {
+    .controller('AppCtrl', function ($scope, $state,SocketService,RfidService, $ionicModal, $ionicHistory, $ionicPopup, $ionicPopover, $timeout, AuthService, UserService, AUTH_EVENTS, USER_ROLES,$q,$ionicLoading) {
         $scope.isExpanded = false;
         $scope.hasHeaderFabLeft = false;
         $scope.hasHeaderFabRight = false;
@@ -67,6 +67,15 @@ angular.module('livrogne-app.controllers', [])
             });
         });
 
+        $scope.show = function () {
+            $ionicLoading.show({
+                template: '<p>Loading...</p><ion-spinner></ion-spinner>'
+            });
+        };
+
+        $scope.hide = function () {
+            $ionicLoading.hide();
+        };
         $scope.logout = function () {
             AuthService.logout();
             $ionicHistory.clearCache().then(function () {
@@ -76,6 +85,7 @@ angular.module('livrogne-app.controllers', [])
             });
 
         };
+
         $scope.valAbs = function (number) {
             return Math.abs(number);
         };
@@ -155,6 +165,42 @@ angular.module('livrogne-app.controllers', [])
                 }
             }
         };
+        var socketListenner = function(){
+            SocketService.socketOn().on('broadcastsocketio', function (authtokenAndId) {
+                SocketService.socketOff();
+                var confirmPopup = $ionicPopup.confirm({
+                    title: 'Une carte a été detectée au nom de '+authtokenAndId.firstname+" "+authtokenAndId.lastname,
+                    template: 'Desirez vous vous connecter sur ce compte ?'
+                });
+
+                confirmPopup.then(function (res) {
+                    if (res) {
+                        AuthService.logout();
+
+                        console.log(authtokenAndId); // ici on récupère ['foo' => 'bar']
+                        var promise1 = RfidService.login(authtokenAndId.token, authtokenAndId.userId);
+                        $scope.show($ionicLoading);
+                        $q.all([promise1]).then(function (data) {
+                            $scope.hide($ionicLoading);
+                            $ionicHistory.nextViewOptions({
+                                disableAnimate: false,
+                                disableBack: true
+                            });
+                            socketListenner();
+                            setTimeout(function () {
+                                $state.go('app.order');
+                            }, 0);
+
+                        }, function (error) {
+                            $scope.hide($ionicLoading);
+                            console.log("Erreur lors du chargement des informations en cache");
+                        });
+                    }
+                })
+            });
+        };
+        socketListenner();
+
 
     })
 

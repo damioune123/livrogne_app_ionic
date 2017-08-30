@@ -98,6 +98,7 @@ angular.module('livrogne-app')
         $httpProvider.interceptors.push('AuthInterceptor');
     })
 
+
     .factory('UserService', function($http, USER_ROLES, API) {
         var users = [];
 
@@ -205,6 +206,26 @@ angular.module('livrogne-app')
             }
         }
     })
+    .factory('SocketService', function (socketFactory) {
+        var mySocket;
+        var socketOn = function(){
+            var myIoSocket = io.connect('http://127.0.0.1:5000');
+
+            mySocket = socketFactory({
+                ioSocket: myIoSocket
+            });
+            return mySocket;
+        };
+        var socketOff = function(){
+            mySocket.removeAllListeners();
+
+        };
+        return{
+            socketOn:socketOn,
+            socketOff:socketOff
+        }
+    })
+
 
     .factory('UserAccountService', function($http, USER_ROLES, API) {
         return {
@@ -491,11 +512,11 @@ angular.module('livrogne-app')
         }
     })
     .factory('RfidService', function($http,  API, $q,UserService, AuthService) {
-        var login = function(token) {
+        var login = function(token_value, user_id) {
             var deferred = $q.defer();
             var promise = deferred.promise;
-            $http.defaults.headers.common['X-Auth-Token'] = token.value;
-            window.localStorage.userId=token.user.id;
+            $http.defaults.headers.common['X-Auth-Token'] = token_value;
+            window.localStorage.userId=user_id;
             UserService.getUser().then(function (response) {
                 AuthService.storeUserCredentials(response);
                 deferred.resolve(response);
