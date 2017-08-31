@@ -1,0 +1,45 @@
+<ion-view view-title="DashBoard" cache-view="false">
+    <ion-content center text-center ng-class="{expanded:$scope.isExpanded}">
+        <div class="hero " style="background-image: url('img/dash-bg.jpg');">
+            <div class="content">
+                <h3><a class="head">{{firstName}}  {{lastName}}</a></h3>
+                <h4 ><a class="head">{{username}}</a></h4>
+                <h4><a class="head">Solde :{{moneyBalance}}€</a></h4>
+                <h4><a class="head">Solde disponible :{{availableBalance}}€</a></h4>
+                <h4 ng-hide="godfatherCredentials==undefined" ><a class="head">Parrain :{{godfatherCredentials}}</a></h4>
+            </div>
+        </div>
+        <div class="row row-center">
+            <div class="col col-center">
+                <button ng-click="showAccounts()"class="button  icon-left ion-ios-list button-block button-default-ios button-ios-light button-default-ios button-ios-light">
+                    Mes comptes
+                </button>
+                <div ng-show="accountsShown"class="button-bar">
+                    <a ng-click="goOrders()" class="button icon-top ion-beer button-calm"> Com.</a>
+                    <a ng-click="goMoneyFlows('positive')" class="button icon-top ion-forward button-positive"> Debit</a>
+                    <a ng-click="goMoneyFlows('negative')" class="button icon-top ion-reply button-assertive"> Credit</a>
+                </div>
+                <button class="button icon-left ion-beer button-block button-default-ios button-ios-light button-default-ios button-ios-light">
+                    Nouvelle  Commande
+                </button>
+                <button class="button icon-left ion-social-usd button-block button-default-ios button-ios-light button-default-ios button-ios-light">
+                    Nouveau Virement
+                </button>
+                <button class="button icon-left ion-social-tux button-block button-default-ios button-ios-light button-default-ios button-ios-light">
+                    Scripts
+                </button>
+                <button class="button icon-left ion-android-contacts button-block button-default-ios button-ios-light button-default-ios button-ios-light">
+                    Filleuls
+                </button>
+                <button class="button icon-left ion-pie-graph button-block button-default-ios button-ios-light button-default-ios button-ios-light">
+                    Statistiques
+                </button>
+                <button class="button icon-left  ion-gear-b button-block button-default-ios button-ios-light button-default-ios button-ios-light">
+                    Edition compte
+                </button>
+
+            </div>
+        </div>
+
+    </ion-content>
+</ion-view>

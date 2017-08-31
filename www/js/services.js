@@ -206,10 +206,10 @@ angular.module('livrogne-app')
             }
         }
     })
-    .factory('SocketService', function (socketFactory) {
+    .factory('SocketService', function (socketFactory, $ionicPopup,AuthService,RfidService,$ionicHistory,$state,$q) {
         var mySocket;
         var socketOn = function(){
-            var myIoSocket = io.connect('http://127.0.0.1:5000');
+            var myIoSocket = io.connect('http://192.168.0.210:5000');
 
             mySocket = socketFactory({
                 ioSocket: myIoSocket
@@ -220,9 +220,48 @@ angular.module('livrogne-app')
             mySocket.removeAllListeners();
 
         };
+        var socketListennerAuth = function(){
+            socketOn().on('broadcastsocketio', function (authtokenAndId) {
+                socketOff();
+                var confirmPopup = $ionicPopup.confirm({
+                    title: 'Une carte a été detectée au nom de '+authtokenAndId.firstname+" "+authtokenAndId.lastname,
+                    template: 'Desirez vous vous connecter sur ce compte ?'
+                });
+
+                confirmPopup.then(function (res) {
+                    if (res) {
+                        AuthService.logout();
+                        var promise1 = RfidService.login(authtokenAndId.token, authtokenAndId.userId);
+                        $q.all([promise1]).then(function (data) {
+                            $ionicHistory.nextViewOptions({
+                                disableAnimate: false,
+                                disableBack: true
+                            });
+                            socketListennerAuth();
+                            setTimeout(function () {
+                                $state.go('app.dashBoard');
+                            }, 0);
+
+                        }, function (error) {
+                            socketListennerAuth();
+                            var alertPopup = $ionicPopup.alert({
+                                title: 'Erreur lors de la connexion',
+                                template: ''
+                            });
+                        });
+                    }
+                    else{
+                        socketListennerAuth();
+                    }
+                })
+            });
+        };
+
         return{
             socketOn:socketOn,
-            socketOff:socketOff
+            socketOff:socketOff,
+            socketListennerAuth: socketListennerAuth
+
         }
     })
 
@@ -289,8 +328,8 @@ angular.module('livrogne-app')
     .factory('OrderService', function($http,  API) {
 
         return {
-            deleteOrder: function(orderId){
-                return $http.delete(API.url+"/admin/orders/"+orderId,{headers: {'Content-Type': 'application/json'}}).then(function(response){
+            deleteOrder: function(orderId, admin){
+                return $http.delete(API.url+"/admin/orders/"+orderId+"?adminAuthentifier="+admin,{headers: {'Content-Type': 'application/json'}}).then(function(response){
                     return response.data;
                 });
             },
@@ -336,6 +375,11 @@ angular.module('livrogne-app')
                 return $http.post(API.url+"/order-lines/check-prices", data ,{headers: {'Content-Type': 'application/json'}}).then(function(response){
                     return response.data;
                 });
+            },
+            getOrder: function( orderId){
+                return $http.get(API.url+"/orders/"+orderId).then(function(response){
+                    return response.data;
+                });
             }
 
         }
@@ -360,6 +404,16 @@ angular.module('livrogne-app')
                     .then(function(response){
                         return response.data;
                     });
+            },
+            getDebitMoneyFlow: function( moneyFlowId){
+                return $http.get(API.url+"/money-flows/"+moneyFlowId+"?type=debit").then(function(response){
+                    return response.data;
+                });
+            },
+            getCreditMoneyFlow: function( moneyFlowId){
+            return $http.get(API.url+"/money-flows/"+moneyFlowId+"?type=credit").then(function(response){
+                    return response.data;
+                });
             }
         };
     })

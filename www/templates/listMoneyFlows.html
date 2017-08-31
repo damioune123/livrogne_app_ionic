@@ -1,0 +1,21 @@
+<ion-view view-title="Liste des opérations" cache-view="false">
+    <ion-content  ng-class="{expanded:$scope.isExpanded}">
+        <div  class="hero " style="background-image: url('img/dash-bg.jpg');">
+            <div class="content">
+                <h3 ng-show="typeMoneyFlows=='positive'"><a class="head">Liste des virements sur le compte</a></h3>
+                <h3 ng-show="typeMoneyFlows=='negative'"><a class="head">Liste des remboursements sur le compte</a></h3>
+                <h4><a class="head">{{firstName}}  {{lastName}}</a></h4>
+                <h5><a class="head">Solde :{{moneyBalance}}€</a></h5>
+                <h5><a class="head">Solde disponible :{{availableBalance}}€</a></h5>
+            </div>
+        </div>
+
+        <ion-item class="item-accordion" ng-repeat="moneyFlow in moneyFlows" >
+            <div class="{{classMoneyFlow(moneyFlow.is_cancelled)}} text-center" ng-click="showMoneyFlow(moneyFlow.id)">
+                N° {{moneyFlow.id}} - Montant : {{moneyFlow.value}}€ - {{formatDate(moneyFlow.created_at)}}
+            </div>
+        </ion-item>
+        <ion-infinite-scroll immediate-check="false" ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" ></ion-infinite-scroll>
+
+    </ion-content>
+</ion-view>

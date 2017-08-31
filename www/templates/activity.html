@@ -12,8 +12,6 @@
         <h4 ng-hide="godfatherCredentials==undefined" ><a class="head">Parrain :{{godfatherCredentials}}</a></h4>
       </div>
     </div>
-
-
     <div class="list ">
       <div class="item item-divider">Mes comptes</div>
       <div class="item item-divider">Solde compte personnel : <a class="{{classUserPeronnalMoney}}">{{userPersonnalMoney}} € </a></div>
@@ -26,7 +24,7 @@
           <hr>Numéro de transfert d'argent : {{money_flow.id}}<hr><ion-item>
             Compte créditeur : {{money_flow.credit_user_details}}  <br>
             Montant : {{money_flow.value}} €  <br>
-            Le : {{money_flow.created_at.toLocaleDateString()}} à {{money_flow.created_at.toLocaleTimeString()}}
+            Le : {{money_flow.created_até }} à {{money_flow.created_at.toLocaleTimeString()}}
             <ion-item class="item item-text-wrap"> Description: {{money_flow.description}} </ion-item>
             <button class="button button-clear button-assertive " ng-hide='!showPrivilege("ROLE_ADMIN") || money_flow.is_cancelled' ng-click="showDeleteMoneyFlowConfirm(money_flow.id)">Supprimer le transfert</button>
             <button class="button button-clear button-balanced " ng-hide ='!money_flow.is_cancelled' >Transfert annulé</button>

@@ -1,0 +1,33 @@
+<ion-view view-title="Détails Transfert" cache-view="false">
+    <ion-content  ng-class="{expanded:$scope.isExpanded}">
+        <h4 class="border-top"><i class="icon ion-navicon-round"></i> Détails Transfert N°{{moneyFlow.id}}</h4>
+        <div class="list">
+            <button class="button button-clear button-assertive " ng-hide='!showPrivilege(current_role) || moneyFlow.is_cancelled' ng-click="showDeleteMoneyFlowConfirm()">Supprimer le transfert</button>
+            <button class="button button-clear button-balanced " ng-hide='!moneyFlow.is_cancelled'>Transfert annulé</button><br>
+            <div class="item item-divider">
+                Informations générales
+            </div>
+            <a class="item">
+                Montant total :  {{moneyFlow.value}}€
+            </a>
+            <a ng-show="typeMoneyFlows=='positive'" class="item">
+                Prenom client : {{moneyFlow.debit_user_account.user.firstname}}
+            </a>
+            <a ng-show="typeMoneyFlows=='positive'"class="item">
+                Nom client : {{moneyFlow.debit_user_account.user.lastname}}
+            </a>
+            <a ng-hide="typeMoneyFlows=='positive'" class="item">
+                Prenom client : {{moneyFlow.credit_user_account.user.firstname}}
+            </a>
+            <a ng-hide="typeMoneyFlows=='positive'"class="item">
+                Nom client : {{moneyFlow.credit_user_account.user.lastname}}
+            </a>
+            <a class="item">
+                Description : {{moneyFlow.description}}
+            </a>
+            <a class="item">
+                Transfert authentifié par l'administrateur : {{moneyFlow.admin_authentifier.firstname}} {{moneyFlow.admin_authentifier.lastname}}
+            </a>
+        </div>
+    </ion-content>
+</ion-view>

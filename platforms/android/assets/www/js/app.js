@@ -1,4 +1,4 @@
-angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrogne-app.controllers'])
+angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrogne-app.controllers','btford.socket-io'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -8,6 +8,7 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
 
       cordova.plugins.Keyboard.disableScroll(true);
     }
+
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
@@ -155,23 +156,12 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
 
 .run(function ($rootScope, $state, AuthService, AUTH_EVENTS) {
   $rootScope.$on('$stateChangeStart', function (event,next, nextParams, fromState) {
-    /*
-    if ('data' in next && 'authorizedRoles' in next.data) {
-      var authorizedRoles = next.data.authorizedRoles;
-      if (!AuthService.isAuthorized(authorizedRoles)) {
-        event.preventDefault();
-        $state.go($state.current);
-        $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
-      }
-    }
-  */
     if (!AuthService.isAuthenticated()) {
       if (next.name !== 'app.login') {
         event.preventDefault();
         $state.go('app.login');
       }
     }
-
   });
 });
 

@@ -8,8 +8,37 @@ h1 {
 .larger {
   font-size: 40px !important;
 }
-/* */
 
+.head {
+    color: black;
+}
+.positive {
+    color: #47BF1B !important;
+}
+.negative {
+    color: red !important;
+}
+.list .item.item-accordion {
+    line-height: 38px;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: 0.09s all linear;
+}
+.list .item.item-accordion.ng-hide {
+    line-height: 0px;
+}
+.list .item.item-accordion.ng-hide-add,
+.list .item.item-accordion.ng-hide-remove {
+    display: block !important;
+}
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+}
 
 /* Utilities
 ==================================*/
@@ -30,7 +59,6 @@ p {
 .scroll {
     height: 100%;
 }
-
 
 /* Menu
 ==================================*/
@@ -68,6 +96,14 @@ p {
     content: "\f2ca";
 }
 
+/* List orders / List Money Flows
+==================================*/
+.active-operation{
+    background-color: #BBDEFB;
+}
+.cancel-operation{
+    background-color: #d54f38;
+}
 
 /* Login
 ==================================*/
@@ -85,35 +121,4 @@ p {
     position: fixed;
     bottom: 0;
 }
-/* Activity
-==========================================*/
-.head {
-    color: black;
-}
-.positive {
-    color: #47BF1B !important;
-}
-.negative {
-    color: red !important;
-}
-.list .item.item-accordion {
-  line-height: 38px;
-  padding-top: 0;
-  padding-bottom: 0;
-  transition: 0.09s all linear;
-}
-.list .item.item-accordion.ng-hide {
-  line-height: 0px;
-}
-.list .item.item-accordion.ng-hide-add,
-.list .item.item-accordion.ng-hide-remove {
-  display: block !important;
-}
-hr {
-    display: block;
-    height: 1px;
-    border: 0;
-    border-top: 1px solid #ccc;
-    margin: 1em 0;
-    padding: 0;
-}
+

@@ -2,14 +2,14 @@
  <ion-content ng-class="{expanded:$scope.isExpanded}">
  <div class="content has-header">
    <div class="item ">
-     Réduction actuelle pour les utilisateurs : {{simplePromotion}} % <br>
-     <i ng-show='showPrivilege("ROLE_ADMIN")'>Réduction actuelle pour les administrateurs : {{adminPromotion}} % </i>
+     Réduction globales utilisateurs : {{simplePromotion}} % <br>
+     <i ng-show='showPrivilege("ROLE_ADMIN")'>Réduction globale admin: {{adminPromotion}} % </i>
    </div>
    <div ng-show="orderLines.length!=0">
      <div class="card ">
        <div class="item">
-         Total pour un utilisateur: {{orderTotal * (100-simplePromotion)/100}} € <br>
-         <i ng-show='showPrivilege("ROLE_ADMIN")'>Total  pour un administrateur: {{orderTotal * (100-adminPromotion)/100}} €</i>
+         Total pour un utilisateur: {{totalUser}} € <br>
+         <i ng-show='showPrivilege("ROLE_ADMIN")'>Total  pour un administrateur: {{totalAdmin}} €</i>
        </div>
 
 
@@ -34,7 +34,11 @@
        </div>
        <ion-item class="item-accordion" ng-repeat="ol in orderLines">
          <div class="list animate-fade-slide-in-right">
-           <p> Catégorie : {{ ol.pc.category_name }} <br> nom produit : {{ol.product.name}}  <br> prix/pièce : {{ol.pc.price}}<br> quantité : {{ol.quantity}}<br> Sous-total: {{ol.quantity*ol.pc.price}}€ </p>
+           <p> Catégorie : {{ ol.pc.category_name }}
+               <br> Nom produit : {{ol.product.name}} }
+               <br>  Quantité : {{ol.quantity}}
+               <br> Total Admin: {{ol.totalAdmin}}€
+               <br> Total USer: {{ol.totalUser}}€</p>
            <div class="button-bar">
              <a class="button button-balanced icon ion-plus-circled" ng-click="addNewOrderLine(ol.pc, ol.pc.products.selectedProduct)">
              </a>
