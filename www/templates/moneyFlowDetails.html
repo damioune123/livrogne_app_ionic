@@ -2,8 +2,8 @@
     <ion-content  ng-class="{expanded:$scope.isExpanded}">
         <h4 class="border-top"><i class="icon ion-navicon-round"></i> Détails Transfert N°{{moneyFlow.id}}</h4>
         <div class="list">
-            <button class="button button-clear button-assertive " ng-hide='!showPrivilege(current_role) || moneyFlow.is_cancelled' ng-click="showDeleteMoneyFlowConfirm()">Supprimer le transfert</button>
-            <button class="button button-clear button-balanced " ng-hide='!moneyFlow.is_cancelled'>Transfert annulé</button><br>
+            <button class="button button-clear button-positive  " ng-hide='!showPrivilege(current_role) || moneyFlow.is_cancelled' ng-click="showDeleteMoneyFlowConfirm()">Supprimer le transfert</button>
+            <button class="button button-clear button-assertive icon-right ion-trash-a" ng-hide='!moneyFlow.is_cancelled'>Transfert annulé</button><br>
             <div class="item item-divider">
                 Informations générales
             </div>

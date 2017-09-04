@@ -35,10 +35,9 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                         controller: 'LoginCtrl'
                     },
                     'fabContent': {
-                        template: '<button id="fab-friends"  ng-click="logout()" class="button button-fab button-fab-top-left expanded button-energized-900 spin"><i class="icon ion-power"></i></button>',
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-friends').classList.toggle('off');
+                                document.getElementById('fab-logout').classList.toggle('off');
                             }, 0);
                         }
                     }
@@ -52,11 +51,11 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                         controller: 'DashboardCtrl'
                     },
                     'fabContent': {
-                        template: '<button id="fab-friends"  ng-click="logout()" class="button button-fab button-fab-top-left expanded button-energized-900 spin"><i class="icon ion-power"></i></button>',
+                        template: '<button id="fab-logout"  ng-click="logout()" class="button button-fab button-fab-top-left expanded spin button-default-ios button-ios-light button-default-ios button-ios-light"><i class="icon ion-log-out"></i> </button>',
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-friends').classList.toggle('on');
-                            }, 500);
+                                document.getElementById('fab-logout').classList.toggle('on');
+                            }, 1000);
                         }
                     }
                 }
@@ -70,11 +69,10 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                         controller: 'ListOrderCtrl'
                     },
                     'fabContent': {
-                        template: '<button id="fab-friends"  ng-click="logout()" class="button button-fab button-fab-top-left expanded button-energized-900 spin"><i class="icon ion-power"></i></button>',
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-friends').classList.toggle('off');
-                            }, 500);
+                                document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
                         }
                     }
                 }
@@ -87,11 +85,10 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                         controller: 'ListMoneyFlowCtrl'
                     },
                     'fabContent': {
-                        template: '<button id="fab-friends"  ng-click="logout()" class="button button-fab button-fab-top-left expanded button-energized-900 spin"><i class="icon ion-power"></i></button>',
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-friends').classList.toggle('off');
-                            }, 500);
+                                document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
                         }
                     }
                 }
@@ -102,6 +99,13 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'menuContent': {
                         templateUrl: 'templates/orderDetails.html',
                         controller: 'OrderDetailsCtrl'
+                    },
+                    'fabContent': {
+                        controller: function($timeout) {
+                            $timeout(function() {
+                                document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
+                        }
                     }
                 }
             })
@@ -111,36 +115,46 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'menuContent': {
                         templateUrl: 'templates/moneyFlowDetails.html',
                         controller: 'MoneyFlowDetailsCtrl'
+                    },
+                    'fabContent': {
+                        controller: function($timeout) {
+                            $timeout(function() {
+                                document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
+                        }
                     }
                 }
             })
-
-            .state('app.activity', {
-                url: '/activity',
-                views: {
-                    'menuContent': {
-                        templateUrl: 'templates/activity.html',
-                        controller: 'ActivityCtrl'
-                    }
-                }
-            })
-
             .state('app.order', {
                 url: '/order',
                 views: {
                     'menuContent': {
                         templateUrl: 'templates/order.html',
                         controller: 'OrderCtrl'
+                    },
+                    'fabContent': {
+                        controller: function($timeout) {
+                            $timeout(function() {
+                                document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
+                        }
                     }
                 }
             })
 
-            .state('app.money_flow', {
+            .state('app.moneyFlow', {
                 url: '/money-flow',
                 views: {
                     'menuContent': {
                         templateUrl: 'templates/money_flow.html',
                         controller: 'MoneyFlowCtrl'
+                    },
+                    'fabContent': {
+                        controller: function($timeout) {
+                            $timeout(function() {
+                                document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
+                        }
                     }
                 }
             })
@@ -151,6 +165,13 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'menuContent': {
                         templateUrl: 'templates/script.html',
                         controller: 'ScriptCtrl'
+                    },
+                    'fabContent': {
+                        controller: function($timeout) {
+                            $timeout(function() {
+                                document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
+                        }
                     }
                 }
             })
@@ -161,6 +182,13 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'menuContent': {
                         templateUrl: 'templates/statistic.html',
                         controller: 'StatisticCtrl'
+                    },
+                    'fabContent': {
+                        controller: function($timeout) {
+                            $timeout(function() {
+                                document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
+                        }
                     }
                 }
             })
@@ -171,6 +199,13 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'menuContent': {
                         templateUrl: 'templates/edit.html',
                         controller: 'EditCtrl'
+                    },
+                    'fabContent': {
+                        controller: function($timeout) {
+                            $timeout(function() {
+                                document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
+                        }
                     }
                 }
             });

@@ -387,8 +387,8 @@ angular.module('livrogne-app')
 
     .factory('MoneyFlowService', function($http,  API) {
         return {
-            deleteMoneyFlow: function(moneyFlowId){
-                return $http.delete(API.url+"/admin/money-flows/"+moneyFlowId,{headers: {'Content-Type': 'application/json'}}).then(function(response){
+            deleteMoneyFlow: function(moneyFlowId, adminAuthentifier){
+                return $http.delete(API.url+"/admin/money-flows/"+moneyFlowId+"?adminAuthentifier="+adminAuthentifier).then(function(response){
                     return response.data;
                 });
             },
@@ -455,7 +455,7 @@ angular.module('livrogne-app')
                 })
             },
             getPromotions: function(){
-                return $http.get(API.url+"/promotions",{headers: {'Content-Type': 'application/json'}}).then(function(response){
+                return $http.get(API.url+"/promotions").then(function(response){
                     promotions = response.data;
                     return promotions;
                 });

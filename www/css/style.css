@@ -8,6 +8,9 @@ h1 {
 .larger {
   font-size: 40px !important;
 }
+input{
+    text-align:center;
+}
 
 .head {
     color: black;
@@ -39,6 +42,22 @@ hr {
     margin: 1em 0;
     padding: 0;
 }
+.custom-card{
+    width: 50%;
+    margin-left:25%;
+}
+.custom-button{
+    width: 70% !important;
+    margin-left:15%;
+
+}
+.custom-button-login{
+    width: 70% !important;
+    margin-left:0%;
+
+}
+
+
 
 /* Utilities
 ==================================*/
@@ -109,16 +128,32 @@ p {
 ==================================*/
 .app-icon {
     background-color: #fff;
-    background: url('../img/livrogne-logo.jpg') center;
+    background: url('../img/logo-ivrogne.jpg') center;
     background-size: cover;
     border-radius: 50%;
-    height: 125px;
+    height: 150px;
     margin: 0 auto;
-    width: 125px;
+    width: 150px;
+}
+.app-icon-dashboard{
+    background-color: #fff;
+    background: url('../img/logo-ivrogne.jpg') center;
+    background-size: cover;
+    border-radius: 50%;
+    height: 100px;
+    margin: 0 auto;
+    width: 100px;
+    margin-top:0px;
+    margin-bottom:100px;
+    margin-right:20px;
 }
 
 .social-login {
     position: fixed;
     bottom: 0;
 }
-
+.login-button{
+    margin: auto;
+    padding: 10px;
+    text-align: center;
+}
