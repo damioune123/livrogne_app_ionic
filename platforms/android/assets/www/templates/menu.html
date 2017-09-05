@@ -1,7 +1,7 @@
 <ion-side-menus enable-menu-with-back-views="true" cache-view="false" >
     <ion-side-menu-content>
-        <ion-nav-bar class="bar-assertive-900" ng-class="{expanded: isExpanded, 'has-header-fab-left': hasHeaderFabLeft, 'has-header-fab-right': hasHeaderFabRight}" align-title="left">
-            <ion-nav-back-button class="no-text">
+        <ion-nav-bar class="bar-dark" ng-class="{expanded: isExpanded, 'has-header-fab-left': hasHeaderFabLeft, 'has-header-fab-right': hasHeaderFabRight}" align-title="left">
+            <ion-nav-back-button class="">
             </ion-nav-back-button>
             <ion-nav-buttons side="right">
                 <button class="button button-icon button-clear ion-android-more-vertical" menu-toggle="right">
@@ -12,9 +12,9 @@
         <ion-nav-view name="menuContent" ng-class="{expanded: isExpanded}" ></ion-nav-view>
     </ion-side-menu-content>
     <ion-side-menu side="right">
-        <ion-header-bar class="dark-bg expanded">
+        <ion-header-bar class="dark-bg expanded bar bar-header ">
             <div class="app-icon"></div>
-            <h2>L'Ivrogne</h2>
+            <h2 >L'Ivrogne</h2>
         </ion-header-bar>
         <ion-content class="stable-bg has-expanded-header">
             <ion-list>

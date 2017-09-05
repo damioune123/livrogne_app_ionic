@@ -10,6 +10,9 @@
                 <h4 ng-hide="godfatherCredentials==undefined" ><a class="head">Parrain :{{godfatherCredentials}}</a></h4>
             </div>
         </div>
+        <div ng-show="orders.length==0" class="content">
+            <h4 class="light"> Pas de commandes encore enregistrées </h4>
+        </div>
 
         <ion-item class="item-accordion" ng-repeat="order in orders" >
             <button class="button button-clear button-block {{classOrder(order.is_cancelled)}} text-center" ng-click="showOrder(order.id)">

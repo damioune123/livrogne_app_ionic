@@ -1,5 +1,5 @@
 <ion-view view-title="Login" align-title="left" cache-view="false">
-    <ion-content style="background: url(img/bar.jpg) center; background-size: cover;" ng-class="{expanded:$scope.isExpanded}">
+    <ion-content style="background-color: #000000; background-size: cover;" ng-class="{expanded:$scope.isExpanded}">
         <div class="hero no-header flat">
             <div class="content">
                 <div class="app-icon"></div>
@@ -8,24 +8,39 @@
         </div>
         <div class="list " ng-show="showSignIn">
             <ion-md-input placeholder="Nom d'utilisateur" highlight-color="balanced" ng-model="data.username" type="text"></ion-md-input>
+            <br>
             <ion-md-input placeholder="Mot de passe" highlight-color="energized" ng-model="data.password" type="password"></ion-md-input>
-        </div>
-        <div class="padding">
-            <button ng-click="login(data)" ng-show="showSignIn"  ng-class="{active: !isGroupShown(register)}" class="button button-full button-assertive ink">Connexion
-            </button>
-            <button class="button button-full button-balanced ink" ng-click="showSignUpF()" ng-show="showSignIn" ng-class="{active: isGroupShown(register)}">
-                Inscription
-            </button>
-            <div class="list"  ng-show="showSignUp">
-                <ion-md-input placeholder="Nom d'utilisateur" highlight-color="balanced" ng-model="data.username1" type="text"></ion-md-input>
-                <ion-md-input placeholder="Prénom" highlight-color="balanced" ng-model="data.firstname1" type="text"></ion-md-input>
-                <ion-md-input placeholder="Nom" highlight-color="balanced" ng-model="data.lastname1" type="text"></ion-md-input>
-                <ion-md-input placeholder="e-mail (facultatif)" highlight-color="balanced" ng-model="data.email1" type="text"></ion-md-input>
-                <ion-md-input placeholder="Mot de passe" highlight-color="energized" ng-model="data.password1" type="password"></ion-md-input>
-                <ion-md-input placeholder="Confirmation" highlight-color="energized" ng-model="data.password2" type="password"></ion-md-input>
-                <button ng-click="signup(data)" class="button button-full icon-right ion-person-stalker button-positive">Valider Inscription</button>
-                <button ng-click="showSignInF()" class="button button-full icon-right md-arrow-back button-dark">Revenir à la connexion</button>
+
+
+            <br>
+            <div >
+                <div class="login-button">
+                    <a ng-click="login(data)" ng-show="showSignIn" class="button icon-left ion-log-in button-block button-default-ios ">Connexion
+                    </a>
+                </div>
+                <div class="login-button">
+                    <a class="button icon-right ion-log-in button-block button-default-ios " ng-click="showSignUpF()"  >Inscription</a>
+                </div>
             </div>
         </div>
+        <div class="list"  ng-show="showSignUp">
+            <div class="login-button">
+                <a ng-click="showSignInF()" class="button button-clear icon-right md-arrow-back button-dark">Revenir à la connexion</a>
+            </div>
+            <ion-md-input placeholder="Nom d'utilisateur" highlight-color="balanced" ng-model="data.username1" type="text"></ion-md-input>
+            <ion-md-input placeholder="Prénom" highlight-color="balanced" ng-model="data.firstname1" type="text"></ion-md-input>
+            <ion-md-input placeholder="Nom" highlight-color="balanced" ng-model="data.lastname1" type="text"></ion-md-input>
+            <ion-md-input placeholder="e-mail (facultatif)" highlight-color="balanced" ng-model="data.email1" type="text"></ion-md-input>
+            <ion-md-input placeholder="Mot de passe" highlight-color="energized" ng-model="data.password1" type="password"></ion-md-input>
+            <ion-md-input placeholder="Confirmation" highlight-color="energized" ng-model="data.password2" type="password"></ion-md-input>
+            <br>
+            <br>
+            <div class="login-button">
+                <a ng-click="signup(data)" class="button button-clear button-positive">Valider Inscription</a>
+            </div>
+
+        </div>
+        </div>
+
     </ion-content>
 </ion-view>

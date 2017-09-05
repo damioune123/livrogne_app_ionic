@@ -288,8 +288,16 @@ angular.module('livrogne-app.controllers', [])
                                           ionicMaterialMotion, ionicMaterialInk, AuthService, $q, USER_ROLES, $ionicLoading) {
         //MOTIONS AND DISPLAY
 
+        $ionicHistory.clearHistory();
+        $ionicHistory.clearCache();
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
+        $scope.$parent.hideHeader();
+
+        $timeout(function () {
+            $scope.$parent.hideHeader();
+        }, 0);
+
         $scope.isExpanded = false;
         $scope.$parent.setExpanded(false);
         $scope.$parent.setHeaderFab(false);
@@ -1219,6 +1227,36 @@ angular.module('livrogne-app.controllers', [])
                 }
             })
         }
+    })
+    .controller('RedirectCtrl', function ($scope, $state,$timeout,$ionicLoading) {
+        $scope.$parent.showHeader();
+        $scope.$parent.clearFabs();
+        $timeout(function () {
+            $scope.$parent.hideHeader();
+        }, 0);
+
+        $scope.show = function () {
+            $ionicLoading.show({
+                template: '<p>Loading...</p><ion-spinner></ion-spinner>'
+            });
+        };
+
+        $scope.hide = function () {
+            $ionicLoading.hide();
+        };
+        $scope.firstName=window.localStorage.firstName;
+        $scope.lastName=window.localStorage.lastName;
+
+        $scope.show($ionicLoading);
+        $timeout(function () {
+            $scope.hide($ionicLoading);
+            $state.go("app.dashBoard");
+        }, 1500);
+
+
+
+
+
     })
     .controller('ScriptCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService, ScriptService,
                                         ionicMaterialMotion, ionicMaterialInk, $ionicLoading) {

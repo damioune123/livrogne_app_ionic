@@ -8,7 +8,55 @@ h1 {
 .larger {
   font-size: 40px !important;
 }
-/* */
+input{
+    text-align:center;
+}
+
+.head {
+    color: black;
+}
+.positive {
+    color: #47BF1B !important;
+}
+.negative {
+    color: red !important;
+}
+.list .item.item-accordion {
+    line-height: 38px;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: 0.09s all linear;
+}
+.list .item.item-accordion.ng-hide {
+    line-height: 0px;
+}
+.list .item.item-accordion.ng-hide-add,
+.list .item.item-accordion.ng-hide-remove {
+    display: block !important;
+}
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+}
+.custom-card{
+    width: 50%;
+    margin-left:25%;
+}
+.custom-button{
+    width: 70% !important;
+    margin-left:15%;
+
+}
+.custom-button-login{
+    width: 70% !important;
+    margin-left:0%;
+
+}
+
 
 
 /* Utilities
@@ -30,7 +78,6 @@ p {
 .scroll {
     height: 100%;
 }
-
 
 /* Menu
 ==================================*/
@@ -68,52 +115,45 @@ p {
     content: "\f2ca";
 }
 
+/* List orders / List Money Flows
+==================================*/
+.active-operation{
+    background-color: #BBDEFB;
+}
+.cancel-operation{
+    background-color: #d54f38;
+}
 
 /* Login
 ==================================*/
 .app-icon {
     background-color: #fff;
-    background: url('../img/livrogne-logo.jpg') center;
+    background: url('../img/logo-ivrogne.jpg') center;
     background-size: cover;
     border-radius: 50%;
-    height: 125px;
+    height: 150px;
     margin: 0 auto;
-    width: 125px;
+    width: 150px;
+}
+.app-icon-dashboard{
+    background-color: #fff;
+    background: url('../img/logo-ivrogne.jpg') center;
+    background-size: cover;
+    border-radius: 50%;
+    height: 100px;
+    margin: 0 auto;
+    width: 100px;
+    margin-top:0px;
+    margin-bottom:100px;
+    margin-right:20px;
 }
 
 .social-login {
     position: fixed;
     bottom: 0;
 }
-/* Activity
-==========================================*/
-.head {
-    color: black;
-}
-.positive {
-    color: #47BF1B !important;
-}
-.negative {
-    color: red !important;
-}
-.list .item.item-accordion {
-  line-height: 38px;
-  padding-top: 0;
-  padding-bottom: 0;
-  transition: 0.09s all linear;
-}
-.list .item.item-accordion.ng-hide {
-  line-height: 0px;
-}
-.list .item.item-accordion.ng-hide-add,
-.list .item.item-accordion.ng-hide-remove {
-  display: block !important;
-}
-hr {
-    display: block;
-    height: 1px;
-    border: 0;
-    border-top: 1px solid #ccc;
-    margin: 1em 0;
-    padding: 0;
+.login-button{
+    margin: auto;
+    padding: 10px;
+    text-align: center;
 }

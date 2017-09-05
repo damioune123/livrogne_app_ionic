@@ -206,10 +206,10 @@ angular.module('livrogne-app')
             }
         }
     })
-    .factory('SocketService', function (socketFactory, $ionicPopup,AuthService,RfidService,$ionicHistory,$state,$q) {
+    .factory('SocketService', function (socketFactory, $ionicPopup,AuthService,RfidService,$ionicHistory,$state,$q, NODE) {
         var mySocket;
         var socketOn = function(){
-            var myIoSocket = io.connect('http://192.168.0.210:5000');
+            var myIoSocket = io.connect(NODE.url);
 
             mySocket = socketFactory({
                 ioSocket: myIoSocket
@@ -223,40 +223,27 @@ angular.module('livrogne-app')
         var socketListennerAuth = function(){
             socketOn().on('broadcastsocketio', function (authtokenAndId) {
                 socketOff();
-                var confirmPopup = $ionicPopup.confirm({
-                    title: 'Une carte a été detectée au nom de '+authtokenAndId.firstname+" "+authtokenAndId.lastname,
-                    template: 'Desirez vous vous connecter sur ce compte ?'
+                AuthService.logout();
+                var promise1 = RfidService.login(authtokenAndId.token, authtokenAndId.userId);
+                $q.all([promise1]).then(function (data) {
+                    $ionicHistory.nextViewOptions({
+                        disableAnimate: false,
+                        disableBack: true
+                    });
+                    socketListennerAuth();
+                    setTimeout(function () {
+                        $state.go('app.redirect');
+                    }, 0);
+
+                }, function (error) {
+                    socketListennerAuth();
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Erreur lors de la connexion',
+                        template: ''
+                    });
                 });
-
-                confirmPopup.then(function (res) {
-                    if (res) {
-                        AuthService.logout();
-                        var promise1 = RfidService.login(authtokenAndId.token, authtokenAndId.userId);
-                        $q.all([promise1]).then(function (data) {
-                            $ionicHistory.nextViewOptions({
-                                disableAnimate: false,
-                                disableBack: true
-                            });
-                            socketListennerAuth();
-                            setTimeout(function () {
-                                $state.go('app.dashBoard');
-                            }, 0);
-
-                        }, function (error) {
-                            socketListennerAuth();
-                            var alertPopup = $ionicPopup.alert({
-                                title: 'Erreur lors de la connexion',
-                                template: ''
-                            });
-                        });
-                    }
-                    else{
-                        socketListennerAuth();
-                    }
-                })
-            });
+            })
         };
-
         return{
             socketOn:socketOn,
             socketOff:socketOff,

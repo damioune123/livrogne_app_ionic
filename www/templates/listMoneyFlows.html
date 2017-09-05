@@ -11,6 +11,10 @@
                 <h4 ng-hide="godfatherCredentials==undefined" ><a class="head">Parrain :{{godfatherCredentials}}</a></h4>
             </div>
         </div>
+        <div ng-show="moneyFlows.length==0"class="content">
+            <h4 class="light"> Pas de transferts encore enregistrés </h4>
+        </div>
+
 
         <ion-item class="item-accordion" ng-repeat="moneyFlow in moneyFlows" >
             <button class="button button-clear button-block {{classMoneyFlow(moneyFlow.is_cancelled)}} text-center" ng-click="showMoneyFlow(moneyFlow.id)">

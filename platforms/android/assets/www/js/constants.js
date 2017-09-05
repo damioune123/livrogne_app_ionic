@@ -11,6 +11,6 @@ angular.module('livrogne-app')
         user: 'ROLE_USER'
     })
 .constant('API', {
-    url: 'http://[2a02:1811:3609:1bf1:41d0:1ae8:50f1:c776]/ivrogne_api_raspberry/web/app_dev.php/api'
+    url: 'http://192.168.0.210/ivrogne_api_raspberry/web/app.php/api'
 });
 

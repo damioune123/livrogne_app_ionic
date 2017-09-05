@@ -1,191 +1,56 @@
-<ion-view view-title="Editer" align-title="left">
- <ion-content ng-class="{expanded:$scope.isExpanded}">
- <div class="content has-header">
-  <div ng-show='showPrivilege("ROLE_SUPER_ADMIN")' class="card">
-    <div class="item item-divider">
-       Opérations de super-administrateur
-    </div>
-    <button ng-click='patchPromotion(simplePromotion.promotion_name, adminPromotion.promotion_name, simplePromotion.user_promotion, adminPromotion.user_promotion)' class="button button-full icon-right ion-person-stalker button-royal">Modifier les réductions</button>
-    <label class="item item-input">
-      <span class="input-label">Utilisateur (en %)</span>
-      <input ng-model="simplePromotion.user_promotion" type="number">
-    </label>
-    <label class="item item-input">
-      <span class="input-label">Admin (en %)</span>
-      <input ng-model="adminPromotion.user_promotion" type="number">
-    </label>
-    <button ng-click="patchUserRole(selectedAdmin)" class="button button-full icon-right ion-person-stalker button-royal">Promouvoir en admin</button>
-    <div class="item item-divider">
-       <div class="list">
-         <label class="item item-input item-select">
-           <div class="input-label">
-             Choix admin
-           </div>
-           <select ng-options="user as user.credential for user in simpleUnsponsorisedUsers track by user.id" ng-model="selectedAdmin"></select>
-         </label>
-       </div>
-    </div>
-    <button ng-click="patchNefewGodfather(selectedNefew1.id, selectedGodfather1.id,true)"class="button button-full icon-right ion-person-stalker button-royal">Parrainer</button>
-    <div class="item item-divider">
-      <div class="list">
-        <label class="item item-input item-select">
-          <div class="input-label">
-            Choix filleul
-          </div>
-          <select ng-options="user as user.credential for user in simpleUnsponsorisedUsers track by user.id" ng-model="selectedNefew1"></select>
-        </label>
-      </div>
-    </div>
-    <div class="item item-divider">
-      <div class="list">
-        <label class="item item-input item-select">
-          <div class="input-label">
-            Choix parrain
-          </div>
-          <select ng-options="user as user.credential for user in admins track by user.id" ng-model="selectedGodfather1"></select>
-        </label>
-      </div>
-    </div>
-    <button ng-click="patchNefewGodfather(selectedNefew2.id, selectedGodfather2.id,false)"class="button button-full icon-right ion-person-stalker button-royal">Modifier Parrainage</button>
-    <div class="item item-divider">
-       <div class="list">
-         <label class="item item-input item-select">
-           <div class="input-label">
-             Choix filleul
-           </div>
-           <select ng-options="user as user.credential for user in simpleSponsorisedUsers track by user.id" ng-model="selectedNefew2"></select>
-         </label>
-       </div>
-    </div>
-    <div class="item item-divider">
-       <div class="list">
-         <label class="item item-input item-select">
-           <div class="input-label">
-             Choix parrain
-           </div>
-           <select ng-options="user as user.credential for user in admins track by user.id" ng-model="selectedGodfather2"></select>
-         </label>
-       </div>
-    </div>
-  </div>
+<ion-view view-title="Edition compte" align-title="left">
+    <ion-content ng-class="{expanded:$scope.isExpanded}">
+        <div class="content has-header">
+            <div class="card">
+                <button ng-click ="updateRfid()" class="button button-full icon-right ion-card button-default-ios custom-button">Ajouter/Modifier carte rfid</button>
+                <button ng-click ="removeRfid()" class="button button-full icon-right ion-eject button-default-ios custom-button">Délier la carte rfid</button>
+            </div>
+            <div class="card">
+                <div class="item item-divider">
+                    <label class="item item-input">
+                        <span class="input-label">Nom d'utilisateur: </span>
+                        <input ng-model="username" type="text">
+                    </label>
+                </div>
+                <div class="item item-divider">
+                    <label class="item item-input">
+                        <span class="input-label">Prénom: </span>
+                        <input ng-model="firstName" type="text">
+                    </label>
+                </div>
+                <div class="item item-divider">
+                    <label class="item item-input">
+                        <span class="input-label">Nom: </span>
+                        <input ng-model="lastName" type="text">
+                    </label>
+                </div>
+                <button ng-click="updateUserDetails(firstName, lastName, username)" class="button button-full icon-right ion-person-stalker button-default-ios custom-button">Modifier infos</button>
+            </div>
 
-   <div ng-show='showPrivilege("ROLE_ADMIN")' class="card">
-    <div class="item item-divider">
-       Opérations d'administrateur
-    </div>
-     <div ng-hide="role!='ROLE_ADMIN'">
-       <button ng-click="patchNefewGodfather(selectedNefew1.id, userId,true)"class="button button-full icon-right ion-person-stalker button-royal">Parrainer</button>
-       <div class="item item-divider">
-         <div class="list">
-           <label class="item item-input item-select">
-             <div class="input-label">
-               Choix filleul
-             </div>
-             <select ng-options="user as user.credential for user in simpleUnsponsorisedUsers track by user.id" ng-model="selectedNefew1"></select>
-           </label>
-         </div>
-       </div>
-     </div>
-    <button ng-click="postProduct(selectedCP.id, nomProduit, codebarMan)" class="button button-full icon-right ion-person-stalker button-royal">Créer un nouveau produit</button>
-    <div class="item item-divider">
-       <div class="list">
-         <label class="item item-input item-select">
-           <div class="input-label">
-             Catégorie produit
-           </div>
-           <select ng-options="cp as cp.category_name for cp in productCategories track by cp.id" ng-model="selectedCP"></select>
-         </label>
-       </div>
-    </div>
-    <div class="item item-divider">
-       <label class="item item-input">
-         <span class="input-label">Nom produit: </span>
-         <input ng-model="nomProduit" placeholder="Leffe blonde" type="text">
-       </label>
-    </div>
-     <div class="item item-divider">
-       <label class="item item-input">
-         <span class="input-label">Codebar: </span>
-         <input type="text" ng-model="codebarMan" placeholder="1236374" class="input-label">
-       </label>
-     </div>
-  </div>
-
-   <div class="card">
-
-    <div class="item item-divider">
-       Opérations personnelles
-    </div>
-     <button ng-click ="updateRfid()" class="button button-full icon-right ion-card button-calm">Ajouter/Modifier carte rfid</button>
-     <button ng-click ="removeRfid()" class="button button-full icon-right ion-eject button-assertive">Délier la carte rfid</button>
-    <button ng-click="updateUserDetails(firstName, lastName, username)" class="button button-full icon-right ion-person-stalker button-royal">Modifier infos</button>
-    <div class="item item-divider">
-       <label class="item item-input">
-         <span class="input-label">Nom d'utilisateur: </span>
-         <input ng-model="username" type="text">
-       </label>
-    </div>
-    <div class="item item-divider">
-       <label class="item item-input">
-         <span class="input-label">Prénom: </span>
-         <input ng-model="firstName" type="text">
-       </label>
-    </div>
-    <div class="item item-divider">
-       <label class="item item-input">
-         <span class="input-label">Nom: </span>
-         <input ng-model="lastName" type="text">
-       </label>
-    </div>
-
-    <button ng-click="updateUserEmail(email)" class="button button-full icon-right ion-person-stalker button-royal">Modifier e-mail</button>
-    <div class="item item-divider">
-       <label class="item item-input">
-         <span class="input-label">e-mail: </span>
-         <input ng-model="email" type="email">
-       </label>
-    </div>
-    <button ng-click ="updateUserPassword(password1,password2)" class="button button-full icon-right ion-person-stalker button-royal">Modifier mot-de-passe</button>
-    <div class="item item-divider">
-       <label class="item item-input">
-         <span class="input-label">Nouveau mot de passe: </span>
-         <input ng-model="password1" type="password">
-       </label>
-    </div>
-    <div class="item item-divider">
-       <label class="item item-input">
-         <span class="input-label">Confirmation: </span>
-         <input ng-model="password2" type="password">
-       </label>
-    </div>
-
-
-
-  </div>
-
-
-
-    <div class="tabs tabs-dark tabs-icon-top static animate-fade-slide-in-right">
-
-        <a class="tab-item" ui-sref="app.order">
-          <i class="icon ion-beer"  ></i> Commandes
-        </a>
-      <a class="tab-item" ui-sref="app.activity" nav-clear>
-        <i class="icon ion-arrow-graph-up-right"></i>  Activités
-      </a>
-        <a class="tab-item" ui-sref="app.money_flow">
-          <i class="icon ion-cash"></i> Money
-        </a>
-         <a ng-show='showPrivilege("ROLE_ADMIN")' class="tab-item" ui-sref="app.script">
-          <i class="icon ion-social-tux"></i> Scripts
-        </a>
-        <a   class="tab-item" ui-sref="app.statistic">
-          <i class="icon ion-pie-graph"></i> Statistiques
-        </a>
-        <a  class="tab-item" ui-sref="app.edit">
-          <i class="icon ion-gear-b"></i> Editer
-        </a>
-      </div>
-    </div>
-  </ion-content>
+            <div class="card">
+                <div class="item item-divider">
+                    <label class="item item-input">
+                        <span class="input-label">e-mail: </span>
+                        <input ng-model="email" type="email">
+                    </label>
+                </div>
+                <button ng-click="updateUserEmail(email)" class="button button-full icon-right ion-person-stalker button-default-ios custom-button">Modifier e-mail</button>
+            </div>
+            <div class="card">
+                <div class="item item-divider">
+                    <label class="item item-input">
+                        <span class="input-label">Nouveau mot de passe: </span>
+                        <input ng-model="password1" type="password">
+                    </label>
+                </div>
+                <div class="item item-divider">
+                    <label class="item item-input">
+                        <span class="input-label">Confirmation: </span>
+                        <input ng-model="password2" type="password">
+                    </label>
+                </div>
+                <button ng-click ="updateUserPassword(password1,password2)" class="button button-full icon-right ion-person-stalker button-default-ios custom-button">Modifier mot-de-passe</button>
+            </div>
+        </div>
+    </ion-content>
 </ion-view>
