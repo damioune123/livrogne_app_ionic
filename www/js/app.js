@@ -14,7 +14,14 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
             }
         });
     })
-
+    .directive('html', [ function () {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            element.html(attrs.html);
+        }
+    }
+    }])
 
     .config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
         $ionicConfigProvider.views.maxCache(0);
@@ -62,7 +69,7 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                 }
             })
             .state('app.dashBoard', {
-                url: '/dashBoard',
+                url: '/dashBoard?userBalance&moneyBalance',
                 views: {
                     'menuContent': {
                         templateUrl: 'templates/dashBoard.html',

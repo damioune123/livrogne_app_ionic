@@ -1,5 +1,21 @@
 /* General
 ==================================*/
+body {
+    background-color:black;
+    color:white;
+}
+#c {
+    opacity:.3;
+}
+canvas {
+    position:absolute;
+    top:0; left:0;
+}
+
+
+
+
+
 h1 {
     color: #fff;
     text-shadow: 0 1px 0px #000;
@@ -55,6 +71,10 @@ hr {
     width: 70% !important;
     margin-left:0%;
 
+}
+.popup-head {
+    padding: 0px;
+    border-bottom: none;
 }
 
 

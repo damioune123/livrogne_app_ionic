@@ -222,6 +222,19 @@ angular.module('livrogne-app')
         };
         var socketListennerAuth = function(){
             socketOn().on('broadcastsocketio', function (authtokenAndId) {
+                if(authtokenAndId.rfid_to_match !=undefined){
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte est vierge !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
                 socketOff();
                 AuthService.logout();
                 var promise1 = RfidService.login(authtokenAndId.token, authtokenAndId.userId);
@@ -239,7 +252,13 @@ angular.module('livrogne-app')
                     socketListennerAuth();
                     var alertPopup = $ionicPopup.alert({
                         title: 'Erreur lors de la connexion',
-                        template: ''
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
                     });
                 });
             })
