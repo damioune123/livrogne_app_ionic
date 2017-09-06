@@ -1,0 +1,42 @@
+<ion-view view-title="Détails commande" cache-view="false">
+    <ion-content  ng-class="{expanded:$scope.isExpanded}">
+        <h4 class="border-top"><i class="icon ion-navicon-round"></i> Détails commande N°{{order.id}}</h4>
+        <div class="list">
+            <button class="button button-clear button-positive " ng-hide='!showPrivilege(current_role) || order.is_cancelled' ng-click="showDeleteOrderConfirm()">Supprimer la commande</button>
+            <button class="button button-clear button-assertive icon-right ion-trash-a" ng-hide='!order.is_cancelled'>Commande annulée</button><br>
+            <div class="item item-divider">
+               Informations générales
+            </div>
+            <a class="item">
+                Montant total :  {{order.order_price}}€
+            </a>
+            <a class="item">
+                Prenom client : {{order.customer_user_account.user.firstname}}
+            </a>
+            <a class="item">
+                Nom client : {{order.customer_user_account.user.lastname}}
+            </a>
+            <a class="item">
+                Promotion : {{order.customer_user_account.user.promotion.user_promotion}}%
+            </a>
+            <a ng-show="order.is_ordered_by_customer" class="item">
+                Commande prise par le client
+            </a>
+            <a ng-hide="order.is_ordered_by_customer" class="item">
+                Commande prise par le barman
+            </a>
+           <br>
+            <ion-item class="item-accordion" ng-repeat="orderline in order.order_lines" >
+                <div class="item item-divider ">
+                    Nom produit : {{orderline.product.name}} - Catégorie : {{orderline.product.product_category.category_name}}
+                </div>
+                <a class="item">
+                    Quantité: {{orderline.quantity}}
+                </a>
+                <a class="item">
+                    Sous-total: {{orderline.order_line_price_final}}€
+                </a>
+            </ion-item>
+        </div>
+    </ion-content>
+</ion-view>

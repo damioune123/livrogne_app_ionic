@@ -1,0 +1,46 @@
+<ion-view view-title="DashBoard" cache-view="false">
+    <ion-content center text-center ng-class="{expanded:$scope.isExpanded}" style="background-color: #000000">
+        <div class="hero " >
+            <div class="content">
+                <h3><a class="head light">{{firstName}}  {{lastName}}</a></h3>
+                <h4 ><a class="light">{{username}}</a></h4>
+                <h4><a class="light">Solde : {{moneyBalance}}€</a></h4>
+                <h4><a class="light">Solde disponible : {{availableBalance}}€</a></h4>
+                <h4 ng-hide="godfatherCredentials==undefined" ><a class="head">Parrain :{{godfatherCredentials}}</a></h4>
+            </div>
+        </div>
+        <div class="row row-center">
+            <div class="col col-center">
+                <button ng-click="showAccounts()"class="button  icon-left ion-ios-list button-block button-default-ios custom-button">
+                    Mes comptes
+                </button>
+                <div ng-show="accountsShown">
+                    <div class="card custom-card" text-center >
+                        <button ng-click="goListOrders()" class="button button-clear button-block icon-top ion-beer button-calm"> Liste commandes</button><hr>
+                        <button ng-click="goListMoneyFlows('positive')" class="button button-clear button-block icon-top ion-forward button-positive"> Liste recharges </button><hr>
+                        <button ng-click="goListMoneyFlows('negative')" class="button button-clear  button-block icon-top ion-reply button-assertive"> Liste remboursements </button>
+                    </div>
+                </div>
+                <button ng-click="goOrder()" class="button icon-left ion-beer button-block button-default-ios custom-button ">
+                   Commande
+                </button>
+                <button ng-click="goMoneyFlow()" class="button icon-left ion-social-usd button-block button-default-ios custom-button ">
+                    Transfert
+                </button>
+                <button ng-click="goScript()" class="button icon-left ion-social-tux button-block button-default-ios custom-button">
+                    Scripts
+                </button>
+                <button class="button icon-left ion-android-contacts button-block button-default-ios button-ios-light custom-button">
+                    Filleuls
+                </button>
+                <button class="button icon-left ion-pie-graph button-block button-default-ios custom-button">
+                    Statistiques
+                </button>
+                <button ng-click="goEdit()"  class="button icon-left  ion-gear-b button-block button-default-ios custom-button">
+                    Edition compte
+                </button>
+
+            </div>
+        </div>
+    </ion-content>
+</ion-view>
