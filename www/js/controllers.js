@@ -60,10 +60,6 @@ angular.module('livrogne-app.controllers', [])
         $scope.$on(AUTH_EVENTS.notAuthenticated, function (event) {
             AuthService.logout();
             $state.go('app.login');
-            var alertPopup = $ionicPopup.alert({
-                title: 'Session finie !',
-                template: 'Désolé, vous devez vous connecter à nouveau.'
-            });
         });
 
         $scope.show = function () {
@@ -860,7 +856,7 @@ angular.module('livrogne-app.controllers', [])
 
 
     .controller('OrderCtrl', function ($scope, $state, $stateParams, $ionicPopup, $ionicHistory, $timeout, PromotionService, USER_ROLES, UserService,
-                                       ProductCategoryService, OrderService, MoneyFlowService, ionicMaterialMotion, ionicMaterialInk, AuthService, UserAccountService, $q, $ionicLoading) {
+                                       ProductService, OrderService, MoneyFlowService, ionicMaterialMotion, ionicMaterialInk, AuthService, UserAccountService, $q, $ionicLoading) {
         // Set Header
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
@@ -888,32 +884,26 @@ angular.module('livrogne-app.controllers', [])
         };
         var getInformation = function () {
             var promise1 = PromotionService.getPromotions();
-            var promise2 = UserService.getLimitedUsers(1);
-            var promise3 = ProductCategoryService.getProductCategories();
+            var promise2 = UserService.getLimitedUsers();
+            var promise3 = ProductService.getProducts();
             $scope.show($ionicLoading);
             $q.all([promise1, promise2, promise3]).then(function (data) {
                 var promotions = data[0];
                 var users = data[1];
-                var productCategories = data[2];
+                var products = data[2];
 
                 for (var i = 0; i < promotions.length; i++) {
                     if (promotions[i].promotion_name == "admin") $scope.adminPromotion = promotions[i].user_promotion;
                     if (promotions[i].promotion_name == "simple") $scope.simplePromotion = promotions[i].user_promotion;
                 }
                 $scope.users = users;
-                console.log($scope.users);
                 for (var i = $scope.users.length - 1; i >= 0; i--) {
                     if (window.localStorage.userPersonnalAccountId == $scope.users[i].id)
                         $scope.users.splice(i, 1);
                     else $scope.users[i].credential = $scope.users[i].firstname + " " + $scope.users[i].lastname;
                 }
-                console.log($scope.users);
-                for (var i = 0; i < productCategories.length; i++) {
-                    for (var j = 0; j < productCategories[i].products.length; j++) {
-                        if (productCategories[i].products[j].name == "Autre") productCategories[i].products.selectedProduct = productCategories[i].products[j];
-                    }
-                }
-                $scope.productCategories = productCategories;
+
+                $scope.products = products;
                 $scope.hide($ionicLoading);
 
             }, function (error) {
@@ -926,12 +916,12 @@ angular.module('livrogne-app.controllers', [])
         var totalAdminOrderLine = function(ol){
             $price=ol.admin_price*ol.quantity;
             $price = $price - (($scope.adminPromotion/100)*$price);
-            return $price;
+            return Math.round($price * 100) / 100;
         };
         var totalUserOrderLine = function(ol){
             $price=ol.user_price*ol.quantity;
             $price = $price - (($scope.simplePromotion/100)*$price);
-            return $price;
+            return Math.round($price * 100) / 100;
         };
         var computeOrderTotal = function () {
             $scope.totalAdmin=0.0;
@@ -940,34 +930,40 @@ angular.module('livrogne-app.controllers', [])
                 $scope.totalAdmin+=$scope.orderLines[k].totalAdmin;
                 $scope.totalUser+=$scope.orderLines[k].totalUser;
             }
+            $scope.totalAdmin = Math.round($scope.totalAdmin * 100) / 100;
+            $scope.totalUser = Math.round($scope.totalUser * 100) / 100;
+
 
         };
-        $scope.addNewOrderLine = function (pc, selectedProduct) {
+        $scope.addNewOrderLine = function (selectedProducts) {
             var newOrder = true;
-            for (var k = 0; k < $scope.orderLines.length; k++) {
-                if ($scope.orderLines[k].pc.id == pc.id && $scope.orderLines[k].product.barcode == selectedProduct.barcode) {
-                    $scope.orderLines[k].quantity++;
-                    $scope.orderLines[k].totalAdmin=totalAdminOrderLine($scope.orderLines[k]);
-                    $scope.orderLines[k].totalUser=totalUserOrderLine($scope.orderLines[k]);
-                    computeOrderTotal();
-                    newOrder=false;
-                    break;
+            for (var i=0; i <selectedProducts.length ; i++){
+                for (var k = 0; k < $scope.orderLines.length; k++) {
+                    if ($scope.orderLines[k].product.barcode == selectedProducts[i].barcode) {
+                        $scope.orderLines[k].quantity++;
+                        $scope.orderLines[k].totalAdmin=totalAdminOrderLine($scope.orderLines[k]);
+                        $scope.orderLines[k].totalUser=totalUserOrderLine($scope.orderLines[k]);
+                        computeOrderTotal();
+                        newOrder=false;
+                        break;
 
+                    }
                 }
+                if(newOrder){
+                    var orderLine = {product: selectedProducts[i], quantity: 1, user_price: selectedProducts[i].price_with_promotion_user, admin_price: selectedProducts[i].price_with_promotion_admin};
+                    orderLine.totalAdmin=totalAdminOrderLine(orderLine);
+                    orderLine.totalUser=totalUserOrderLine(orderLine);
+                    $scope.orderLines.push(orderLine);
+                    computeOrderTotal();
+                }
+
             }
-            if(newOrder){
-                console.log(selectedProduct);
-                var orderLine = {pc: pc, product: selectedProduct, quantity: 1, user_price: selectedProduct.price_with_promotion_user, admin_price: selectedProduct.price_with_promotion_admin};
-                orderLine.totalAdmin=totalAdminOrderLine(orderLine);
-                orderLine.totalUser=totalUserOrderLine(orderLine);
-                $scope.orderLines.push(orderLine);
-                computeOrderTotal();
-            }
+
         };
 
-        $scope.removeOrderLine = function (pcId, productBarcode) {
+        $scope.removeOrderLine = function (productBarcode) {
             for (var k = 0; k < $scope.orderLines.length; k++) {
-                if ($scope.orderLines[k].pc.id == pcId && $scope.orderLines[k].product.barcode == productBarcode) {
+                if ($scope.orderLines[k].product.barcode == productBarcode) {
                     $scope.orderLines[k].quantity--;
                     if ($scope.orderLines[k].quantity == 0) $scope.orderLines.splice(k, 1);
                 }
@@ -976,6 +972,12 @@ angular.module('livrogne-app.controllers', [])
         };
 
         $scope.persistOrder = function (type, client) {
+            if($scope.orderLines.length==0 || $scope.orderLines==undefined){
+                var alertPopup = $ionicPopup.confirm({
+                    title: 'Panier vide !',
+                });
+                return;
+            }
 
             if(type=="someoneElse"){
                 if(client.role==="ROLE_USER"){
@@ -992,7 +994,7 @@ angular.module('livrogne-app.controllers', [])
                 }
             }
             else if(type=="self"){
-                if(currentUserRole!="ROLE_USER"){
+                if(window.localStorage.role!="ROLE_USER"){
                     var confirmPopup = $ionicPopup.confirm({
                         title: 'Passer une commande',
                         template: 'Etes-vous sûr de vouloir passer la commande pour un total de ' + $scope.totalAdmin+ ' € ?'
@@ -1016,6 +1018,7 @@ angular.module('livrogne-app.controllers', [])
                 if(!res){
                     return;
                 }
+
                 var ol = [];
                 for (var k = 0; k < $scope.orderLines.length; k++) {
                     var l = {};
@@ -1023,6 +1026,8 @@ angular.module('livrogne-app.controllers', [])
                     l.quantity = $scope.orderLines[k].quantity;
                     ol[k] = l;
                 }
+
+
                 if (type == "self") {
                     $scope.show($ionicLoading);
                     OrderService.addSelfOrder(ol).then(function (result) {
@@ -1040,6 +1045,7 @@ angular.module('livrogne-app.controllers', [])
                             });
                         }
 
+
                     }, function (error) {
                         $scope.hide($ionicLoading);
                         console.log(error);
@@ -1049,6 +1055,14 @@ angular.module('livrogne-app.controllers', [])
                         });
 
 
+                    }).finally(function(){
+                        ol=undefined;
+                        $scope.selectedClient=undefined;
+                        $scope.selectedProducts=undefined;
+                        $scope.orderLines = [];
+                        $scope.totalUser=0.0;
+                        $scope.totalAdmin=0.0;
+                        getInformation();
                     });
                 }
                 else if (type == "someoneElse") {
@@ -1068,6 +1082,7 @@ angular.module('livrogne-app.controllers', [])
                                 template: ''
                             });
                         }
+
                     }, function (error) {
                         $scope.hide($ionicLoading);
                         console.log(error);
@@ -1075,6 +1090,14 @@ angular.module('livrogne-app.controllers', [])
                             title: 'Erreur lors de la création de la commande!',
                             template: 'Une erreur est survenue lors de la création de la commande. Veuillez contacter un admin.'
                         });
+                    }).finally(function(){
+                        ol=undefined;
+                        $scope.selectedClient=undefined;
+                        $scope.selectedProducts=undefined;
+                        $scope.orderLines = [];
+                        $scope.totalUser=0.0;
+                        $scope.totalAdmin=0.0;
+                        getInformation();
                     });
 
                 }
@@ -1094,6 +1117,10 @@ angular.module('livrogne-app.controllers', [])
                                 template: ''
                             });
                         }
+                        $scope.selectedClient=undefined;
+                        $scope.selectedProducts=undefined;
+                        $scope.orderLines = [];
+                        getInformation();
                     }, function (error) {
                         $scope.hide($ionicLoading);
                         console.log(error);
@@ -1101,16 +1128,20 @@ angular.module('livrogne-app.controllers', [])
                             title: 'Erreur lors de la création de la commande!',
                             template: 'Une erreur est survenue lors de la création de la commande. Veuillez contacter un admin.'
                         });
+                    }).finally(function(){
+                        ol=undefined;
+                        $scope.selectedClient=undefined;
+                        $scope.selectedProducts=undefined;
+                        $scope.totalUser=0.0;
+                        $scope.totalAdmin=0.0;
+                        $scope.orderLines = [];
+                        console.log("yo");
+                        getInformation();
                     });
                 }
-                $scope.orderLines = [];
-                getInformation();
+
             })
         };
-        $scope.isSelected = function (productName) {
-            if (productName == "Autre") return "selected";
-        };
-
 
 
 

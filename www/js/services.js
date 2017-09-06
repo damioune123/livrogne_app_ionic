@@ -111,7 +111,7 @@ angular.module('livrogne-app')
                 });
             },
             getLimitedUsers: function(){
-                return $http({url: API.url+"/limited-users", method: "GET"}).then(function(response){
+                return $http.get(API.url+"/limited-users").then(function(response){
                     console.log(response.data);
                     return response.data;
                 });
@@ -408,7 +408,7 @@ angular.module('livrogne-app')
     .factory('ProductCategoryService', function($http,  API) {
         var productCategories = [];
         var getProductCategories= function(){
-            return $http.get(API.url+"/product-categories",{headers: {'Content-Type': 'application/json'}}).then(function(response){
+            return $http.get(API.url+"/product-categories").then(function(response){
                 productCategories = response.data;
                 return productCategories;
             });
@@ -427,7 +427,14 @@ angular.module('livrogne-app')
                 return $http.post(API.url+"/admin/products",data, {headers: {'Content-Type': 'application/json'}}).then(function (response) {
                     return response.data;
                 });
+            },
+            getProducts:function(){
+                return $http.get(API.url+"/products").then(function (response) {
+                    return response.data;
+                });
             }
+
+
         }
     })
     .factory('PromotionService', function($http,  API) {

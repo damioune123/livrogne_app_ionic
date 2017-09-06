@@ -1,4 +1,4 @@
-angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrogne-app.controllers','btford.socket-io'])
+angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrogne-app.controllers','btford.socket-io','ionic-modal-select'])
 
     .run(function($ionicPlatform) {
         $ionicPlatform.ready(function() {
