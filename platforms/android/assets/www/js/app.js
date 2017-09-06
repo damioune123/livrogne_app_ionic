@@ -1,4 +1,4 @@
-angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrogne-app.controllers','btford.socket-io'])
+angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrogne-app.controllers','btford.socket-io','ionic-modal-select'])
 
     .run(function($ionicPlatform) {
         $ionicPlatform.ready(function() {
@@ -14,7 +14,14 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
             }
         });
     })
-
+    .directive('html', [ function () {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            element.html(attrs.html);
+        }
+    }
+    }])
 
     .config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
         $ionicConfigProvider.views.maxCache(0);
@@ -37,6 +44,24 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'fabContent': {
                         controller: function($timeout) {
                             $timeout(function() {
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
+                        }
+                    }
+                }
+            })
+            .state('app.redirect', {
+                url: '/redirect',
+                views: {
+                    'menuContent': {
+                        templateUrl: 'templates/redirected.html',
+                        controller: 'RedirectCtrl'
+                    },
+                    'fabContent': {
+                        controller: function($timeout) {
+                            $timeout(function() {
+                                if(document.getElementById('fab-logout')!=undefined)
                                 document.getElementById('fab-logout').classList.toggle('off');
                             }, 0);
                         }
@@ -44,7 +69,7 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                 }
             })
             .state('app.dashBoard', {
-                url: '/dashBoard',
+                url: '/dashBoard?userBalance&moneyBalance',
                 views: {
                     'menuContent': {
                         templateUrl: 'templates/dashBoard.html',
@@ -54,7 +79,8 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                         template: '<button id="fab-logout"  ng-click="logout()" class="button button-fab button-fab-top-left expanded spin button-default-ios button-ios-light button-default-ios button-ios-light"><i class="icon ion-log-out"></i> </button>',
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-logout').classList.toggle('on');
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('on');
                             }, 1000);
                         }
                     }
@@ -71,7 +97,8 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'fabContent': {
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-logout').classList.toggle('off');
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
                             }, 0);
                         }
                     }
@@ -87,7 +114,8 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'fabContent': {
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-logout').classList.toggle('off');
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
                             }, 0);
                         }
                     }
@@ -103,7 +131,8 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'fabContent': {
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-logout').classList.toggle('off');
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
                             }, 0);
                         }
                     }
@@ -119,7 +148,8 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'fabContent': {
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-logout').classList.toggle('off');
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
                             }, 0);
                         }
                     }
@@ -135,7 +165,8 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'fabContent': {
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-logout').classList.toggle('off');
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
                             }, 0);
                         }
                     }
@@ -152,7 +183,8 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'fabContent': {
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-logout').classList.toggle('off');
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
                             }, 0);
                         }
                     }
@@ -169,7 +201,8 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'fabContent': {
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-logout').classList.toggle('off');
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
                             }, 0);
                         }
                     }
@@ -186,7 +219,8 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'fabContent': {
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-logout').classList.toggle('off');
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
                             }, 0);
                         }
                     }
@@ -203,7 +237,8 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'fabContent': {
                         controller: function($timeout) {
                             $timeout(function() {
-                                document.getElementById('fab-logout').classList.toggle('off');
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
                             }, 0);
                         }
                     }

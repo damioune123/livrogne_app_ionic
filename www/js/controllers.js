@@ -183,7 +183,7 @@ angular.module('livrogne-app.controllers', [])
             //afterinitial calculations
             size = w/total,
             repaintColor = 'rgba(0, 0, 0, .04)'
-            colors = [],
+        colors = [],
             dots = [],
             dotsVel = [];
         var portion = 360/total;
@@ -391,9 +391,7 @@ angular.module('livrogne-app.controllers', [])
         $scope.$parent.setHeaderFab(false);
 
         ionicMaterialInk.displayEffect();
-        var currentUserId = window.localStorage['userId'];
-        var currentUserRole = window.localStorage['role'];
-        $scope.currentUserRole = currentUserRole;
+        $scope.currentUserRole = window.localStorage['role'];
         $scope.show = function () {
             $ionicLoading.show({
                 template: '<p>Loading...</p><ion-spinner></ion-spinner>'
@@ -446,6 +444,7 @@ angular.module('livrogne-app.controllers', [])
             $scope.show($ionicLoading);
             $q.all([promise1]).then(function (data) {
                 var userPersonnalAccount = data[0];
+                window.localStorage["userPersonnalAccountId"] = userPersonnalAccount.id;
                 $scope.moneyBalance = userPersonnalAccount.money_balance;
                 if (userPersonnalAccount.money_balance >= 0) $scope.classUserPeronnalMoney = "positive";
                 else $scope.classUserPeronnalMoney = "negative";
@@ -794,7 +793,6 @@ angular.module('livrogne-app.controllers', [])
         $scope.page=1;
         $scope.moneyFlows=undefined;
         $scope.typeMoneyFlows=$stateParams.type;
-        console.log($scope.typeMoneyFlows);
 
         //SCOPE FUNCTIONS
         $scope.formatDate = function (date) {
@@ -1100,15 +1098,6 @@ angular.module('livrogne-app.controllers', [])
             $scope.isExpanded = true;
             $scope.$parent.setExpanded(true);
         }, 300);
-
-        $scope.search_properties_users = ['firstname','lastname','role'];
-        ionicMaterialInk.displayEffect();
-        $scope.orderLines = [];
-        $scope.users = {};
-        $scope.adminPromotion = 0.0;
-        $scope.simplePromotion = 0.0;
-        var currentUserId = window.localStorage['userId'];
-        var userPersonnalAccountId = window.localStorage["userPersonnalAccountId"];
         $scope.show = function () {
             $ionicLoading.show({
                 template: '<p>Loading...</p><ion-spinner></ion-spinner>'
@@ -1117,6 +1106,15 @@ angular.module('livrogne-app.controllers', [])
         $scope.hide = function () {
             $ionicLoading.hide();
         };
+
+
+        ionicMaterialInk.displayEffect();
+        $scope.orderLines = [];
+        $scope.search_properties_users = ['firstname','lastname','role'];
+        $scope.users = {};
+        $scope.adminPromotion = 0.0;
+        $scope.simplePromotion = 0.0;
+
         var getInformation = function () {
             var promise1 = PromotionService.getPromotions();
             var promise2 = UserService.getLimitedUsers();
@@ -1314,8 +1312,6 @@ angular.module('livrogne-app.controllers', [])
                                 }
                             ]
                         });
-
-
                     }).finally(function(){
                         ol=undefined;
                         $scope.selectedClient=undefined;
@@ -1438,8 +1434,9 @@ angular.module('livrogne-app.controllers', [])
     })
 
     .controller('MoneyFlowCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService, ProductCategoryService, MoneyFlowService, AuthService,
-                                           ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading, $q) {
+                                           ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading, $q,SocketService,$rootScope) {
         // Set Header
+        var userPersonnalAccountId = window.localStorage["userPersonnalAccountId"];
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
         $scope.$parent.setHeaderFab('left');
@@ -1460,35 +1457,35 @@ angular.module('livrogne-app.controllers', [])
         };
 
         ionicMaterialInk.displayEffect();
-
-        $scope.users = {};
-        var getLimitedUsers = function () {
-            $scope.show($ionicLoading);
-            UserService.getLimitedUsers(1).then(function (result) {
-                $scope.users = result;
-                for (var i = $scope.users.length - 1; i >= 0; i--) {
-                    if (window.localStorage.userPersonnalAccountId == $scope.users[i].id)
-                        $scope.users.splice(i, 1);
-                    else $scope.users[i].credential = $scope.users[i].firstname + " " + $scope.users[i].lastname;
-                }
-                $scope.hide($ionicLoading);
-            },function(error){
-                $scope.hide($ionicLoading);
-                var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lors du chargement des inforamtons',
-                    template: ''
-                });
+        $scope.show = function () {
+            $ionicLoading.show({
+                template: '<p>Loading...</p><ion-spinner></ion-spinner>'
             });
         };
+        $scope.hide = function () {
+            $ionicLoading.hide();
+        };
+        $scope.search_properties_users = ['firstname','lastname','role'];
+        $scope.userPersonnalAccountId = window.localStorage["userPersonnalAccountId"]
 
-        getLimitedUsers();
+        var stopSockAdmin = function(){
+            $ionicLoading.hide();
+            SocketService.socketOff();
+            SocketService.socketListennerAuth();
+        };
 
-        $scope.persistMoneyFlow = function (debitAccountId, creditAccountId, value, description) {
-            if (isNefew) {
-                if ((currentUserMoneyBalance - value) < moneyLimit) {
+        var socketListennerConfirmMoneyFlowAdmin = function(accountId,type, value, description){
+            console.log("yoyo");
+            SocketService.socketOff();
+            $rootScope.cancel = stopSockAdmin;
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>En attente de la lecture d\'une carte admin...<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
+            SocketService.socketOn().on('broadcastsocketio', function (authtokenAndId) {
+                console.log(authtokenAndId);
+                stopSockAdmin();
+                if(authtokenAndId.rfid_to_match !=undefined){
                     var alertPopup = $ionicPopup.alert({
-                        title: 'Désolé mais vous êtes fauché !',
-                        template: 'Vous ne disposez pas d\'assez d\'argent ou de crédit sur votre compte pour effectuer le transfert',
+                        title: 'La carte est vierge !',
+                        template: '',
                         buttons: [
                             {
                                 text: '<b>OK</b>',
@@ -1498,7 +1495,83 @@ angular.module('livrogne-app.controllers', [])
                     });
                     return;
                 }
-            }
+                if(authtokenAndId.role!=USER_ROLES.admin  ) {
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte n\'appartient pas a un admin !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                $scope.show($ionicLoading);
+                MoneyFlowService.postMoneyFlow(accountId,type, value, description,authtokenAndId.userId).then(function (result) {
+                    $scope.hide($ionicLoading);
+                    getInformation();
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Transfert bien effectué !',
+                        template: 'Type : ' + type +
+                        '; Montant : ' + result.value + ' €',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+
+                }, function (error) {
+                    stopSockAdmin();
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Erreur lors du transfert',
+                        template: 'Code:' + error.data.code,
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                });
+            })
+
+        };
+
+        var getInformation = function () {
+            var promise1 = UserService.getLimitedUsers();
+            $scope.show($ionicLoading);
+            $q.all([promise1]).then(function (data) {
+                var users = data[0];
+                $scope.users=users;
+                for (var i = $scope.users.length - 1; i >= 0; i--) {
+                    if (window.localStorage.userId == $scope.users[i].id)
+                        $scope.users.splice(i, 1);
+                    else $scope.users[i].credential = $scope.users[i].firstname + " " + $scope.users[i].lastname;
+                }
+                $scope.hide($ionicLoading);
+
+            }, function (error) {
+                $scope.hide($ionicLoading);
+                var alertPopup = $ionicPopup.alert({
+                    title: 'Erreur lors de la récupération des utilisateurs',
+                    template: '',
+                    buttons: [
+                        {
+                            text: '<b>OK</b>',
+                            type: 'button-default-ios'
+                        }
+                    ]
+                });
+            })
+        };
+        getInformation();
+
+        $scope.persistMoneyFlow = function (accountId,type, value, description) {
+            console.log("qsdqjn");
             if (value == undefined) {
                 var alertPopup = $ionicPopup.alert({
                     title: 'Veuillez rentrer un montant',
@@ -1525,7 +1598,7 @@ angular.module('livrogne-app.controllers', [])
                 });
                 return;
             }
-            if (creditAccountId == undefined) {
+            if (accountId == undefined) {
                 var alertPopup = $ionicPopup.alert({
                     title: 'Veuillez rentrer un compter créditeur',
                     template: '',
@@ -1538,57 +1611,8 @@ angular.module('livrogne-app.controllers', [])
                 });
                 return;
             }
-            if (debitAccountId == undefined) {
-                var alertPopup = $ionicPopup.alert({
-                    title: 'Veuillez rentrer un compter débiteur',
-                    template: '',
-                    buttons: [
-                        {
-                            text: '<b>OK</b>',
-                            type: 'button-default-ios'
-                        }
-                    ]
-                });
-                return;
-            }
-            var confirmPopup = $ionicPopup.confirm({
-                title: 'Effectuer un transfert',
-                template: 'Etes-vous sûr de vouloir faire le transfert pour un montant de ' + value + ' € ?'
-            });
-            confirmPopup.then(function (res) {
-                if (res) {
-                    MoneyFlowService.postMoneyFlow(debitAccountId, creditAccountId, value, description).then(
-                        function (result) {
-                            var alertPopup = $ionicPopup.alert({
-                                title: 'Transfert bien effectué !',
-                                template: 'Type compte débiteur : ' + result.debit_user_account.type +
-                                '; Type compte créditeur : ' + result.credit_user_account.type +
-                                '; Montant : ' + result.value + ' €',
-                                buttons: [
-                                    {
-                                        text: '<b>OK</b>',
-                                        type: 'button-default-ios'
-                                    }
-                                ]
-                            });
-                            UserAccountService.getUserPersonnalAccount().then(function (currentUserPersonalAccount) {
-                                currentUserMoneyBalance = currentUserPersonalAccount.money_balance;
-                            });
-
-                        }, function (error) {
-                            var alertPopup = $ionicPopup.alert({
-                                title: 'Erreur lors du transfert',
-                                template: 'Code:' + error.data.code,
-                                buttons: [
-                                    {
-                                        text: '<b>OK</b>',
-                                        type: 'button-default-ios'
-                                    }
-                                ]
-                            });
-                        });
-                }
-            })
+            console.log("qsdqjn2");
+            socketListennerConfirmMoneyFlowAdmin(accountId,type, value, description);
         }
     })
     .controller('RedirectCtrl', function ($scope, $state,$timeout,$ionicLoading,UserAccountService,$q) {

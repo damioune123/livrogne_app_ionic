@@ -5,7 +5,7 @@
         <div class="item item-divider">
           Recharger mon compte
         </div>
-        <button ng-click="persistMoneyFlow(currentUserPersonnalAccountId,currentUserCashRegisterAccountId,amount1,'Recharge du compte personnel par soi-meme')" class="button button-full icon-left ion-forward button-default-ios custom-button">Recharger mon compte</button>
+        <button ng-click="persistMoneyFlow(userPersonnalAccountId,'debit',amount1,'Recharge du compte personnel par soi-meme')" class="button button-full icon-left ion-forward button-default-ios custom-button">Recharger mon compte</button>
         <div class="item item-divider">
           <label class="item item-input">
             <span class="input-label">Montant</span>
@@ -17,74 +17,88 @@
         <div class="item item-divider">
           Rembourser mon compte
         </div>
-        <button ng-click="persistMoneyFlow(currentUserPersonnalAccountId,currentUserCashRegisterAccountId,amount1,'Remboursement du compte personnel par soi-meme')" class="button button-full icon-left ion-reply button-default-ios custom-button">Rembourser mon compte</button>
+        <button ng-click="persistMoneyFlow(userPersonnalAccountId,'credit',amount2,'Remboursement du compte personnel par soi-meme')" class="button button-full icon-left ion-reply button-default-ios custom-button">Rembourser mon compte</button>
         <div class="item item-divider">
           <label class="item item-input">
             <span class="input-label">Montant</span>
-            <input ng-model="amount1" type="number">
+            <input ng-model="amount2" type="number">
           </label>
         </div>
       </div>
-      <div >
-        <div class="card">
-          <div class="item item-divider">
-            Recharger compte d'un client
-          </div>
-          <button ng-click="persistMoneyFlow(getUserPersonnalAccount(selectedClient3),currentUserCashRegisterAccountId,amount3,'Rechargement compte client par admin :'+ description3)"
-                  class="button button-full icon-left ion-forward button-default-ios custom-button">Recharger compte client</button>
-          <div class="item item-divider">
-            <label class="item item-input">
-              <span class="input-label">Montant</span>
-              <input ng-model="amount3" type="number">
-            </label>
-          </div>
-          <div class="item item-divider">
-            <div class="list">
-              <label class="item item-input item-select">
-                <div class="input-label">
-                  Destinataire
-                </div>
-                <select ng-options="user as user.credential for user in users track by user.id" ng-model="selectedClient3"></select>
-              </label>
-            </div>
-          </div>
-          <div class="item item-divider">
-            <label class="item item-input">
-              <span class="input-label">Description (facultatif): </span>
-              <input ng-model="description3" placeholder="Votre description" type="text">
-            </label>
-          </div>
+
+      <div class="card">
+        <div class="item item-divider">
+          Recharger compte d'un client
         </div>
-        <div class="card">
-          <div class="item item-divider">
-            Rembourser compte d'un client
+
+
+
+        <button class="button icon-left ion-person-stalker button-block button-default-ios custom-button" modal-select="" modal-title="Sélection du client" cancel-button="Annuler" search-placeholder="Nom, prénom, admin, user, ..." ok-button="OK" ng-model="selectedClient" options="users" has-search="true" search-properties="search_properties_users">
+          Client
+          <div class="option">
+            <h2>{{option.firstname}} {{option.lastname}} </h2>
+            <p>Solde disponible : {{option.user_accounts[0].available_balance}}€</p>
+            <p ng-show="option.role=='ROLE_ADMIN'">Administrateur</p>
+            <p ng-show="option.role=='ROLE_USER'">Utilisateur</p>
+            <p ng-show="option.godfather!=undefined">Parrain : {{option.godfather.firstname}} {{option.godfathers.lastname}}</p>
           </div>
-          <button ng-click="persistMoneyFlow(currentUserCashRegisterAccountId,getUserPersonnalAccount(selectedClient4),amount4,'Remboursement compte client par admin :'+ description4)"
-                   class="button button-full icon-left ion-reply button-default-ios custom-button"> Rembourser compte client</button>
-          <div class="item item-divider">
-            <label class="item item-input">
-              <span class="input-label">Montant</span>
-              <input ng-model="amount4" type="number">
-            </label>
-          </div>
-          <div class="item item-divider">
-            <div class="list">
-              <label class="item item-input item-select">
-                <div class="input-label">
-                  Destinataire
-                </div>
-                <select ng-options="user as user.credential for user in users track by user.id" ng-model="selectedClient4"></select>
-              </label>
-            </div>
-          </div>
-          <div class="item item-divider">
-            <label class="item item-input">
-              <span class="input-label">Description (facultatif): </span>
-              <input ng-model="description4" placeholder="Votre description" type="text">
-            </label>
-          </div>
+        </button>
+        <div  ng-hide="selectedClient==undefined || selectedClient.length==0" >
+          <button ng-click="persistMoneyFlow(selectedClient.user_accounts[0], 'debit',amount3,'Recharge compte client par admin :'+ description3)"
+                  class="button button-block button-default-ios custom-button">Rembourser compte de {{selectedClient.credential}}</button>
+
+        </div>
+        <div class="item item-divider">
+          <label class="item item-input">
+            <span class="input-label">Montant</span>
+            <input ng-model="amount3" type="number">
+          </label>
+        </div>
+
+        <div class="item item-divider">
+          <label class="item item-input">
+            <span class="input-label">Description (facultatif): </span>
+            <input ng-model="description3" placeholder="Votre description" type="text">
+          </label>
         </div>
       </div>
-    </div>
+
+      <div class="card">
+        <div class="item item-divider">
+          Rembourser compte d'un client
+        </div>
+
+
+
+        <button class="button icon-left ion-person-stalker button-block button-default-ios custom-button" modal-select="" modal-title="Sélection du client" cancel-button="Annuler" search-placeholder="Nom, prénom, admin, user, ..." ok-button="OK" ng-model="selectedClient2" options="users" has-search="true" search-properties="search_properties_users">
+          Client
+          <div class="option">
+            <h2>{{option.firstname}} {{option.lastname}} </h2>
+            <p>Solde disponible : {{option.user_accounts[0].available_balance}}€</p>
+            <p ng-show="option.role=='ROLE_ADMIN'">Administrateur</p>
+            <p ng-show="option.role=='ROLE_USER'">Utilisateur</p>
+            <p ng-show="option.godfather!=undefined">Parrain : {{option.godfather.firstname}} {{option.godfathers.lastname}}</p>
+          </div>
+        </button>
+        <div  ng-hide="selectedClient2==undefined || selectedClient2.length==0" >
+          <button ng-click="persistMoneyFlow(selectedClient2.user_accounts[0], 'credit',amount4,'Remboursement compte client par admin :'+ description4)"
+                  class="button button-block button-default-ios custom-button">Rembourser compte de {{selectedClient2.credential}}</button>
+
+        </div>
+        <div class="item item-divider">
+          <label class="item item-input">
+            <span class="input-label">Montant</span>
+            <input ng-model="amount4" type="number">
+          </label>
+        </div>
+
+        <div class="item item-divider">
+          <label class="item item-input">
+            <span class="input-label">Description (facultatif): </span>
+            <input ng-model="description4" placeholder="Votre description" type="text">
+          </label>
+        </div>
+      </div>
+
   </ion-content>
 </ion-view>

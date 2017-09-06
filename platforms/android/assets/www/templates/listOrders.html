@@ -3,12 +3,15 @@
         <ion-refresher on-refresh="doRefresh()"></ion-refresher>
         <div class="hero " >
             <div class="content">
-                <h3><a class="head light">Liste des commandes effectuées</a></h3>
+                <h3><a class="head light">Liste commandes</a></h3>
                 <h4><a class="light">{{firstName}}  {{lastName}}</a></h4>
                 <h4><a class="light">Solde : {{moneyBalance}}€</a></h4>
                 <h4><a class="light">Solde disponible : {{availableBalance}}€</a></h4>
                 <h4 ng-hide="godfatherCredentials==undefined" ><a class="head">Parrain :{{godfatherCredentials}}</a></h4>
             </div>
+        </div>
+        <div ng-show="orders.length==0" class="content">
+            <h4 class="light"> Pas de commandes encore enregistrées </h4>
         </div>
 
         <ion-item class="item-accordion" ng-repeat="order in orders" >

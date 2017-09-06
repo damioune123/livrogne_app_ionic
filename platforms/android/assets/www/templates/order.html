@@ -5,61 +5,59 @@
                 Réduction utilisateurs : {{simplePromotion}} % <br>
                 Réduction admin: {{adminPromotion}} %
             </div>
-            <div ng-show="orderLines.length!=0">
-                <div class="card ">
-                    <div class="item">
-                        Total pour un utilisateur: {{totalUser}} € <br>
-                        Total  pour un administrateur: {{totalAdmin}} €
-                    </div>
-                    <button ng-click='persistOrder("cash",undefined )' class="button icon-left ion-social-euro button-block button-default-ios custom-button">Cash</button>
-                    <button ng-click='persistOrder("self",undefined )' class="button icon-left ion-person button-block button-default-ios custom-button">Soi-même</button>
-                    <div>
-                        <button  ng-click='persistOrder("someoneElse",selectedClient )' class="button icon-left ion-person-stalker button-block button-default-ios custom-button">Client</button>
-                        <div class="list">
-                            <label class="item item-input item-select">
-                                <div class="input-label">
-                                    Client
-                                </div>
-                                <select ng-options="user as user.credential for user in users track by user.id" ng-model="selectedClient"></select>
-                            </label>
+            <div class="card ">
+                <div class="item">
+                    Total pour un utilisateur: {{totalUser}} € <br>
+                    Total  pour un administrateur: {{totalAdmin}} €
+                </div>
+                <button ng-click='persistOrder("cash",undefined )' class="button icon-left ion-social-euro button-block button-default-ios custom-button">Cash</button>
+                <button ng-click='persistOrder("self",undefined )' class="button icon-left ion-person button-block button-default-ios custom-button">Soi-même</button>
+                <div class="item item-body">
+
+                    <button class="button icon-left ion-person-stalker button-block button-default-ios custom-button" modal-select="" modal-title="Sélection du client" cancel-button="Annuler" search-placeholder="Nom, prénom, admin, user, ..." ok-button="OK" ng-model="selectedClient" options="users" has-search="true" search-properties="search_properties_users">
+                        Client
+                        <div class="option">
+                            <h2>{{option.firstname}} {{option.lastname}} </h2>
+                            <p>Solde disponible : {{option.user_accounts[0].available_balance}}€</p>
+                            <p ng-show="option.role=='ROLE_ADMIN'">Administrateur</p>
+                            <p ng-show="option.role=='ROLE_USER'">Utilisateur</p>
+                            <p ng-show="option.godfather!=undefined">Parrain : {{option.godfather.firstname}} {{option.godfathers.lastname}}</p>
                         </div>
-                    </div>
-                    <div class="item item-divider">
-                        Récapitulatif :
-                    </div>
-                    <ion-item class="item-accordion" ng-repeat="ol in orderLines">
-                        <div class="list animate-fade-slide-in-right">
-                            <p> Catégorie : {{ ol.pc.category_name }}
-                                <br> Nom produit : {{ol.product.name}} }
-                                <br>  Quantité : {{ol.quantity}}
-                                <br> Total Admin: {{ol.totalAdmin}}€
-                                <br> Total USer: {{ol.totalUser}}€</p>
-                            <div class="button-bar">
-                                <a class="button button-default-ios icon ion-plus-circled" ng-click="addNewOrderLine(ol.pc, ol.pc.products.selectedProduct)">
-                                </a>
-                                <a class="button button-default-ios icon ion-minus-circled" ng-click="removeOrderLine(ol.pc.id, ol.product.barcode)">
-                                </a>
-                            </div>
-                        </div>
-                    </ion-item>
+                    </button>
+                </div>
+                <div  ng-hide="selectedClient==undefined || selectedClient.length==0" >
+                    <button  ng-click='persistOrder("someoneElse",selectedClient )' class="button button-block button-default-ios custom-button">Valider pour {{selectedClient.credential}}</button>
                 </div>
             </div>
-            <div class="item item-divider">
-                Liste des produits :
-            </div>
-            <ion-item ng-repeat="pc in productCategories">
-                <div class="list">
-                    <button ng-click="addNewOrderLine(pc, pc.products.selectedProduct)" class="button button-block button-default-ios custom-button">{{pc.category_name}}</button>
-                    <div class="list">
-                        <label class="item item-input item-select">
-                            <div class="input-label">
-                                Nom produit
-                            </div>
-                            <select ng-options="product as product.name for product in pc.products track by product.id" ng-model="pc.products.selectedProduct"></select>
-                        </label>
-                    </div>
+            <div class="card ">
+                <div class="item item-body">
+                    <button class="button button-block button-default-ios custom-button" modal-select="" modal-title="Sélection du produit" cancel-button="Annuler" ok-button="OK"  hide-reset="true" search-placeholder="Leffe, cara, ..."  multiple="true" on-select="addNewOrderLine(selectedProducts)" ng-model="selectedProducts" options="products" has-search="true">
+                        Produits
+                        <div class="option">
+                            <h2>{{option.name}} - Catégorie :{{option.product_category.category_name}} </h2>
+                            <p>Prix admin : {{option.price_with_promotion_admin}}€</p>
+                            <p>Prix utilisateur : {{option.price_with_promotion_user}}€</p>
+                        </div>
+                    </button>
                 </div>
-            </ion-item>
+                <div class="item item-divider">
+                    Récapitulatif :
+                </div>
+                <ion-item class="item-accordion" ng-repeat="ol in orderLines">
+                    <div class="list animate-fade-slide-in-right">
+                            <br> Nom produit : {{ol.product.name}}
+                            <br>  Quantité : {{ol.quantity}}
+                            <br> Total Admin: {{ol.totalAdmin}}€
+                            <br> Total USer: {{ol.totalUser}}€</p>
+                        <div class="button-bar">
+                            <a class="button button-default-ios icon ion-plus-circled" ng-click="addNewOrderLine([ol.product])">
+                            </a>
+                            <a class="button button-default-ios icon ion-minus-circled" ng-click="removeOrderLine(ol.product.barcode)">
+                            </a>
+                        </div>
+                    </div>
+                </ion-item>
+            </div>
         </div>
     </ion-content>
 </ion-view>

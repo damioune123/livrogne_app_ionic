@@ -221,8 +221,11 @@ angular.module('livrogne-app')
 
         };
         var socketListennerAuth = function(){
+
             socketOn().on('broadcastsocketio', function (authtokenAndId) {
+
                 if(authtokenAndId.rfid_to_match !=undefined){
+                    socketOff();
                     var alertPopup = $ionicPopup.alert({
                         title: 'La carte est vierge !',
                         template: '',
@@ -233,7 +236,9 @@ angular.module('livrogne-app')
                             }
                         ]
                     });
+                    socketListennerAuth();
                     return;
+
                 }
                 socketOff();
                 AuthService.logout();
@@ -398,15 +403,16 @@ angular.module('livrogne-app')
                     return response.data;
                 });
             },
-            postMoneyFlow : function(debitAccountId, creditAccountId, value, description){
+            postMoneyFlow : function(accountId, type,value , description,adminAuthentifier){
                 var data=
                     {
-                        "creditUserAccount":creditAccountId,
-                        "debitUserAccount": debitAccountId,
+                        "accountId":accountId,
+                        "type":type,
+                        "adminAuthentifier":adminAuthentifier,
                         "value": value,
                         "description": description
                     };
-                return $http.post(API.url+"/money-flows", data  ,{headers: {'Content-Type': 'application/json'}})
+                return $http.post(API.url+"/admin/money-flows", data  ,{headers: {'Content-Type': 'application/json'}})
                     .then(function(response){
                         return response.data;
                     });

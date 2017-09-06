@@ -111,7 +111,7 @@ angular.module('livrogne-app')
                 });
             },
             getLimitedUsers: function(){
-                return $http({url: API.url+"/limited-users", method: "GET"}).then(function(response){
+                return $http.get(API.url+"/limited-users").then(function(response){
                     console.log(response.data);
                     return response.data;
                 });
@@ -206,10 +206,10 @@ angular.module('livrogne-app')
             }
         }
     })
-    .factory('SocketService', function (socketFactory, $ionicPopup,AuthService,RfidService,$ionicHistory,$state,$q) {
+    .factory('SocketService', function (socketFactory, $ionicPopup,AuthService,RfidService,$ionicHistory,$state,$q, NODE) {
         var mySocket;
         var socketOn = function(){
-            var myIoSocket = io.connect('http://192.168.0.210:5000');
+            var myIoSocket = io.connect(NODE.url);
 
             mySocket = socketFactory({
                 ioSocket: myIoSocket
@@ -222,41 +222,47 @@ angular.module('livrogne-app')
         };
         var socketListennerAuth = function(){
             socketOn().on('broadcastsocketio', function (authtokenAndId) {
+                if(authtokenAndId.rfid_to_match !=undefined){
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte est vierge !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
                 socketOff();
-                var confirmPopup = $ionicPopup.confirm({
-                    title: 'Une carte a été detectée au nom de '+authtokenAndId.firstname+" "+authtokenAndId.lastname,
-                    template: 'Desirez vous vous connecter sur ce compte ?'
+                AuthService.logout();
+                var promise1 = RfidService.login(authtokenAndId.token, authtokenAndId.userId);
+                $q.all([promise1]).then(function (data) {
+                    $ionicHistory.nextViewOptions({
+                        disableAnimate: false,
+                        disableBack: true
+                    });
+                    socketListennerAuth();
+                    setTimeout(function () {
+                        $state.go('app.redirect');
+                    }, 0);
+
+                }, function (error) {
+                    socketListennerAuth();
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Erreur lors de la connexion',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
                 });
-
-                confirmPopup.then(function (res) {
-                    if (res) {
-                        AuthService.logout();
-                        var promise1 = RfidService.login(authtokenAndId.token, authtokenAndId.userId);
-                        $q.all([promise1]).then(function (data) {
-                            $ionicHistory.nextViewOptions({
-                                disableAnimate: false,
-                                disableBack: true
-                            });
-                            socketListennerAuth();
-                            setTimeout(function () {
-                                $state.go('app.dashBoard',null,{reload:true});
-                            }, 0);
-
-                        }, function (error) {
-                            socketListennerAuth();
-                            var alertPopup = $ionicPopup.alert({
-                                title: 'Erreur lors de la connexion',
-                                template: ''
-                            });
-                        });
-                    }
-                    else{
-                        socketListennerAuth();
-                    }
-                })
-            });
+            })
         };
-
         return{
             socketOn:socketOn,
             socketOff:socketOff,
@@ -421,7 +427,7 @@ angular.module('livrogne-app')
     .factory('ProductCategoryService', function($http,  API) {
         var productCategories = [];
         var getProductCategories= function(){
-            return $http.get(API.url+"/product-categories",{headers: {'Content-Type': 'application/json'}}).then(function(response){
+            return $http.get(API.url+"/product-categories").then(function(response){
                 productCategories = response.data;
                 return productCategories;
             });
@@ -440,7 +446,14 @@ angular.module('livrogne-app')
                 return $http.post(API.url+"/admin/products",data, {headers: {'Content-Type': 'application/json'}}).then(function (response) {
                     return response.data;
                 });
+            },
+            getProducts:function(){
+                return $http.get(API.url+"/products").then(function (response) {
+                    return response.data;
+                });
             }
+
+
         }
     })
     .factory('PromotionService', function($http,  API) {
