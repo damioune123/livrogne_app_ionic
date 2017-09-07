@@ -110,6 +110,18 @@ angular.module('livrogne-app')
                     return response.data;
                 });
             },
+            getUnsponsoredUsers: function(){
+                return $http({url: API.url+"/admin/limited-unsponsored-users", method: "GET"}).then(function(response){
+                    console.log(response.data);
+                    return response.data;
+                });
+            },
+            getNefews: function(){
+                return $http({url: API.url+"/admin/limited-nefews", method: "GET"}).then(function(response){
+                    console.log(response.data);
+                    return response.data;
+                });
+            },
             getLimitedUsers: function(){
                 return $http.get(API.url+"/limited-users").then(function(response){
                     console.log(response.data);
@@ -288,28 +300,47 @@ angular.module('livrogne-app')
             },
             getUserPersonnalAccountOrders: function(page){
                 var userPersonnalAccountId= window.localStorage["userPersonnalAccountId"];
-                return $http({url: API.url+"/user-accounts/"+userPersonnalAccountId+"?page="+page+"&operations=order&sort=desc", method: "GET"}).then(function(response){
-                    console.log(response.data);
-                    return response.data;
-                });
-            },
-            getUserPersonnalAccountRegisterOrders: function(page){
-                var userPersonnalAccountId= window.localStorage["userPersonnalAccountId"];
-                return $http({url: API.url+"/user-accounts/"+userPersonnalAccountId+"?page="+page+"&operations=registerOrder&sort=desc", method: "GET"}).then(function(response){
+                return $http({url: API.url+"/user-accounts/"+userPersonnalAccountId+"?page="+page+"&operations=order", method: "GET"}).then(function(response){
                     console.log(response.data);
                     return response.data;
                 });
             },
             getUserPersonnalAccountPositiveMoneyFlows: function(page){
                 var userPersonnalAccountId= window.localStorage["userPersonnalAccountId"];
-                return $http({url: API.url+"/user-accounts/"+userPersonnalAccountId+"?page="+page+"&operations=positive_money_flows&sort=desc", method: "GET"}).then(function(response){
+                return $http({url: API.url+"/user-accounts/"+userPersonnalAccountId+"?page="+page+"&operations=positive_money_flows", method: "GET"}).then(function(response){
                     console.log(response.data);
                     return response.data;
                 });
             },
             getUserPersonnalAccountNegativeMoneyFlows: function(page){
                 var userPersonnalAccountId= window.localStorage["userPersonnalAccountId"];
-                return $http({url: API.url+"/user-accounts/"+userPersonnalAccountId+"?page="+page+"&operations=negative_money_flows&sort=desc", method: "GET"}).then(function(response){
+                return $http({url: API.url+"/user-accounts/"+userPersonnalAccountId+"?page="+page+"&operations=negative_money_flows", method: "GET"}).then(function(response){
+                    console.log(response.data);
+                    return response.data;
+                });
+            },
+            getBarmanAccountOrders: function(page){
+
+                return $http({url: API.url+"/admin/user-accounts/barman?page="+page+"&operations=order", method: "GET"}).then(function(response){
+                    console.log(response.data);
+                    return response.data;
+                });
+            },
+            getBarmanRegisterOrders: function(page){
+                return $http({url: API.url+"/admin/user-accounts/barman?page="+page+"&operations=registerOrder", method: "GET"}).then(function(response){
+                    console.log(response.data);
+                    return response.data;
+                });
+            },
+            getBarmanPositiveMoneyFlows: function(page){
+                return $http({url: API.url+"/admin/user-accounts/barman?page="+page+"&operations=positive_money_flows", method: "GET"}).then(function(response){
+                    console.log(response.data);
+                    return response.data;
+                });
+            },
+            getBarmanNegativeMoneyFlows: function(page){
+                var userPersonnalAccountId= window.localStorage["userPersonnalAccountId"];
+                return $http({url: API.url+"/admin/user-accounts/barman?page="+page+"&operations=negative_money_flows", method: "GET"}).then(function(response){
                     console.log(response.data);
                     return response.data;
                 });

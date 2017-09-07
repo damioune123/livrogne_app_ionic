@@ -209,6 +209,24 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                 }
             })
 
+            .state('app.nefew', {
+                url: '/nefew',
+                views: {
+                    'menuContent': {
+                        templateUrl: 'templates/nefew.html',
+                        controller: 'NefewCtrl'
+                    },
+                    'fabContent': {
+                        controller: function($timeout) {
+                            $timeout(function() {
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
+                        }
+                    }
+                }
+            })
+
             .state('app.statistic', {
                 url: '/statistic',
                 views: {
