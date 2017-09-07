@@ -169,7 +169,7 @@ angular.module('livrogne-app.controllers', [])
                                        USER_ROLES, ionicMaterialInk, UserService, UserAccountService, PromotionService,
                                        RfidService, $ionicLoading, $q) {
         $scope.data = {};
-
+/*
 
         //initial
         var w = c.width = bg.width = window.innerWidth,
@@ -219,7 +219,7 @@ angular.module('livrogne-app.controllers', [])
         }
         anim();
 
-
+*/
 
 
         //$state.reload();

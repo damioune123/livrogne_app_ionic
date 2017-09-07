@@ -11,14 +11,15 @@
                 Montant total :  {{order.order_price}}€
             </a>
             <a class="item">
+                Promotion globale: {{order.during_order_global_promotion}}%
+            </a>
+            <a class="item">
                 Prenom client : {{order.customer_user_account.user.firstname}}
             </a>
             <a class="item">
                 Nom client : {{order.customer_user_account.user.lastname}}
             </a>
-            <a class="item">
-                Promotion : {{order.customer_user_account.user.promotion.user_promotion}}%
-            </a>
+
             <a ng-show="order.is_ordered_by_customer" class="item">
                 Commande prise par le client
             </a>
@@ -31,10 +32,16 @@
                     Nom produit : {{orderline.product.name}} - Catégorie : {{orderline.product.product_category.category_name}}
                 </div>
                 <a class="item">
+                    Prix durant la commande pour un utilisateur par pièce: {{orderline.product_during_order_price_user}}€
+                </a>
+                <a class="item">
+                    Prix durant la commande pour un administrateur par pièce : {{orderline.product_during_order_price_admin}}€
+                </a>
+                <a class="item">
                     Quantité: {{orderline.quantity}}
                 </a>
                 <a class="item">
-                    Sous-total: {{orderline.order_line_price_final}}€
+                    Sous-total: {{orderline.order_line_during_order_price}}€
                 </a>
             </ion-item>
         </div>
