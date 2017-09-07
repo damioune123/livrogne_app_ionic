@@ -1,7 +1,11 @@
 <ion-view view-title="DashBoard" cache-view="false">
     <ion-content center text-center ng-class="{expanded:$scope.isExpanded}" style="background-color: #000000">
-        <canvas id=c3></canvas>
-        <canvas id=bg3></canvas>
+        <ion-refresher on-refresh="doRefresh()"
+                       pulling-text="Tirez pour rafraichir.."
+                       refreshing-text="Chargement!"
+                       refreshing-icon="ion-loading-c">
+
+        </ion-refresher>
         <div class="hero " >
             <div class="content">
                 <h3><a class="head light">{{firstName}}  {{lastName}}</a></h3>
@@ -44,7 +48,10 @@
                 </button>
 
             </div>
+        </div>
+        <div class="content">
+            <div class="app-icon"></div>
 
-        </div>&
+        </div>
     </ion-content>
 </ion-view>

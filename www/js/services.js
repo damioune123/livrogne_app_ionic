@@ -169,6 +169,12 @@ angular.module('livrogne-app')
                     return response.data;
                 });
             },
+            unsetUserGodfather: function(nefewId){
+
+                return $http.patch(API.url+"/admin/users/unset-nefew/"+nefewId,{headers: {'Content-Type': 'application/json'}}).then(function(response){
+                    return response.data;
+                });
+            },
             patchUserMoneyLimit: function(nefewId, moneyLimit){
                 return $http.patch(API.url+"/admin/users-acccounts/money-limit/"+nefewId+"?money_limit="+moneyLimit,{headers: {'Content-Type': 'application/json'}}).then(function(response){
                     user = response.data;
@@ -213,6 +219,11 @@ angular.module('livrogne-app')
             getUser: function(){
                 var userId=window.localStorage["userId"];
                 return $http.get(API.url+"/users/"+userId,{headers: {'Content-Type': 'application/json'}}).then(function(response){
+                    return response.data;
+                });
+            },
+            getUserById: function(userId){
+                return $http.get(API.url+"/admin/users/"+userId,{headers: {'Content-Type': 'application/json'}}).then(function(response){
                     return response.data;
                 });
             }

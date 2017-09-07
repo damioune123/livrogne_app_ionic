@@ -401,6 +401,11 @@ angular.module('livrogne-app.controllers', [])
         $scope.hide = function () {
             $ionicLoading.hide();
         };
+        $scope.doRefresh=function(){
+            getDetails();
+            $scope.$broadcast('scroll.refreshComplete');
+
+        };
 
         //SCOPE VARS
         $scope.username = window.localStorage['username'];
@@ -511,6 +516,7 @@ angular.module('livrogne-app.controllers', [])
             $scope.page=1;
             getDetails();
             getOrders();
+            $scope.$broadcast('scroll.refreshComplete');
         };
 
 
@@ -691,7 +697,7 @@ angular.module('livrogne-app.controllers', [])
                 OrderService.deleteOrder(orderToConfirmId, authtokenAndId.userId).then(function (result) {
                     $scope.hide($ionicLoading);
                     var alertPopup = $ionicPopup.alert({
-                        title: 'Commande annulée avec succès!',
+                        title: 'Commande annulée avec succès',
                         template: 'Les comptes concernés ont été débités/crédités, vous trouverez l\'annulaton de commande dans les transferts d\'argents.',
                         buttons: [
                             {
@@ -702,9 +708,9 @@ angular.module('livrogne-app.controllers', [])
                     });
                     $scope.order=result;
                 }, function (error) {
+                    $scope.hide($ionicLoading);
                     console.log(error);
                     stopSockAdmin();
-                    $scope.hide($ionicLoading);
                     var alertPopup = $ionicPopup.alert({
                         title: 'Erreur lors de l\'annulation la commande!',
                         template: error.data.message,
@@ -783,6 +789,7 @@ angular.module('livrogne-app.controllers', [])
             $scope.page=1;
             getDetails();
             getMoneyFlows();
+            $scope.$broadcast('scroll.refreshComplete');
         };
 
 
@@ -1003,7 +1010,7 @@ angular.module('livrogne-app.controllers', [])
                 MoneyFlowService.deleteMoneyFlow(moneyFlowToConfirmId, authtokenAndId.userId).then(function (result) {
                     $scope.hide($ionicLoading);
                     var alertPopup = $ionicPopup.alert({
-                        title: 'Transfert annulé avec succès!',
+                        title: 'Transfert annulé avec succès',
                         template: 'Les comptes concernés ont été débités/crédités, vous trouverez l\'annulaton dans les transferts d\'argents.',
                         buttons: [
                             {
@@ -1293,7 +1300,7 @@ angular.module('livrogne-app.controllers', [])
                         }
                         else {
                             var alertPopup = $ionicPopup.alert({
-                                title: 'Commande réalisée avec succès !',
+                                title: 'Commande réalisée avec succès',
                                 template: '',
                                 buttons: [
                                     {
@@ -1347,7 +1354,7 @@ angular.module('livrogne-app.controllers', [])
                         }
                         else {
                             var alertPopup = $ionicPopup.alert({
-                                title: 'Commande réalisée avec succès !',
+                                title: 'Commande réalisée avec succès ',
                                 template: '',
                                 buttons: [
                                     {
@@ -1394,7 +1401,7 @@ angular.module('livrogne-app.controllers', [])
                         }
                         else {
                             var alertPopup = $ionicPopup.alert({
-                                title: 'Commande réalisée avec succès !',
+                                title: 'Commande réalisée avec succès ',
                                 template: '',
                                 buttons: [
                                     {
@@ -1530,6 +1537,7 @@ angular.module('livrogne-app.controllers', [])
                     });
 
                 }, function (error) {
+                    $scope.hide($ionicLoading);
                     stopSockAdmin();
                     var alertPopup = $ionicPopup.alert({
                         title: 'Erreur lors du transfert',
@@ -1616,7 +1624,6 @@ angular.module('livrogne-app.controllers', [])
                 });
                 return;
             }
-            console.log("qsdqjn2");
             socketListennerConfirmMoneyFlowAdmin(accountId,type, value, description);
         }
     })
@@ -2033,8 +2040,12 @@ angular.module('livrogne-app.controllers', [])
         $scope.doRefresh=function(){
             getDetails();
             getInformation();
+            $scope.$broadcast('scroll.refreshComplete');
 
         };
+        $scope.showNefew = function(userId){
+            $state.go("app.userDetails",{"userId":userId});
+        }
         $scope.search_properties_users = ['firstname','lastname','role'];
 
         $scope.patchGodfather= function(nefewId){
@@ -2048,7 +2059,7 @@ angular.module('livrogne-app.controllers', [])
         $scope.availableMoney = undefined;
 
 
-
+        console.log($scope);
         var stopSockAdmin = function(){
             $ionicLoading.hide();
             SocketService.socketOff();
@@ -2056,6 +2067,7 @@ angular.module('livrogne-app.controllers', [])
         };
 
         var socketListennerConfirmSponsorAdmin= function(futureNefewId){
+            console.log($scope);
             SocketService.socketOff();
             $rootScope.cancel = stopSockAdmin;
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>En attente de la lecture de la carte de '+window.localStorage.firstName+' '+window.localStorage.lastName+'...<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
@@ -2116,6 +2128,7 @@ angular.module('livrogne-app.controllers', [])
                     });
 
                 }, function (error) {
+                    $scope.hide($ionicLoading);
                     stopSockAdmin();
                     var alertPopup = $ionicPopup.alert({
                         title: 'Erreur lors du parrainage',
@@ -2145,8 +2158,7 @@ angular.module('livrogne-app.controllers', [])
                  $scope.godfatherCredentials = userPersonnalAccount.user.godfather.firstname + " " + userPersonnalAccount.user.godfather.lastname;*/
                 $scope.availableBalance= userPersonnalAccount.available_balance;
                 $scope.availableCredit= userPersonnalAccount.credit_to_allow_max-userPersonnalAccount.credit_allowed;
-                $scope.creditMax= userPersonnalAccount.credit_to_allow_max;
-                $scope.creditUsed= userPersonnalAccount.credit_allowed;
+                $scope.creditAllowed= userPersonnalAccount.credit_allowed;
 
                 $scope.hide($ionicLoading);
 
@@ -2193,6 +2205,263 @@ angular.module('livrogne-app.controllers', [])
         };
         getInformation();
 
+
+    })
+
+    .controller('UserDetailsCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService, ProductCategoryService, MoneyFlowService, AuthService,
+                                       ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading, $q,SocketService,$rootScope) {
+        // Set Header
+        $scope.$parent.showHeader();
+        $scope.$parent.clearFabs();
+        $scope.$parent.setHeaderFab('left');
+        // Delay expansion
+        $timeout(function () {
+            $scope.isExpanded = true;
+            $scope.$parent.setExpanded(true);
+        }, 300);
+
+        $scope.show = function () {
+            $ionicLoading.show({
+                template: '<p>Loading...</p><ion-spinner></ion-spinner>'
+            });
+        };
+
+        $scope.hide = function () {
+            $ionicLoading.hide();
+        };
+
+        ionicMaterialInk.displayEffect();
+        $scope.show = function () {
+            $ionicLoading.show({
+                template: '<p>Loading...</p><ion-spinner></ion-spinner>'
+            });
+        };
+        $scope.hide = function () {
+            $ionicLoading.hide();
+        };
+        $scope.doRefresh=function(){
+            getDetails();
+            $scope.$broadcast('scroll.refreshComplete');
+
+        };
+        $scope.setLimit= function(value){
+          socketListennerConfirmChangeLimitAdmin($scope.user.user_accounts[0].id,value);
+        };
+        $scope.numberPickerObject = {
+            inputValue: 0, //Optional
+            minValue: 0,
+            maxValue: 200,
+            precision: 1,  //Optional
+            decimalStep: 0.5,  //Optional
+            format: "DECIMAL",  //Optional - "WHOLE" or "DECIMAL"
+            unit: "€",  //Optional - "m", "kg", "℃" or whatever you want
+            titleLabel: 'Changer la limite de crédit du neveu',  //Optional
+            setLabel: 'OK',  //Optional
+            closeLabel: 'Back',  //Optional
+            setButtonType: 'button-positive',  //Optional
+            callback: function (val) {    //Mandatory
+                $scope.setLimit(val);
+            }
+        };
+
+        $scope.currentUserId=window.localStorage.userId;
+
+        $scope.currentRole = window.localStorage['role'];
+
+        var stopSockAdmin = function(){
+            $ionicLoading.hide();
+            SocketService.socketOff();
+            SocketService.socketListennerAuth();
+        };
+
+        var socketListennerConfirmUnsetAdmin= function(nefewId){
+            console.log($scope);
+            SocketService.socketOff();
+            $rootScope.cancel = stopSockAdmin;
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>En attente de la lecture de la carte de '+window.localStorage.firstName+' '+window.localStorage.lastName+'...<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
+            SocketService.socketOn().on('broadcastsocketio', function (authtokenAndId) {
+                console.log(authtokenAndId);
+                stopSockAdmin();
+                if(authtokenAndId.rfid_to_match !=undefined){
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte est vierge !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                if(authtokenAndId.role!=USER_ROLES.admin  ) {
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte n\'appartient pas a un admin !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                if(authtokenAndId.userId!=window.localStorage.userId  ) {
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte n\'appartient pas a '+window.localStorage.firstName+' '+window.localStorage.lastName+' !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                $scope.show($ionicLoading);
+
+                UserService.unsetUserGodfather(nefewId).then(function (result) {
+                    $scope.hide($ionicLoading);
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'L\'utilisateur a bien été retiré de la liste de vos neveux !',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+
+                }, function (error) {
+                    $scope.hide($ionicLoading);
+                    stopSockAdmin();
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Erreur lors du déparrainage',
+                        template: error.data.message,
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                }).finally(function() {
+                    getDetails();
+                });
+
+            })
+        };
+
+        var socketListennerConfirmChangeLimitAdmin= function(nefewId,value){
+            console.log($scope);
+            SocketService.socketOff();
+            $rootScope.cancel = stopSockAdmin;
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>En attente de la lecture de la carte de '+window.localStorage.firstName+' '+window.localStorage.lastName+'...<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
+            SocketService.socketOn().on('broadcastsocketio', function (authtokenAndId) {
+                console.log(authtokenAndId);
+                stopSockAdmin();
+                if(authtokenAndId.rfid_to_match !=undefined){
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte est vierge !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                if(authtokenAndId.role!=USER_ROLES.admin  ) {
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte n\'appartient pas a un admin !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                if(authtokenAndId.userId!=window.localStorage.userId  ) {
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte n\'appartient pas a '+window.localStorage.firstName+' '+window.localStorage.lastName+' !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                $scope.show($ionicLoading);
+
+                UserService.patchUserMoneyLimit(nefewId,value).then(function (result) {
+                    $scope.hide($ionicLoading);
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La limite de l\'utilisateur a bien été modifiée !',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+
+                }, function (error) {
+                    $scope.hide($ionicLoading);
+                    stopSockAdmin();
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Erreur lors du changement de limite',
+                        template: error.data.message,
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                }).finally(function() {
+                    getDetails();
+                });
+
+            })
+        };
+        $scope.unsetGodfather = function(userId){
+            socketListennerConfirmUnsetAdmin(userId);
+        };
+
+        //CONTROL FUNCTIONS
+        var getDetails = function () {
+            var promise1 = UserService.getUserById($stateParams.userId);
+            $scope.show($ionicLoading);
+            $q.all([promise1]).then(function (data) {
+                $scope.user=data[0];
+                $scope.hide($ionicLoading);
+
+            }, function (error) {
+                $scope.hide($ionicLoading);
+                var alertPopup = $ionicPopup.alert({
+                    title: 'Erreur lors de la récupération des informations !',
+                    template: 'Contacter un admin',
+                    buttons: [
+                        {
+                            text: '<b>OK</b>',
+                            type: 'button-default-ios'
+                        }
+                    ]
+                });
+            });
+        };
+        getDetails();
 
     })
     .controller('RedirectCtrl', function ($scope, $state,$timeout,$ionicLoading,UserAccountService,$q) {

@@ -1,4 +1,4 @@
-angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrogne-app.controllers','btford.socket-io','ionic-modal-select'])
+angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrogne-app.controllers','btford.socket-io','ionic-modal-select', 'ionic-numberpicker'])
 
     .run(function($ionicPlatform) {
         $ionicPlatform.ready(function() {
@@ -215,6 +215,24 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'menuContent': {
                         templateUrl: 'templates/nefew.html',
                         controller: 'NefewCtrl'
+                    },
+                    'fabContent': {
+                        controller: function($timeout) {
+                            $timeout(function() {
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
+                        }
+                    }
+                }
+            })
+
+            .state('app.userDetails', {
+                url: '/userDetails?userId',
+                views: {
+                    'menuContent': {
+                        templateUrl: 'templates/userDetails.html',
+                        controller: 'UserDetailsCtrl'
                     },
                     'fabContent': {
                         controller: function($timeout) {

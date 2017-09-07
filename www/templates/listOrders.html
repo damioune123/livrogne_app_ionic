@@ -1,6 +1,11 @@
 <ion-view view-title="Liste Commandes" cache-view="false">
     <ion-content  ng-class="{expanded:$scope.isExpanded}" >
-        <ion-refresher on-refresh="doRefresh()"></ion-refresher>
+        <ion-refresher on-refresh="doRefresh()"
+                       pulling-text="Tirez pour rafraichir.."
+                       refreshing-text="Chargement!"
+                       refreshing-icon="ion-loading-c">
+
+        </ion-refresher>
         <div class="hero  " >
             <div class="content">
                 <h3> <a class="head">{{firstName}}  {{lastName}} </a></h3>

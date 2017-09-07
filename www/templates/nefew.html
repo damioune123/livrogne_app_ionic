@@ -1,12 +1,17 @@
 <ion-view view-title="Mes Filleuls" align-title="left">
     <ion-content ng-class="{expanded:$scope.isExpanded}">
-        <ion-refresher on-refresh="doRefresh()"></ion-refresher>
+        <ion-refresher on-refresh="doRefresh()"
+                       pulling-text="Tirez pour rafraichir.."
+                       refreshing-text="Chargement!"
+                       refreshing-icon="ion-loading-c">
+
+        </ion-refresher>
         <div class="hero " >
             <div class="content">
                 <h4><a class="head">{{firstName}}  {{lastName}}</a></h4>
                 <h4><a class="head">Solde : {{moneyBalance}}€</a></h4>
                 <h4><a class="head">Solde disponible : {{availableBalance}}€</a></h4>
-                <h4><a class="head">Crédit autorisé : {{availableCredit}}€</a></h4>
+                <h4><a class="head">Crédit alloué aux filleuls : {{creditAllowed}}€</a></h4>
             </div>
         </div>
             <button class="button icon-left ion-person-stalker button-block button-default-ios custom-button" modal-select="" modal-title="Sélection du neveu" cancel-button="Annuler" search-placeholder="Nom, prénom, admin, user, ..." ok-button="OK" ng-model="selectedNefew" options="unsponsoredUsers" has-search="true" search-properties="search_properties_users">
