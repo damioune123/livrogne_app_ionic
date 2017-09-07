@@ -2193,7 +2193,7 @@ angular.module('livrogne-app.controllers', [])
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
                     title: 'Erreur lors de la récupération des utilisateurs',
-                    template: '',
+                    template: error.data.message,
                     buttons: [
                         {
                             text: '<b>OK</b>',

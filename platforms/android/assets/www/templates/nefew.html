@@ -1,0 +1,43 @@
+<ion-view view-title="Mes Filleuls" align-title="left">
+    <ion-content ng-class="{expanded:$scope.isExpanded}">
+        <ion-refresher on-refresh="doRefresh()"
+                       pulling-text="Tirez pour rafraichir.."
+                       refreshing-text="Chargement!"
+                       refreshing-icon="ion-loading-c">
+
+        </ion-refresher>
+        <div class="hero " >
+            <div class="content">
+                <h4><a class="head">{{firstName}}  {{lastName}}</a></h4>
+                <h4><a class="head">Solde : {{moneyBalance}}€</a></h4>
+                <h4><a class="head">Solde disponible : {{availableBalance}}€</a></h4>
+                <h4><a class="head">Crédit alloué aux filleuls : {{creditAllowed}}€</a></h4>
+            </div>
+        </div>
+            <button class="button icon-left ion-person-stalker button-block button-default-ios custom-button" modal-select="" modal-title="Sélection du neveu" cancel-button="Annuler" search-placeholder="Nom, prénom, admin, user, ..." ok-button="OK" ng-model="selectedNefew" options="unsponsoredUsers" has-search="true" search-properties="search_properties_users">
+                Parrainer un client
+                <div class="option">
+                    <h2>{{option.firstname}} {{option.lastname}} </h2>
+                    <p>Solde : {{option.user_accounts[0].money_balance}}€</p>
+                </div>
+            </button>
+            <div  ng-hide="selectedNefew==undefined || selectedNefew.length==0" >
+                <button ng-click="patchGodfather(selectedNefew.id)"
+                        class="button button-block button-default-ios custom-button">Parrainer {{selectedNefew.firstname}} {{selectedNefew.lastname}}</button>
+
+            </div>
+        <div ng-show="nefews.length==0"class="content">
+            <h4 class="light"> Pas de neveux encore enregistrés </h4>
+        </div>
+
+
+        <ion-item class="item-accordion" ng-repeat="nefew in nefews" >
+            <div  class="option button button-clear text-center custom-button " ng-click="showNefew(nefew.id)">
+                    <h2>{{nefew.firstname}} {{nefew.lastname}} </h2>
+                    <p>Solde : {{nefew.user_accounts[0].money_balance}}€- Limite : {{nefew.user_accounts[0].money_limit}}€</p>
+
+            </div>
+        </ion-item>
+
+    </ion-content>
+</ion-view>

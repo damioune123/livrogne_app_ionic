@@ -169,7 +169,7 @@ angular.module('livrogne-app.controllers', [])
                                        USER_ROLES, ionicMaterialInk, UserService, UserAccountService, PromotionService,
                                        RfidService, $ionicLoading, $q) {
         $scope.data = {};
-/*
+
 
         //initial
         var w = c.width = bg.width = window.innerWidth,
@@ -219,7 +219,7 @@ angular.module('livrogne-app.controllers', [])
         }
         anim();
 
-*/
+
 
 
         //$state.reload();
@@ -2193,7 +2193,7 @@ angular.module('livrogne-app.controllers', [])
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
                     title: 'Erreur lors de la récupération des utilisateurs',
-                    template: '',
+                    template: error.data.message,
                     buttons: [
                         {
                             text: '<b>OK</b>',
