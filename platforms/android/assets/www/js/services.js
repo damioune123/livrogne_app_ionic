@@ -379,26 +379,26 @@ angular.module('livrogne-app')
             },
             getBarmanAccountOrders: function(page){
 
-                return $http({url: API.url+"/admin/user-accounts/barman?page="+page+"&operations=order", method: "GET"}).then(function(response){
+                return $http({url: API.url+"/admin/barman/user-accounts?page="+page+"&operations=order", method: "GET"}).then(function(response){
                     console.log(response.data);
                     return response.data;
                 });
             },
             getBarmanRegisterOrders: function(page){
-                return $http({url: API.url+"/admin/user-accounts/barman?page="+page+"&operations=registerOrder", method: "GET"}).then(function(response){
+                return $http({url: API.url+"/admin/barman/user-accounts?page="+page+"&operations=registerOrder", method: "GET"}).then(function(response){
                     console.log(response.data);
                     return response.data;
                 });
             },
             getBarmanPositiveMoneyFlows: function(page){
-                return $http({url: API.url+"/admin/user-accounts/barman?page="+page+"&operations=positive_money_flows", method: "GET"}).then(function(response){
+                return $http({url: API.url+"/admin/barman/user-accounts?page="+page+"&operations=positive_money_flows", method: "GET"}).then(function(response){
                     console.log(response.data);
                     return response.data;
                 });
             },
             getBarmanNegativeMoneyFlows: function(page){
                 var userPersonnalAccountId= window.localStorage["userPersonnalAccountId"];
-                return $http({url: API.url+"/admin/user-accounts/barman?page="+page+"&operations=negative_money_flows", method: "GET"}).then(function(response){
+                return $http({url: API.url+"/admin/barman/user-accounts?page="+page+"&operations=negative_money_flows", method: "GET"}).then(function(response){
                     console.log(response.data);
                     return response.data;
                 });

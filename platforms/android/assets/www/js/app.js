@@ -88,7 +88,7 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
             })
 
             .state('app.listOrders', {
-                url: '/listOrders',
+                url: '/listOrders?barman',
                 views: {
                     'menuContent': {
                         templateUrl: 'templates/listOrders.html',
@@ -105,7 +105,7 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                 }
             })
             .state('app.listMoneyFlows', {
-                url: '/listMoneyFlows?type',
+                url: '/listMoneyFlows?type&barman',
                 views: {
                     'menuContent': {
                         templateUrl: 'templates/listMoneyFlows.html',

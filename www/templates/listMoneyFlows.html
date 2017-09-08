@@ -1,6 +1,6 @@
 <ion-view view-title="Liste des transerts" cache-view="false">
     <ion-content  ng-class="{expanded:$scope.isExpanded}" >
-        <ion-refresher on-refresh="doRefresh()"
+        <ion-refresher ng on-refresh="doRefresh()"
                        pulling-text="Tirez pour rafraichir.."
                        refreshing-text="Chargement!"
                        refreshing-icon="ion-loading-c">
@@ -8,12 +8,15 @@
         </ion-refresher>
         <div class="hero  " >
             <div class="content">
-                <h3><a ng-show="typeMoneyFlows=='positive'" class="head light">Liste recharges</a></h3>
-                <h3><a ng-show="typeMoneyFlows=='negative'" class="head light">Liste remboursements</a></h3>
-                <h3> <a class="head">{{firstName}}  {{lastName}} </a></h3>
-                <h4> <a class="head">Solde : {{moneyBalance}}€</a></h4>
-                <h4><a class="head">Solde disponible : {{availableBalance}}€</a></h4>
-                <h4 ng-hide="godfatherCredentials==undefined"> <a class="head">  >Parrain :{{godfatherCredentials}}</a></h4>
+                <h3><a ng-show="typeMoneyFlows=='positive' && barman==undefined" class="head">Liste recharges</a></h3>
+                <h3><a ng-show="typeMoneyFlows=='negative' && barman==undefined" class="head">Liste remboursements</a></h3>
+                <h3><a ng-show="typeMoneyFlows=='negative' && barman!=undefined" class="head">Liste recharges</a></h3>
+                <h3><a ng-show="typeMoneyFlows=='positive' && barman!==undefined" class="head">Liste remboursements</a></h3>
+                <h3 ng-show="barman!=undefined" > <a class="head">Barman</a></h3>
+                <h3 ng-show="barman==undefined"> <a class="head">{{firstName}}  {{lastName}} </a></h3>
+                <h4 ng-show="barman==undefined"> <a class="head">Solde : {{moneyBalance}}€</a></h4>
+                <h4 ng-show="barman==undefined"><a class="head">Solde disponible : {{availableBalance}}€</a></h4>
+                <h4 ng-show="barman==undefined" ng-hide="godfatherCredentials==undefined"> <a class="head">  >Parrain :{{godfatherCredentials}}</a></h4>
             </div>
         </div>
         <div ng-show="moneyFlows.length==0"class="content">
@@ -24,6 +27,8 @@
             <div class="option button button-clear text-center custom-button " ng-click="showMoneyFlow(moneyFlow.id)">
                 <h2 class="text-center"> <a class="{{classMoneyFlow(moneyFlow.isCancelled==1)}}">Transfert N° {{moneyFlow.id}}</a></h2>
                 <p class="text-center">Montant : {{moneyFlow.value}}€ - {{formatDate(moneyFlow.created_at)}} </p>
+                <p ng-show="barman!=undefined "class="text-center">Utilisateur : {{moneyFlow.debit_user_account[0].user.firstname}} {{moneyFlow.debit_user_account[0].user.lastname}}</p>
+
             </div >
         </ion-item>
         <ion-infinite-scroll immediate-check="false" ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" ></ion-infinite-scroll>

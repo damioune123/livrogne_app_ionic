@@ -486,8 +486,10 @@ angular.module('livrogne-app.controllers', [])
                 });
             });
         };
-        if($scope.currentRole==USER_ROLES.ADMIN || $scope.currentRole==USER_ROLES.user){
+        if($scope.currentRole==USER_ROLES.admin || $scope.currentRole==USER_ROLES.user){
+            console.log($stateParams);
             if($stateParams.userBalance==undefined || $stateParams.moneyBalance==undefined){
+                console.log("yoyo");
                 getDetails();
             }
             else{
@@ -531,7 +533,9 @@ angular.module('livrogne-app.controllers', [])
         $scope.doRefresh= function() {
             $scope.orders =[];
             $scope.page=1;
-            getDetails();
+            if($scope.barman==undefined){
+                getDetails();
+            }
             getOrders();
             $scope.$broadcast('scroll.refreshComplete');
         };
@@ -897,7 +901,9 @@ angular.module('livrogne-app.controllers', [])
         $scope.doRefresh = function() {
             $scope.moneyFlows =[];
             $scope.page=1;
-            getDetails();
+            if($scope.barman==undefined){
+                getDetails();
+            }
             getMoneyFlows();
             $scope.$broadcast('scroll.refreshComplete');
         };
@@ -913,6 +919,7 @@ angular.module('livrogne-app.controllers', [])
         $scope.page=1;
         $scope.moneyFlows=undefined;
         $scope.typeMoneyFlows=$stateParams.type;
+        $scope.barman=$stateParams.barman;
 
         //SCOPE FUNCTIONS
         $scope.formatDate = function (date) {
@@ -934,87 +941,174 @@ angular.module('livrogne-app.controllers', [])
 
         $scope.loadMore = function(argument) {
             $scope.page++;
-            if($scope.typeMoneyFlows==="positive"){
-                UserAccountService.getUserPersonnalAccountPositiveMoneyFlows($scope.page).then(function(moneyFlows){
-                    console.log(moneyFlows);
+            if($scope.barman==undefined) {
+                if ($scope.typeMoneyFlows === "positive") {
+                    UserAccountService.getUserPersonnalAccountPositiveMoneyFlows($scope.page).then(function (moneyFlows) {
+                        console.log(moneyFlows);
 
-                    $scope.moneyFlows = $scope.moneyFlows.concat(moneyFlows);
+                        $scope.moneyFlows = $scope.moneyFlows.concat(moneyFlows);
 
-                    if (moneyFlows.length!=0 ) {
-                        $scope.noMoreItemsAvailable = false;
+                        if (moneyFlows.length != 0) {
+                            $scope.noMoreItemsAvailable = false;
 
-                    } else {
-                        $scope.noMoreItemsAvailable = true;
-                    }
-                    console.log($scope.moneyFlows);
-                }).finally(function() {
-                        $scope.$broadcast("scroll.infiniteScrollComplete");
-                        $scope.$broadcast('scroll.refreshComplete');
-                    },function (error) {
-                        var alertPopup = $ionicPopup.alert({
-                            title: 'Erreur lors de la récupération des informations !',
-                            template: 'Contacter un admin',
-                            buttons: [
-                                {
-                                    text: '<b>OK</b>',
-                                    type: 'button-default-ios'
-                                }
-                            ]
-                        });
-                    }
-                );
+                        } else {
+                            $scope.noMoreItemsAvailable = true;
+                        }
+                        console.log($scope.moneyFlows);
+                    }).finally(function () {
+                            $scope.$broadcast("scroll.infiniteScrollComplete");
+                            $scope.$broadcast('scroll.refreshComplete');
+                        }, function (error) {
+                            var alertPopup = $ionicPopup.alert({
+                                title: 'Erreur lors de la récupération des informations !',
+                                template: 'Contacter un admin',
+                                buttons: [
+                                    {
+                                        text: '<b>OK</b>',
+                                        type: 'button-default-ios'
+                                    }
+                                ]
+                            });
+                        }
+                    );
+                }
+                else {
+                    UserAccountService.getUserPersonnalAccountNegativeMoneyFlows($scope.page).then(function (moneyFlows) {
+                        $scope.moneyFlows = $scope.moneyFlows.concat(moneyFlows);
+                        if (moneyFlows.length != 0) {
+                            $scope.noMoreItemsAvailable = false;
+
+                        } else {
+                            $scope.noMoreItemsAvailable = true;
+                        }
+
+                    }).finally(function () {
+                            $scope.$broadcast("scroll.infiniteScrollComplete");
+                            $scope.$broadcast('scroll.refreshComplete');
+                        }, function (error) {
+                            var alertPopup = $ionicPopup.alert({
+                                title: 'Erreur lors de la récupération des informations !',
+                                template: 'Contacter un admin',
+                                buttons: [
+                                    {
+                                        text: '<b>OK</b>',
+                                        type: 'button-default-ios'
+                                    }
+                                ]
+                            });
+                        }
+                    );
+                }
             }
             else{
-                UserAccountService.getUserPersonnalAccountNegativeMoneyFlows($scope.page).then(function(moneyFlows){
-                    $scope.moneyFlows = $scope.moneyFlows.concat(moneyFlows);
-                    if (moneyFlows.length!=0) {
-                        $scope.noMoreItemsAvailable = false;
+                if ($scope.typeMoneyFlows === "positive") {
+                    UserAccountService.getBarmanPositiveMoneyFlows($scope.page).then(function (moneyFlows) {
+                        console.log(moneyFlows);
 
-                    } else {
-                        $scope.noMoreItemsAvailable = true;
-                    }
+                        $scope.moneyFlows = $scope.moneyFlows.concat(moneyFlows);
 
-                }).finally(function() {
-                        $scope.$broadcast("scroll.infiniteScrollComplete");
-                        $scope.$broadcast('scroll.refreshComplete');
-                    },function (error) {
-                        var alertPopup = $ionicPopup.alert({
-                            title: 'Erreur lors de la récupération des informations !',
-                            template: 'Contacter un admin',
-                            buttons: [
-                                {
-                                    text: '<b>OK</b>',
-                                    type: 'button-default-ios'
-                                }
-                            ]
-                        });
-                    }
-                );
+                        if (moneyFlows.length != 0) {
+                            $scope.noMoreItemsAvailable = false;
+
+                        } else {
+                            $scope.noMoreItemsAvailable = true;
+                        }
+                        console.log($scope.moneyFlows);
+                    }).finally(function () {
+                            $scope.$broadcast("scroll.infiniteScrollComplete");
+                            $scope.$broadcast('scroll.refreshComplete');
+                        }, function (error) {
+                            var alertPopup = $ionicPopup.alert({
+                                title: 'Erreur lors de la récupération des informations !',
+                                template: 'Contacter un admin',
+                                buttons: [
+                                    {
+                                        text: '<b>OK</b>',
+                                        type: 'button-default-ios'
+                                    }
+                                ]
+                            });
+                        }
+                    );
+                }
+                else {
+                    UserAccountService.getBarmanNegativeMoneyFlows($scope.page).then(function (moneyFlows) {
+                        $scope.moneyFlows = $scope.moneyFlows.concat(moneyFlows);
+                        if (moneyFlows.length != 0) {
+                            $scope.noMoreItemsAvailable = false;
+
+                        } else {
+                            $scope.noMoreItemsAvailable = true;
+                        }
+
+                    }).finally(function () {
+                            $scope.$broadcast("scroll.infiniteScrollComplete");
+                            $scope.$broadcast('scroll.refreshComplete');
+                        }, function (error) {
+                            var alertPopup = $ionicPopup.alert({
+                                title: 'Erreur lors de la récupération des informations !',
+                                template: 'Contacter un admin',
+                                buttons: [
+                                    {
+                                        text: '<b>OK</b>',
+                                        type: 'button-default-ios'
+                                    }
+                                ]
+                            });
+                        }
+                    );
+                }
             }
+
 
         };
 
 
         //CONTROL FUNCTIONS
         var getMoneyFlows = function(){
-            if($scope.typeMoneyFlows==="positive"){
-                UserAccountService.getUserPersonnalAccountPositiveMoneyFlows(1).then(function (moneyFlows) {
-                    $scope.moneyFlows =moneyFlows;
+            if($scope.barman==undefined){
+                if($scope.typeMoneyFlows==="positive"){
+                    UserAccountService.getUserPersonnalAccountPositiveMoneyFlows(1).then(function (moneyFlows) {
+                        $scope.moneyFlows =moneyFlows;
 
-                }, function (error) {
-                    $scope.hide($ionicLoading);
-                    console.log("erreur lors de la récupération des informations !");
-                });
+                    }, function (error) {
+                        $scope.hide($ionicLoading);
+                        console.log("erreur lors de la récupération des informations !");
+                    });
+                }
+                else{
+                    UserAccountService.getUserPersonnalAccountNegativeMoneyFlows(1).then(function (moneyFlows) {
+                        $scope.moneyFlows =moneyFlows;
+
+                    }, function (error) {
+                        $scope.hide($ionicLoading);
+                        console.log("erreur lors de la récupération des informations !");
+                    });
+                }
+
             }
             else{
-                UserAccountService.getUserPersonnalAccountNegativeMoneyFlows(1).then(function (moneyFlows) {
-                    $scope.moneyFlows =moneyFlows;
+                if($scope.typeMoneyFlows==="positive"){
+                    UserAccountService.getBarmanPositiveMoneyFlows(1).then(function (moneyFlows) {
+                        $scope.moneyFlows =moneyFlows;
 
-                }, function (error) {
-                    $scope.hide($ionicLoading);
-                    console.log("erreur lors de la récupération des informations !");
-                });
+                    }, function (error) {
+                        $scope.hide($ionicLoading);
+                        console.log("erreur lors de la récupération des informations !");
+                    });
+                }
+                else{
+                    UserAccountService.getBarmanNegativeMoneyFlows(1).then(function (moneyFlows) {
+                        $scope.moneyFlows =moneyFlows;
+
+                    }, function (error) {
+                        $scope.hide($ionicLoading);
+                        console.log("erreur lors de la récupération des informations !");
+                    });
+                }
+
             }
+
 
         };
         getMoneyFlows();
@@ -1045,7 +1139,10 @@ angular.module('livrogne-app.controllers', [])
                 });
             });
         };
-        getDetails();
+        if($scope.barman==undefined){
+            getDetails();
+        }
+
 
     })
 

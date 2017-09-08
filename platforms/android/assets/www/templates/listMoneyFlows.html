@@ -23,7 +23,7 @@
         <ion-item class="item-accordion" ng-repeat="moneyFlow in moneyFlows" >
             <div class="option button button-clear text-center custom-button " ng-click="showMoneyFlow(moneyFlow.id)">
                 <h2 class="text-center"> <a class="{{classMoneyFlow(moneyFlow.isCancelled==1)}}">Transfert N° {{moneyFlow.id}}</a></h2>
-                <p class="text-center">Montant : {{moneyFlow.value}}€ - {{formatDate(moneyFlow.createdAt)}} </p>
+                <p class="text-center">Montant : {{moneyFlow.value}}€ - {{formatDate(moneyFlow.created_at)}} </p>
             </div >
         </ion-item>
         <ion-infinite-scroll immediate-check="false" ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" ></ion-infinite-scroll>
