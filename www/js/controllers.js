@@ -2647,6 +2647,8 @@ angular.module('livrogne-app.controllers', [])
                 "productRealPrice": $scope.product.product_real_price,
                 "amountAvailableInStock": $scope.product.amount_available_in_stock
             };
+            console.log($scope.product);
+            console.log(newProduct);
           ProductService.patchProduct($scope.product.barcode, newProduct).then(function(result){
               $scope.hide($ionicLoading);
               var alertPopup = $ionicPopup.alert({
@@ -2679,21 +2681,24 @@ angular.module('livrogne-app.controllers', [])
         //CONTROL FUNCTIONS
         var getDetails = function () {
             var promise1 = ProductService.getProduct($stateParams.barcode);
-            var promise2 = ProductCategoryService.getProductCategories();
 
             $scope.show($ionicLoading);
             $q.all([promise1]).then(function (data) {
                 $scope.product=data[0];
-                $scope.calculPrixAdmin=function(){
-                    return $scope.product.product_category.price -($scope.product.product_category.price *($scope.product.product_promotion_admin/100))  ;
+                $scope.calculPromoAdmin=function(){
+                    var promo = ($scope.product.product_category.price - $scope.product.price_with_promotion_admin)/$scope.product.product_category.price*100;
+                    $scope.product.product_promotion_admin = promo;
+                    promo = Math.round(promo * 100) / 100;
+                    return promo;
                 };
-                $scope.calculPrixUtilisateur=function(){
+                $scope.calculPromoUtilisateur=function(){
+                    var promo = ($scope.product.product_category.price - $scope.product.price_with_promotion_user)/$scope.product.product_category.price*100;
 
-                    var prix = $scope.product.product_category.price -($scope.product.product_category.price *($scope.product.product_promotion_user/100))  ;
-
-                    return prix;
+                    $scope.product.product_promotion_user = promo;
+                    promo = Math.round(promo * 100) / 100;
+                    return promo;
                 };
-                $scope.productCategories=data[1];
+
                 $scope.hide($ionicLoading);
 
             }, function (error) {

@@ -546,6 +546,17 @@ angular.module('livrogne-app')
                 return $http.get(API.url+"/products").then(function (response) {
                     return response.data;
                 });
+            },
+            getProduct:function(barcode){
+                return $http.get(API.url+"/products/"+barcode).then(function (response) {
+                    return response.data;
+                });
+            },
+            patchProduct:function(barcode, product){
+                var data= product;
+                return $http.patch(API.url+"/admin/products/"+barcode, data,{headers: {'Content-Type': 'application/json'}}).then(function (response) {
+                    return response.data;
+                });
             }
 
 
