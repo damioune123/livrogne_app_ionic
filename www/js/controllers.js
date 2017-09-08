@@ -375,7 +375,7 @@ angular.module('livrogne-app.controllers', [])
     })
 
     .controller('DashboardCtrl', function($scope, $state, $stateParams, $ionicPopup, $ionicHistory, $timeout, UserService, UserAccountService, OrderService, MoneyFlowService,
-                                          ionicMaterialMotion, ionicMaterialInk, AuthService, $q, USER_ROLES, $ionicLoading) {
+                                          ionicMaterialMotion, ionicMaterialInk, AuthService, $q, USER_ROLES, $ionicLoading,ProductService) {
         $ionicHistory.clearHistory();
         $ionicHistory.clearCache();
         $scope.$parent.showHeader();
@@ -402,7 +402,10 @@ angular.module('livrogne-app.controllers', [])
             $ionicLoading.hide();
         };
         $scope.doRefresh=function(){
-            getDetails();
+            if($scope.currentRole=="ROLE_USER" || $scope.currentRole=="ROLE_ADMIN"){
+                getDetails();
+            }
+
             $scope.$broadcast('scroll.refreshComplete');
 
         };
@@ -456,6 +459,13 @@ angular.module('livrogne-app.controllers', [])
         $scope.goListMoneyFlowsBank=function(type){
             $state.go('app.listMoneyFlows',{"type" : type,"barman":"barman"});
         };
+        $scope.goProductDetails= function(product){
+            $state.go('app.productDetails',{"barcode" : product.barcode});
+
+        };
+
+
+
 
         //CONTROL FUNCTIONS
         var getDetails = function () {
@@ -499,6 +509,24 @@ angular.module('livrogne-app.controllers', [])
                 $scope.availableBalance=$stateParams.userBalance;
             }
         }
+
+        var getProducts = function () {
+            var promise = ProductService.getProducts();
+            $scope.show($ionicLoading);
+            $q.all([promise]).then(function (data) {
+                $scope.products = data[0];
+                $scope.hide($ionicLoading);
+
+            }, function (error) {
+                $scope.hide($ionicLoading);
+                console.log("erreur lors de la récupération du solde de l'utilisiateur");
+            })
+        }
+        if($scope.currentRole==USER_ROLES.super_admin){
+            getProducts();
+        }
+
+
 
 
 
@@ -2572,6 +2600,119 @@ angular.module('livrogne-app.controllers', [])
         getDetails();
 
     })
+
+    .controller('ProductDetailsCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService, ProductCategoryService, MoneyFlowService, AuthService,
+                                             ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading, $q,ProductService,ProductCategoryService) {
+        // Set Header
+        $scope.$parent.showHeader();
+        $scope.$parent.clearFabs();
+        $scope.$parent.setHeaderFab('left');
+        // Delay expansion
+        $timeout(function () {
+            $scope.isExpanded = true;
+            $scope.$parent.setExpanded(true);
+        }, 300);
+
+        $scope.show = function () {
+            $ionicLoading.show({
+                template: '<p>Loading...</p><ion-spinner></ion-spinner>'
+            });
+        };
+
+        $scope.hide = function () {
+            $ionicLoading.hide();
+        };
+
+        ionicMaterialInk.displayEffect();
+        $scope.show = function () {
+            $ionicLoading.show({
+                template: '<p>Loading...</p><ion-spinner></ion-spinner>'
+            });
+        };
+        $scope.hide = function () {
+            $ionicLoading.hide();
+        };
+        $scope.doRefresh=function(){
+            getDetails();
+            $scope.$broadcast('scroll.refreshComplete');
+
+        };
+
+
+        $scope.patchProduct=function(){
+            $scope.show($ionicLoading);
+            var newProduct={
+                "productPromotionAdmin": $scope.product.product_promotion_admin,
+                "productPromotionUser": $scope.product.product_promotion_user,
+                "productRealPrice": $scope.product.product_real_price,
+                "amountAvailableInStock": $scope.product.amount_available_in_stock
+            };
+          ProductService.patchProduct($scope.product.barcode, newProduct).then(function(result){
+              $scope.hide($ionicLoading);
+              var alertPopup = $ionicPopup.alert({
+                  title: 'Les modifications ont été enregistrées !',
+                  template: '',
+                  buttons: [
+                      {
+                          text: '<b>OK</b>',
+                          type: 'button-default-ios'
+                      }
+                  ]
+              });
+
+          },function(error){
+              $scope.hide($ionicLoading);
+              var alertPopup = $ionicPopup.alert({
+                  title: 'Erreur lors de la modification des informations !',
+                  template: 'Contacter un admin',
+                  buttons: [
+                      {
+                          text: '<b>OK</b>',
+                          type: 'button-default-ios'
+                      }
+                  ]
+              });
+          })
+        };
+
+
+        //CONTROL FUNCTIONS
+        var getDetails = function () {
+            var promise1 = ProductService.getProduct($stateParams.barcode);
+            var promise2 = ProductCategoryService.getProductCategories();
+
+            $scope.show($ionicLoading);
+            $q.all([promise1]).then(function (data) {
+                $scope.product=data[0];
+                $scope.calculPrixAdmin=function(){
+                    return $scope.product.product_category.price -($scope.product.product_category.price *($scope.product.product_promotion_admin/100))  ;
+                };
+                $scope.calculPrixUtilisateur=function(){
+
+                    var prix = $scope.product.product_category.price -($scope.product.product_category.price *($scope.product.product_promotion_user/100))  ;
+
+                    return prix;
+                };
+                $scope.productCategories=data[1];
+                $scope.hide($ionicLoading);
+
+            }, function (error) {
+                $scope.hide($ionicLoading);
+                var alertPopup = $ionicPopup.alert({
+                    title: 'Erreur lors de la récupération des informations !',
+                    template: 'Contacter un admin',
+                    buttons: [
+                        {
+                            text: '<b>OK</b>',
+                            type: 'button-default-ios'
+                        }
+                    ]
+                });
+            });
+        };
+        getDetails();
+
+    })
     .controller('RedirectCtrl', function ($scope, $state,$timeout,$ionicLoading,UserAccountService,$q,USER_ROLES) {
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
@@ -2595,7 +2736,7 @@ angular.module('livrogne-app.controllers', [])
         $scope.lastName=window.localStorage.lastName;
 
 
-        if(window.localStorage.role!==USER_ROLES.barman){
+        if(window.localStorage.role!==USER_ROLES.barman && window.localStorage.role!==USER_ROLES.super_admin){
             var getDetails = function () {
                 var promise1 = UserAccountService.getUserPersonnalAccount();
                 $scope.show($ionicLoading);
