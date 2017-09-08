@@ -1,7 +1,7 @@
 <ion-view view-title="Transferts" align-title="left">
   <ion-content ng-class="{expanded:$scope.isExpanded}">
     <div class="content has-header">
-      <div  class="card">
+      <div ng-hide="currentRole=='ROLE_BARMAN'" class="card">
         <div class="item item-divider">
           Recharger mon compte
         </div>
@@ -13,7 +13,7 @@
           </label>
         </div>
       </div>
-      <div  class="card">
+      <div ng-hide="currentRole=='ROLE_BARMAN'"  class="card">
         <div class="item item-divider">
           Rembourser mon compte
         </div>

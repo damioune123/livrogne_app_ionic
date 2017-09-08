@@ -4,7 +4,7 @@
             <div class="card " ng-show="orderLines.length!=0">
 
                 <button ng-click='persistOrder("cash",undefined )' class="button icon-left ion-social-euro button-block button-default-ios custom-button">Cash</button>
-                <button ng-click='persistOrder("self",undefined )' class="button icon-left ion-person button-block button-default-ios custom-button">Soi-même</button>
+                <button ng-hide="currentRole=='ROLE_BARMAN'"  ng-click='persistOrder("self",undefined )' class="button icon-left ion-person button-block button-default-ios custom-button">Soi-même</button>
                 <div class="item item-body">
 
                     <button class="button icon-left ion-person-stalker button-block button-default-ios custom-button" modal-select="" modal-title="Sélection du client" cancel-button="Back" search-placeholder="Nom, prénom, admin, user, ..." ok-button="OK" ng-model="selectedClient" options="users" has-search="true" search-properties="search_properties_users">

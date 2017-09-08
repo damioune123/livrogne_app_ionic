@@ -1627,93 +1627,7 @@ angular.module('livrogne-app.controllers', [])
             socketListennerConfirmMoneyFlowAdmin(accountId,type, value, description);
         }
     })
-    .controller('RedirectCtrl', function ($scope, $state,$timeout,$ionicLoading,UserAccountService,$q) {
-        $scope.$parent.showHeader();
-        $scope.$parent.clearFabs();
 
-        //initial
-        var w = c2.width = bg2.width = window.innerWidth,
-            h = c2.height = bg2.height = window.innerHeight,
-            ctx = c2.getContext('2d'),
-            bgCtx = bg2.getContext('2d'),
-
-            //parameters
-            total = w,
-            accelleration = .05,
-
-            //afterinitial calculations
-            size = w/total,
-            repaintColor = 'rgba(0, 0, 0, .04)'
-        colors = [],
-            dots = [],
-            dotsVel = [];
-
-//setting the colors' hue
-//and y level for all dots
-        var portion = 360/total;
-        for(var i = 0; i < total; ++i){
-            colors[i] = portion * i;
-
-            dots[i] = h;
-            dotsVel[i] = 10;
-        }
-
-        function anim(){
-            window.requestAnimationFrame(anim);
-
-            ctx.fillStyle = repaintColor;
-            ctx.fillRect(0, 0, w, h);
-            bgCtx.clearRect(0, 0, w, h);
-
-            for(var i = 0; i < total; ++i){
-                var currentY = dots[i] - 1;
-                dots[i] += dotsVel[i] += accelleration;
-
-                ctx.fillStyle = bgCtx.fillStyle = 'hsl('+ colors[i] + ', 80%, 50%)';
-                ctx.fillRect(size * i, currentY, size, dotsVel[i] + 1);
-
-                if(dots[i] > h && Math.random() < .01){
-                    dots[i] = dotsVel[i] = 0;
-                }
-            }
-        }
-
-        anim();
-
-        $timeout(function () {
-            $scope.$parent.hideHeader();
-        }, 0);
-
-        $scope.show = function () {
-            $ionicLoading.show({
-                template: '<p>Loading...</p><ion-spinner></ion-spinner>'
-            });
-        };
-
-        $scope.hide = function () {
-            $ionicLoading.hide();
-        };
-        $scope.firstName=window.localStorage.firstName;
-        $scope.lastName=window.localStorage.lastName;
-
-
-
-        var getDetails = function () {
-            var promise1 = UserAccountService.getUserPersonnalAccount();
-            $scope.show($ionicLoading);
-            $q.all([promise1]).then(function (data) {
-                $scope.show($ionicLoading);
-                $timeout(function () {
-                    $scope.hide($ionicLoading);
-                    $state.go("app.dashBoard", {"userBalance":data[0].available_balance, "moneyBalance":data[0].money_balance});
-                }, 500);
-            });
-
-        };
-        getDetails();
-
-
-    })
     .controller('ScriptCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService, ScriptService,
                                         ionicMaterialMotion, ionicMaterialInk, $ionicLoading) {
         // Set Header
@@ -2247,22 +2161,6 @@ angular.module('livrogne-app.controllers', [])
         $scope.setLimit= function(value){
           socketListennerConfirmChangeLimitAdmin($scope.user.user_accounts[0].id,value);
         };
-        $scope.numberPickerObject = {
-            inputValue: 0, //Optional
-            minValue: 0,
-            maxValue: 200,
-            precision: 1,  //Optional
-            decimalStep: 0.5,  //Optional
-            format: "DECIMAL",  //Optional - "WHOLE" or "DECIMAL"
-            unit: "€",  //Optional - "m", "kg", "℃" or whatever you want
-            titleLabel: 'Changer la limite de crédit du neveu',  //Optional
-            setLabel: 'OK',  //Optional
-            closeLabel: 'Back',  //Optional
-            setButtonType: 'button-positive',  //Optional
-            callback: function (val) {    //Mandatory
-                $scope.setLimit(val);
-            }
-        };
 
         $scope.currentUserId=window.localStorage.userId;
 
@@ -2356,7 +2254,7 @@ angular.module('livrogne-app.controllers', [])
         };
 
         var socketListennerConfirmChangeLimitAdmin= function(nefewId,value){
-            console.log($scope);
+
             SocketService.socketOff();
             $rootScope.cancel = stopSockAdmin;
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>En attente de la lecture de la carte de '+window.localStorage.firstName+' '+window.localStorage.lastName+'...<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
@@ -2445,6 +2343,7 @@ angular.module('livrogne-app.controllers', [])
             $scope.show($ionicLoading);
             $q.all([promise1]).then(function (data) {
                 $scope.user=data[0];
+                $scope.limit=data[0].user_accounts[0].money_limit;
                 $scope.hide($ionicLoading);
 
             }, function (error) {
@@ -2464,58 +2363,11 @@ angular.module('livrogne-app.controllers', [])
         getDetails();
 
     })
-    .controller('RedirectCtrl', function ($scope, $state,$timeout,$ionicLoading,UserAccountService,$q) {
+    .controller('RedirectCtrl', function ($scope, $state,$timeout,$ionicLoading,UserAccountService,$q,USER_ROLES) {
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
 
-        //initial
-        var w = c2.width = bg2.width = window.innerWidth,
-            h = c2.height = bg2.height = window.innerHeight,
-            ctx = c2.getContext('2d'),
-            bgCtx = bg2.getContext('2d'),
 
-            //parameters
-            total = w,
-            accelleration = .05,
-
-            //afterinitial calculations
-            size = w/total,
-            repaintColor = 'rgba(0, 0, 0, .04)'
-        colors = [],
-            dots = [],
-            dotsVel = [];
-
-//setting the colors' hue
-//and y level for all dots
-        var portion = 360/total;
-        for(var i = 0; i < total; ++i){
-            colors[i] = portion * i;
-
-            dots[i] = h;
-            dotsVel[i] = 10;
-        }
-
-        function anim(){
-            window.requestAnimationFrame(anim);
-
-            ctx.fillStyle = repaintColor;
-            ctx.fillRect(0, 0, w, h);
-            bgCtx.clearRect(0, 0, w, h);
-
-            for(var i = 0; i < total; ++i){
-                var currentY = dots[i] - 1;
-                dots[i] += dotsVel[i] += accelleration;
-
-                ctx.fillStyle = bgCtx.fillStyle = 'hsl('+ colors[i] + ', 80%, 50%)';
-                ctx.fillRect(size * i, currentY, size, dotsVel[i] + 1);
-
-                if(dots[i] > h && Math.random() < .01){
-                    dots[i] = dotsVel[i] = 0;
-                }
-            }
-        }
-
-        anim();
 
         $timeout(function () {
             $scope.$parent.hideHeader();
@@ -2534,20 +2386,27 @@ angular.module('livrogne-app.controllers', [])
         $scope.lastName=window.localStorage.lastName;
 
 
-
-        var getDetails = function () {
-            var promise1 = UserAccountService.getUserPersonnalAccount();
-            $scope.show($ionicLoading);
-            $q.all([promise1]).then(function (data) {
+        if(window.localStorage.role!==USER_ROLES.barman){
+            var getDetails = function () {
+                var promise1 = UserAccountService.getUserPersonnalAccount();
                 $scope.show($ionicLoading);
-                $timeout(function () {
-                    $scope.hide($ionicLoading);
-                    $state.go("app.dashBoard", {"userBalance":data[0].available_balance, "moneyBalance":data[0].money_balance});
-                }, 500);
-            });
+                $q.all([promise1]).then(function (data) {
+                    $scope.show($ionicLoading);
+                    $timeout(function () {
+                        $scope.hide($ionicLoading);
+                        $state.go("app.dashBoard", {"userBalance":data[0].available_balance, "moneyBalance":data[0].money_balance});
+                    }, 500);
+                });
 
-        };
-        getDetails();
+            };
+            getDetails();
+
+        }
+        else{
+            $state.go("app.dashBoard");
+        }
+
+
 
 
     })

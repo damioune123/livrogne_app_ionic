@@ -9,9 +9,14 @@
         <h4 class="border-top"><i class="icon ion-navicon-round"></i> Détails de l'utilisateur {{user.firstname}} {{user.lastname}}</h4>
         <div class="list">
             <button class="button button-clear button-assertive " ng-show='user.godfather.id==currentUserId' ng-click="unsetGodfather(user.id)">Ne plus parrainer</button>
-            <ionic-numberpicker  input-obj="numberPickerObject">
-                <button ng-show='user.godfather.id==currentUserId' class="button button-clear button-positive "> Changer limite crédit</button>
-            </ionic-numberpicker>
+                <button ng-show='user.godfather.id==currentUserId' ng-click="setLimit(limit)" class="button button-clear button-positive "> Changer limite crédit</button>
+            <div ng-show='user.godfather.id==currentUserId' class="item item-divider">
+                <label class="item item-input">
+                    <span class="input-label"> Limite de crédit autorisée :</span>
+                    <input ng-model="limit" type="number">
+                </label>
+            </div>
+
             <div class="item item-divider">
                 Informations générales
             </div>
@@ -30,9 +35,9 @@
             <a class="item">
                 Solde:  {{user.user_accounts[0].money_balance}}€
             </a>
-            <a class="item">
-                Limite de crédit autorisée :  {{user.user_accounts[0].money_limit}}€
-            </a>
+
+
+
 
             <a class="item">
                 Solde disponible :  {{user.user_accounts[0].available_balance}}€

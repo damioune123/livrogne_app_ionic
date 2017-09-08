@@ -415,6 +415,7 @@ angular.module('livrogne-app.controllers', [])
         $scope.moneyBalance=undefined;
         $scope.availableMoney = undefined;
         $scope.accountsShown=false;
+        $scope.currentRole=window.localStorage.role;
 
         //SCOPE FUNCTIONS
         $scope.showAccounts = function(){
@@ -444,6 +445,16 @@ angular.module('livrogne-app.controllers', [])
         };
         $scope.goEdit =function(){
             $state.go('app.edit');
+        };
+        $scope.goListOrdersCash = function(){
+            $state.go('app.listOrders',{"barman":"cash"});
+        };
+        $scope.goListOrdersBarman = function(){
+            $state.go('app.listOrders',{"barman":"barman"});
+        };
+
+        $scope.goListMoneyFlowsBank=function(type){
+            $state.go('app.listMoneyFlows',{"type" : type,"barman":"barman"});
         };
 
         //CONTROL FUNCTIONS
@@ -475,15 +486,18 @@ angular.module('livrogne-app.controllers', [])
                 });
             });
         };
-        if($stateParams.userBalance==undefined || $stateParams.moneyBalance==undefined){
-            getDetails();
+        if($scope.currentRole==USER_ROLES.ADMIN || $scope.currentRole==USER_ROLES.user){
+            if($stateParams.userBalance==undefined || $stateParams.moneyBalance==undefined){
+                getDetails();
+            }
+            else{
+                $scope.moneyBalance = $stateParams.moneyBalance;
+                if ($scope.moneyBalance >= 0) $scope.classUserPeronnalMoney = "positive";
+                else $scope.classUserPeronnalMoney = "negative";
+                $scope.availableBalance=$stateParams.userBalance;
+            }
         }
-        else{
-            $scope.moneyBalance = $stateParams.moneyBalance;
-            if ($scope.moneyBalance >= 0) $scope.classUserPeronnalMoney = "positive";
-            else $scope.classUserPeronnalMoney = "negative";
-            $scope.availableBalance=$stateParams.userBalance;
-        }
+
 
 
 
@@ -491,6 +505,9 @@ angular.module('livrogne-app.controllers', [])
     .controller('ListOrderCtrl', function($scope, $state, $stateParams, $ionicPopup, $ionicHistory, $timeout, UserService, UserAccountService, OrderService, MoneyFlowService,
                                           ionicMaterialMotion, ionicMaterialInk, AuthService, $q, USER_ROLES, $ionicLoading) {
         //MOTIONS AND DISPLAY
+        $scope.currentRole=window.localStorage.role;
+        $scope.barman=$stateParams.barman;
+        console.log($scope.barman);
 
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
@@ -552,47 +569,136 @@ angular.module('livrogne-app.controllers', [])
         };
 
         $scope.loadMore = function(argument) {
-            $scope.page++;
-            UserAccountService.getUserPersonnalAccountOrders($scope.page).then(function(orders){
-                console.log(orders);
-                $scope.orders = $scope.orders.concat(orders);
+            if($scope.barman==undefined){
+                $scope.page++;
+                UserAccountService.getUserPersonnalAccountOrders($scope.page).then(function(orders){
+                    $scope.orders = $scope.orders.concat(orders);
 
-                if (orders.length!=0) {
-                    $scope.noMoreItemsAvailable = false;
+                    if (orders.length!=0) {
+                        $scope.noMoreItemsAvailable = false;
 
-                } else {
-                    $scope.noMoreItemsAvailable = true;
-                }
-                console.log($scope.orders);
-            }).finally(function() {
-                    $scope.$broadcast("scroll.infiniteScrollComplete");
-                    $scope.$broadcast('scroll.refreshComplete');
-                },function (error) {
-                    var alertPopup = $ionicPopup.alert({
-                        title: 'Erreur lors de la récupération des informations !',
-                        template: 'Contacter un admin',
-                        buttons: [
-                            {
-                                text: '<b>OK</b>',
-                                type: 'button-default-ios'
-                            }
-                        ]
-                    });
-                }
-            );
+                    } else {
+                        $scope.noMoreItemsAvailable = true;
+                    }
+                    console.log($scope.orders);
+                }).finally(function() {
+                        $scope.$broadcast("scroll.infiniteScrollComplete");
+                        $scope.$broadcast('scroll.refreshComplete');
+                    },function (error) {
+                        var alertPopup = $ionicPopup.alert({
+                            title: 'Erreur lors de la récupération des informations !',
+                            template: 'Contacter un admin',
+                            buttons: [
+                                {
+                                    text: '<b>OK</b>',
+                                    type: 'button-default-ios'
+                                }
+                            ]
+                        });
+                    }
+                );
+            }
+            else if($scope.barman=="cash"){
+
+                $scope.page++;
+                UserAccountService.getBarmanAccountOrders($scope.page).then(function(orders){
+                    console.log(orders);
+                    $scope.orders = $scope.orders.concat(orders);
+
+                    if (orders.length!=0) {
+                        $scope.noMoreItemsAvailable = false;
+
+                    } else {
+                        $scope.noMoreItemsAvailable = true;
+                    }
+                    console.log($scope.orders);
+                }).finally(function() {
+                        $scope.$broadcast("scroll.infiniteScrollComplete");
+                        $scope.$broadcast('scroll.refreshComplete');
+                    },function (error) {
+                        var alertPopup = $ionicPopup.alert({
+                            title: 'Erreur lors de la récupération des informations !',
+                            template: 'Contacter un admin',
+                            buttons: [
+                                {
+                                    text: '<b>OK</b>',
+                                    type: 'button-default-ios'
+                                }
+                            ]
+                        });
+                    }
+                );
+
+            }
+            else if($scope.barman=="barman"){
+                $scope.page++;
+                UserAccountService.getBarmanRegisterOrders($scope.page).then(function(orders){
+                    console.log(orders);
+                    $scope.orders = $scope.orders.concat(orders);
+
+                    if (orders.length!=0) {
+                        $scope.noMoreItemsAvailable = false;
+
+                    } else {
+                        $scope.noMoreItemsAvailable = true;
+                    }
+                    console.log($scope.orders);
+                }).finally(function() {
+                        $scope.$broadcast("scroll.infiniteScrollComplete");
+                        $scope.$broadcast('scroll.refreshComplete');
+                    },function (error) {
+                        var alertPopup = $ionicPopup.alert({
+                            title: 'Erreur lors de la récupération des informations !',
+                            template: 'Contacter un admin',
+                            buttons: [
+                                {
+                                    text: '<b>OK</b>',
+                                    type: 'button-default-ios'
+                                }
+                            ]
+                        });
+                    }
+                );
+
+            }
+
         };
 
 
         //CONTROL FUNCTIONS
         var getOrders = function(){
-            UserAccountService.getUserPersonnalAccountOrders(1).then(function (orders) {
+            if($scope.barman==undefined){
+                UserAccountService.getUserPersonnalAccountOrders(1).then(function (orders) {
 
-                $scope.orders = orders;
+                    $scope.orders = orders;
 
-            }, function (error) {
-                $scope.hide($ionicLoading);
-                console.log("erreur lors de la récupération des commades");
-            });
+                }, function (error) {
+                    $scope.hide($ionicLoading);
+                    console.log("erreur lors de la récupération des commades");
+                });
+            }
+            else if($scope.barman=="cash"){
+                UserAccountService.getBarmanAccountOrders(1).then(function (orders) {
+
+                    $scope.orders = orders;
+
+                }, function (error) {
+                    $scope.hide($ionicLoading);
+                    console.log("erreur lors de la récupération des commades");
+                });
+
+            }
+            else if($scope.barman=="barman"){
+                UserAccountService.getBarmanRegisterOrders(1).then(function (orders) {
+
+                    $scope.orders = orders;
+
+                }, function (error) {
+                    $scope.hide($ionicLoading);
+                    console.log("erreur lors de la récupération des commades");
+                });
+            }
+
         };
         getOrders();
         var getDetails = function () {
@@ -622,7 +728,11 @@ angular.module('livrogne-app.controllers', [])
                 });
             });
         };
-        getDetails();
+        if($scope.barman==undefined){
+
+            getDetails();
+        }
+
 
 
 
@@ -1103,6 +1213,7 @@ angular.module('livrogne-app.controllers', [])
     .controller('OrderCtrl', function ($scope, $state, $stateParams, $ionicPopup, $ionicHistory, $timeout, PromotionService, USER_ROLES, UserService,
                                        ProductService, OrderService, MoneyFlowService, ionicMaterialMotion, ionicMaterialInk, AuthService, UserAccountService, $q, $ionicLoading) {
         // Set Header
+        $scope.currentRole=window.localStorage.role;
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
         $scope.$parent.setHeaderFab('left');
@@ -1449,6 +1560,7 @@ angular.module('livrogne-app.controllers', [])
     .controller('MoneyFlowCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService, ProductCategoryService, MoneyFlowService, AuthService,
                                            ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading, $q,SocketService,$rootScope) {
         // Set Header
+        $scope.currentRole=window.localStorage.role;
         var userPersonnalAccountId = window.localStorage["userPersonnalAccountId"];
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
@@ -1627,93 +1739,7 @@ angular.module('livrogne-app.controllers', [])
             socketListennerConfirmMoneyFlowAdmin(accountId,type, value, description);
         }
     })
-    .controller('RedirectCtrl', function ($scope, $state,$timeout,$ionicLoading,UserAccountService,$q) {
-        $scope.$parent.showHeader();
-        $scope.$parent.clearFabs();
 
-        //initial
-        var w = c2.width = bg2.width = window.innerWidth,
-            h = c2.height = bg2.height = window.innerHeight,
-            ctx = c2.getContext('2d'),
-            bgCtx = bg2.getContext('2d'),
-
-            //parameters
-            total = w,
-            accelleration = .05,
-
-            //afterinitial calculations
-            size = w/total,
-            repaintColor = 'rgba(0, 0, 0, .04)'
-        colors = [],
-            dots = [],
-            dotsVel = [];
-
-//setting the colors' hue
-//and y level for all dots
-        var portion = 360/total;
-        for(var i = 0; i < total; ++i){
-            colors[i] = portion * i;
-
-            dots[i] = h;
-            dotsVel[i] = 10;
-        }
-
-        function anim(){
-            window.requestAnimationFrame(anim);
-
-            ctx.fillStyle = repaintColor;
-            ctx.fillRect(0, 0, w, h);
-            bgCtx.clearRect(0, 0, w, h);
-
-            for(var i = 0; i < total; ++i){
-                var currentY = dots[i] - 1;
-                dots[i] += dotsVel[i] += accelleration;
-
-                ctx.fillStyle = bgCtx.fillStyle = 'hsl('+ colors[i] + ', 80%, 50%)';
-                ctx.fillRect(size * i, currentY, size, dotsVel[i] + 1);
-
-                if(dots[i] > h && Math.random() < .01){
-                    dots[i] = dotsVel[i] = 0;
-                }
-            }
-        }
-
-        anim();
-
-        $timeout(function () {
-            $scope.$parent.hideHeader();
-        }, 0);
-
-        $scope.show = function () {
-            $ionicLoading.show({
-                template: '<p>Loading...</p><ion-spinner></ion-spinner>'
-            });
-        };
-
-        $scope.hide = function () {
-            $ionicLoading.hide();
-        };
-        $scope.firstName=window.localStorage.firstName;
-        $scope.lastName=window.localStorage.lastName;
-
-
-
-        var getDetails = function () {
-            var promise1 = UserAccountService.getUserPersonnalAccount();
-            $scope.show($ionicLoading);
-            $q.all([promise1]).then(function (data) {
-                $scope.show($ionicLoading);
-                $timeout(function () {
-                    $scope.hide($ionicLoading);
-                    $state.go("app.dashBoard", {"userBalance":data[0].available_balance, "moneyBalance":data[0].money_balance});
-                }, 500);
-            });
-
-        };
-        getDetails();
-
-
-    })
     .controller('ScriptCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService, ScriptService,
                                         ionicMaterialMotion, ionicMaterialInk, $ionicLoading) {
         // Set Header
@@ -2247,22 +2273,6 @@ angular.module('livrogne-app.controllers', [])
         $scope.setLimit= function(value){
           socketListennerConfirmChangeLimitAdmin($scope.user.user_accounts[0].id,value);
         };
-        $scope.numberPickerObject = {
-            inputValue: 0, //Optional
-            minValue: 0,
-            maxValue: 200,
-            precision: 1,  //Optional
-            decimalStep: 0.5,  //Optional
-            format: "DECIMAL",  //Optional - "WHOLE" or "DECIMAL"
-            unit: "€",  //Optional - "m", "kg", "℃" or whatever you want
-            titleLabel: 'Changer la limite de crédit du neveu',  //Optional
-            setLabel: 'OK',  //Optional
-            closeLabel: 'Back',  //Optional
-            setButtonType: 'button-positive',  //Optional
-            callback: function (val) {    //Mandatory
-                $scope.setLimit(val);
-            }
-        };
 
         $scope.currentUserId=window.localStorage.userId;
 
@@ -2356,7 +2366,7 @@ angular.module('livrogne-app.controllers', [])
         };
 
         var socketListennerConfirmChangeLimitAdmin= function(nefewId,value){
-            console.log($scope);
+
             SocketService.socketOff();
             $rootScope.cancel = stopSockAdmin;
             $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>En attente de la lecture de la carte de '+window.localStorage.firstName+' '+window.localStorage.lastName+'...<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
@@ -2445,6 +2455,7 @@ angular.module('livrogne-app.controllers', [])
             $scope.show($ionicLoading);
             $q.all([promise1]).then(function (data) {
                 $scope.user=data[0];
+                $scope.limit=data[0].user_accounts[0].money_limit;
                 $scope.hide($ionicLoading);
 
             }, function (error) {
@@ -2464,58 +2475,11 @@ angular.module('livrogne-app.controllers', [])
         getDetails();
 
     })
-    .controller('RedirectCtrl', function ($scope, $state,$timeout,$ionicLoading,UserAccountService,$q) {
+    .controller('RedirectCtrl', function ($scope, $state,$timeout,$ionicLoading,UserAccountService,$q,USER_ROLES) {
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
 
-        //initial
-        var w = c2.width = bg2.width = window.innerWidth,
-            h = c2.height = bg2.height = window.innerHeight,
-            ctx = c2.getContext('2d'),
-            bgCtx = bg2.getContext('2d'),
 
-            //parameters
-            total = w,
-            accelleration = .05,
-
-            //afterinitial calculations
-            size = w/total,
-            repaintColor = 'rgba(0, 0, 0, .04)'
-        colors = [],
-            dots = [],
-            dotsVel = [];
-
-//setting the colors' hue
-//and y level for all dots
-        var portion = 360/total;
-        for(var i = 0; i < total; ++i){
-            colors[i] = portion * i;
-
-            dots[i] = h;
-            dotsVel[i] = 10;
-        }
-
-        function anim(){
-            window.requestAnimationFrame(anim);
-
-            ctx.fillStyle = repaintColor;
-            ctx.fillRect(0, 0, w, h);
-            bgCtx.clearRect(0, 0, w, h);
-
-            for(var i = 0; i < total; ++i){
-                var currentY = dots[i] - 1;
-                dots[i] += dotsVel[i] += accelleration;
-
-                ctx.fillStyle = bgCtx.fillStyle = 'hsl('+ colors[i] + ', 80%, 50%)';
-                ctx.fillRect(size * i, currentY, size, dotsVel[i] + 1);
-
-                if(dots[i] > h && Math.random() < .01){
-                    dots[i] = dotsVel[i] = 0;
-                }
-            }
-        }
-
-        anim();
 
         $timeout(function () {
             $scope.$parent.hideHeader();
@@ -2534,20 +2498,27 @@ angular.module('livrogne-app.controllers', [])
         $scope.lastName=window.localStorage.lastName;
 
 
-
-        var getDetails = function () {
-            var promise1 = UserAccountService.getUserPersonnalAccount();
-            $scope.show($ionicLoading);
-            $q.all([promise1]).then(function (data) {
+        if(window.localStorage.role!==USER_ROLES.barman){
+            var getDetails = function () {
+                var promise1 = UserAccountService.getUserPersonnalAccount();
                 $scope.show($ionicLoading);
-                $timeout(function () {
-                    $scope.hide($ionicLoading);
-                    $state.go("app.dashBoard", {"userBalance":data[0].available_balance, "moneyBalance":data[0].money_balance});
-                }, 500);
-            });
+                $q.all([promise1]).then(function (data) {
+                    $scope.show($ionicLoading);
+                    $timeout(function () {
+                        $scope.hide($ionicLoading);
+                        $state.go("app.dashBoard", {"userBalance":data[0].available_balance, "moneyBalance":data[0].money_balance});
+                    }, 500);
+                });
 
-        };
-        getDetails();
+            };
+            getDetails();
+
+        }
+        else{
+            $state.go("app.dashBoard");
+        }
+
+
 
 
     })
@@ -2670,6 +2641,7 @@ angular.module('livrogne-app.controllers', [])
     .controller('EditCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService,
                                       ionicMaterialMotion, ionicMaterialInk, AuthService, USER_ROLES, ProductCategoryService, PromotionService, ProductService, SocketService,$rootScope,$ionicLoading) {
         // Set Header
+        $scope.currentRole=window.localStorage.role;
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
         $scope.$parent.setHeaderFab('left');

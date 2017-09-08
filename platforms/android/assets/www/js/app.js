@@ -285,8 +285,7 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
     })
 
 
-
-    .run(function ($rootScope, $state, AuthService, AUTH_EVENTS) {
+    .run(function ($rootScope, $state, AuthService) {
         $rootScope.$on('$stateChangeStart', function (event,next, nextParams, fromState) {
             if (!AuthService.isAuthenticated()) {
                 if (next.name !== 'app.login') {

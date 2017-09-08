@@ -5,7 +5,7 @@
                 <button ng-click ="updateRfid()" class="button button-full icon-right ion-card button-default-ios custom-button">Ajouter/Modifier carte rfid</button>
                 <button ng-click ="removeRfid()" class="button button-full icon-right ion-eject button-default-ios custom-button">Délier la carte rfid</button>
             </div>
-            <div class="card">
+            <div class="card" ng-hide="currentRole=='ROLE_BARMAN'" >
                 <div class="item item-divider">
                     <label class="item item-input">
                         <span class="input-label">Nom d'utilisateur: </span>

@@ -81,6 +81,47 @@ angular.module('livrogne-app')
             isAuthenticated: function() {return window.localStorage["isAuthenticated"];}
         };
     })
+    .factory('HttpRequestTimeoutInterceptor', function ($q, HttpPendingRequestsService) {
+        return {
+            request: function (config) {
+                config = config || {};
+                if (config.timeout === undefined && !config.noCancelOnRouteChange) {
+                    config.timeout = HttpPendingRequestsService.newTimeout();
+                }
+                return config;
+            }
+        };
+    })
+    .run(function ($rootScope, HttpPendingRequestsService) {
+        $rootScope.$on('$locationChangeSuccess', function (event, newUrl, oldUrl) {
+           /* if (newUrl !== oldUrl) {
+             HttpPendingRequestsService.cancelAll();
+             }*/
+        })
+    })
+    .service('HttpPendingRequestsService', function ($q) {
+        var cancelPromises = [];
+
+        function newTimeout() {
+            var cancelPromise = $q.defer();
+            cancelPromises.push(cancelPromise);
+            return cancelPromise.promise;
+        }
+
+        function cancelAll() {
+            angular.forEach(cancelPromises, function (cancelPromise) {
+                cancelPromise.promise.isGloballyCancelled = true;
+                cancelPromise.resolve();
+            });
+            cancelPromises.length = 0;
+        }
+
+        return {
+            newTimeout: newTimeout,
+            cancelAll: cancelAll
+        };
+    })
+
 
     .factory('AuthInterceptor', function ($rootScope, $q, AUTH_EVENTS) {
         return {
@@ -97,6 +138,11 @@ angular.module('livrogne-app')
     .config(function ($httpProvider) {
         $httpProvider.interceptors.push('AuthInterceptor');
     })
+    .config(function($httpProvider) {
+        $httpProvider.interceptors.push('HttpRequestTimeoutInterceptor');
+    })
+
+
 
 
     .factory('UserService', function($http, USER_ROLES, API) {
@@ -229,7 +275,7 @@ angular.module('livrogne-app')
             }
         }
     })
-    .factory('SocketService', function (socketFactory, $ionicPopup,AuthService,RfidService,$ionicHistory,$state,$q, NODE) {
+    .factory('SocketService', function (socketFactory, $ionicPopup,AuthService,RfidService,$ionicHistory,$state,$q, NODE, $q) {
         var mySocket;
         var socketOn = function(){
             var myIoSocket = io.connect(NODE.url);
@@ -246,6 +292,7 @@ angular.module('livrogne-app')
         var socketListennerAuth = function(){
 
             socketOn().on('broadcastsocketio', function (authtokenAndId) {
+                $q.defer();
 
                 if(authtokenAndId.rfid_to_match !=undefined){
                     socketOff();
@@ -332,26 +379,26 @@ angular.module('livrogne-app')
             },
             getBarmanAccountOrders: function(page){
 
-                return $http({url: API.url+"/admin/user-accounts/barman?page="+page+"&operations=order", method: "GET"}).then(function(response){
+                return $http({url: API.url+"/admin/barman/user-accounts?page="+page+"&operations=order", method: "GET"}).then(function(response){
                     console.log(response.data);
                     return response.data;
                 });
             },
             getBarmanRegisterOrders: function(page){
-                return $http({url: API.url+"/admin/user-accounts/barman?page="+page+"&operations=registerOrder", method: "GET"}).then(function(response){
+                return $http({url: API.url+"/admin/barman/user-accounts?page="+page+"&operations=registerOrder", method: "GET"}).then(function(response){
                     console.log(response.data);
                     return response.data;
                 });
             },
             getBarmanPositiveMoneyFlows: function(page){
-                return $http({url: API.url+"/admin/user-accounts/barman?page="+page+"&operations=positive_money_flows", method: "GET"}).then(function(response){
+                return $http({url: API.url+"/admin/barman/user-accounts?page="+page+"&operations=positive_money_flows", method: "GET"}).then(function(response){
                     console.log(response.data);
                     return response.data;
                 });
             },
             getBarmanNegativeMoneyFlows: function(page){
                 var userPersonnalAccountId= window.localStorage["userPersonnalAccountId"];
-                return $http({url: API.url+"/admin/user-accounts/barman?page="+page+"&operations=negative_money_flows", method: "GET"}).then(function(response){
+                return $http({url: API.url+"/admin/barman/user-accounts?page="+page+"&operations=negative_money_flows", method: "GET"}).then(function(response){
                     console.log(response.data);
                     return response.data;
                 });
@@ -465,7 +512,7 @@ angular.module('livrogne-app')
                 });
             },
             getCreditMoneyFlow: function( moneyFlowId){
-            return $http.get(API.url+"/money-flows/"+moneyFlowId+"?type=credit").then(function(response){
+                return $http.get(API.url+"/money-flows/"+moneyFlowId+"?type=credit").then(function(response){
                     return response.data;
                 });
             }
