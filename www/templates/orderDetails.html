@@ -26,6 +26,9 @@
             <a ng-hide="order.is_ordered_by_customer" class="item">
                 Commande prise par le barman
             </a>
+            <a class="item">
+                Commande passé {{formatDate(order.created_at)}}{{}}
+            </a>
            <br>
             <ion-item class="item-accordion" ng-repeat="orderline in order.order_lines" >
                 <div class="item item-divider ">

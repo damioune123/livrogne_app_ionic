@@ -789,6 +789,10 @@ angular.module('livrogne-app.controllers', [])
                 template: '<p>Loading...</p><ion-spinner></ion-spinner>'
             });
         };
+        $scope.formatDate = function (date) {
+            date = new Date(date);
+            return "Le " + date.toLocaleDateString() + "  à " + date.toLocaleTimeString();
+        }
         //SCOPE VARS
         $scope.current_role=window.localStorage.role;
 
@@ -801,6 +805,7 @@ angular.module('livrogne-app.controllers', [])
             SocketService.socketOff();
             SocketService.socketListennerAuth();
         };
+
 
         var socketListennerConfirmOrderDeleteAdmin = function(orderToConfirmId){
             SocketService.socketOff();
@@ -1200,6 +1205,11 @@ angular.module('livrogne-app.controllers', [])
         //SCOPE FUNCTIONS
         $scope.hide = function () {
             $ionicLoading.hide();
+        };
+        $scope.formatDate = function (date) {
+
+            date = new Date(date);
+            return "Le "+ date.toLocaleDateString()+"  à "+date.toLocaleTimeString();
         };
 
         var stopSockAdmin = function(){
