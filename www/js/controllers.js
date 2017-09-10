@@ -162,6 +162,8 @@ angular.module('livrogne-app.controllers', [])
         SocketService.socketListennerAuth();
 
 
+
+
     })
 
 
@@ -316,9 +318,10 @@ angular.module('livrogne-app.controllers', [])
                 },0);
 
             }, function (error) {
+                $ionicLoading.hide();
                 var alertPopup = $ionicPopup.alert({
                     title: 'Erreur lors de la création du compte !',
-                    template: 'Contacter un admin',
+                    template: error.data.message,
                     buttons: [
                         {
                             text: '<b>OK</b>',
@@ -381,6 +384,8 @@ angular.module('livrogne-app.controllers', [])
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
         $scope.$parent.hideHeader();
+
+
 
         $timeout(function () {
             $scope.$parent.hideHeader();
@@ -463,6 +468,94 @@ angular.module('livrogne-app.controllers', [])
             $state.go('app.productDetails',{"barcode" : product.barcode});
 
         };
+        $scope.goUsersManagement= function(){
+            console.log("yo");
+            $state.go('app.usersManagement');
+        };
+        //MOTION
+        var refreshIntervalId;
+        var showMatrix= function(){
+            //making the canvas full screen
+            c2.height = window.innerHeight;
+            c2.width = window.innerWidth;
+            window.ctx = c2.getContext("2d");
+
+            //chinese characters - taken from the unicode charset
+            var chinese = "LIVROGNE田由甲申甴电甶男甸甹町画甼甽甾甿畀畁畂畃畄畅畆畇畈畉畊畋界畍畎畏畐畑";
+            chinese = chinese.toUpperCase();
+            //converting the string into an array of single characters
+            chinese = chinese.split("");
+
+            var font_size = 10;
+            var columns = c2.width/font_size; //number of columns for the rain
+            //an array of drops - one per column
+            var drops = [];
+            //x below is the x coordinate
+            //1 = y co-ordinate of the drop(same for every drop initially)
+            for(var x = 0; x < columns; x++)
+                drops[x] = 1;
+
+            //drawing the characters
+            var draw = function ()
+            {
+                //Black BG for the canvas
+                //translucent BG to show trail
+                ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+                ctx.fillRect(0, 0, c2.width, c2.height);
+
+                ctx.fillStyle = "#0F0"; //green text
+                ctx.font = font_size + "px arial";
+                //looping over drops
+
+                for(var i = 0; i < drops.length; i++)
+                {
+                    //a random chinese character to print
+                    var text = chinese[Math.floor(Math.random()*chinese.length)];
+
+
+                    ctx.fillText(text, i*font_size, drops[i]*font_size);
+
+                    //x = i*font_size, y = value of drops[i]*font_size
+
+
+                    //sending the drop back to the top randomly after it has crossed the screen
+                    //adding a randomness to the reset to make the drops scattered on the Y axis
+                    if(drops[i]*font_size > c2.height && Math.random() > 0.975)
+                        drops[i] = 0;
+
+                    //incrementing Y coordinate
+                    drops[i]++;
+                }
+            };
+
+            refreshIntervalId = setInterval(draw, 33);
+
+
+        };
+        showMatrix();
+        $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
+            console.log(toState);
+            if(fromState.name == "app.dashBoard"){
+                window.ctx = c2.getContext("2d");
+                ctx.clearRect(0, 0, c2.width, c2.height);
+                clearInterval(refreshIntervalId);
+
+            }
+
+        });
+
+
+
+
+
+
+
+        /*
+        $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
+
+        });*/
+
+
 
 
 
@@ -565,9 +658,8 @@ angular.module('livrogne-app.controllers', [])
                 getDetails();
             }
             getOrders();
-            $scope.$broadcast('scroll.refreshComplete');
+            //$scope.$broadcast('scroll.refreshComplete');
         };
-
 
 
 
@@ -805,12 +897,15 @@ angular.module('livrogne-app.controllers', [])
             SocketService.socketOff();
             SocketService.socketListennerAuth();
         };
+        $scope.showDeleteOrderConfirm = function () {
+            socketListennerConfirmOrderDeleteAdmin($stateParams.orderId);
+        };
 
 
         var socketListennerConfirmOrderDeleteAdmin = function(orderToConfirmId){
             SocketService.socketOff();
             $rootScope.cancel = stopSockAdmin;
-            $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>En attente de la lecture d\'une carte admin...<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br> Suppresion de la commande N°'+orderToConfirmId+'<br>En attente de la lecture d\'une carte admin...<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
             SocketService.socketOn().on('broadcastsocketio', function (authtokenAndId) {
                 console.log(authtokenAndId);
                 stopSockAdmin();
@@ -873,18 +968,7 @@ angular.module('livrogne-app.controllers', [])
 
         };
 
-        $scope.showDeleteOrderConfirm = function () {
-            var confirmPopup = $ionicPopup.confirm({
-                title: 'Annuler une commande',
-                template: 'Pour valider l\'annulation, veuillez passer une carte admin devant le lecteur'
-            });
 
-            confirmPopup.then(function (res) {
-                if (res) {
-                    socketListennerConfirmOrderDeleteAdmin($stateParams.orderId);
-                }
-            });
-        };
         var getOrder = function(){
             $scope.show($ionicLoading);
             OrderService.getOrder($stateParams.orderId).then(function (response) {
@@ -938,7 +1022,7 @@ angular.module('livrogne-app.controllers', [])
                 getDetails();
             }
             getMoneyFlows();
-            $scope.$broadcast('scroll.refreshComplete');
+            //$scope.$broadcast('scroll.refreshComplete');
         };
 
 
@@ -1206,6 +1290,9 @@ angular.module('livrogne-app.controllers', [])
         $scope.hide = function () {
             $ionicLoading.hide();
         };
+        $scope.showDeleteMoneyFlowConfirm = function () {
+            socketListennerConfirmMoneyFlowDeleteAdmin($stateParams.moneyFlowId);
+        };
         $scope.formatDate = function (date) {
 
             date = new Date(date);
@@ -1221,7 +1308,7 @@ angular.module('livrogne-app.controllers', [])
         var socketListennerConfirmMoneyFlowDeleteAdmin = function(moneyFlowToConfirmId){
             SocketService.socketOff();
             $rootScope.cancel = stopSockAdmin;
-            $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>En attente de la lecture d\'une carte admin...<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>Suppresion du transfert N°'+moneyFlowToConfirmId+'<br>En attente de la lecture d\'une carte admin...<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
             SocketService.socketOn().on('broadcastsocketio', function (authtokenAndId) {
                 console.log(authtokenAndId);
                 stopSockAdmin();
@@ -1284,18 +1371,7 @@ angular.module('livrogne-app.controllers', [])
 
         };
 
-        $scope.showDeleteMoneyFlowConfirm = function () {
-            var confirmPopup = $ionicPopup.confirm({
-                title: 'Annuler un Transfert',
-                template: 'Pour valider l\'annulation, veuillez passer une carte admin devant le lecteur'
-            });
 
-            confirmPopup.then(function (res) {
-                if (res) {
-                    socketListennerConfirmMoneyFlowDeleteAdmin($stateParams.moneyFlowId);
-                }
-            });
-        };
 
 
         var getMoneyFlow = function(){
@@ -1346,7 +1422,7 @@ angular.module('livrogne-app.controllers', [])
 
 
     .controller('OrderCtrl', function ($scope, $state, $stateParams, $ionicPopup, $ionicHistory, $timeout, PromotionService, USER_ROLES, UserService,
-                                       ProductService, OrderService, MoneyFlowService, ionicMaterialMotion, ionicMaterialInk, AuthService, UserAccountService, $q, $ionicLoading) {
+                                       ProductService, OrderService, MoneyFlowService, ionicMaterialMotion, ionicMaterialInk, AuthService, UserAccountService, $q, $ionicLoading,SocketService,$rootScope) {
         // Set Header
         $scope.currentRole=window.localStorage.role;
         $scope.$parent.showHeader();
@@ -1374,59 +1450,25 @@ angular.module('livrogne-app.controllers', [])
         $scope.adminPromotion = 0.0;
         $scope.simplePromotion = 0.0;
 
-        var getInformation = function () {
-            var promise1 = PromotionService.getPromotions();
-            var promise2 = UserService.getLimitedUsers();
-            var promise3 = ProductService.getProducts();
-            $scope.show($ionicLoading);
-            $q.all([promise1, promise2, promise3]).then(function (data) {
-                var promotions = data[0];
-                var users = data[1];
-                var products = data[2];
-                console.log(users);
 
-                for (var i = 0; i < promotions.length; i++) {
-                    if (promotions[i].promotion_name == "admin") $scope.adminPromotion = promotions[i].user_promotion;
-                    if (promotions[i].promotion_name == "simple") $scope.simplePromotion = promotions[i].user_promotion;
-                }
-                $scope.users = users;
-                for (var i = $scope.users.length - 1; i >= 0; i--) {
-                    if (window.localStorage.userId == $scope.users[i].id)
-                        $scope.users.splice(i, 1);
-                    else $scope.users[i].credential = $scope.users[i].firstname + " " + $scope.users[i].lastname;
-                }
 
-                $scope.products = products;
-                $scope.hide($ionicLoading);
 
-            }, function (error) {
-                $scope.hide($ionicLoading);
-                console.log("erreur lors de la récupération du solde de l'utilisiateur");
-            })
-        };
-        getInformation();
+        $scope.goCommandOrder = function(type, client){
+            console.log(client);
+            if($scope.orderLines.length==0 || $scope.orderLines==undefined){
+                var alertPopup = $ionicPopup.alert({
+                    title: 'Panier vide !',
+                    buttons: [
+                        {
+                            text: '<b>OK</b>',
+                            type: 'button-default-ios'
+                        }
+                    ]
+                });
 
-        var totalAdminOrderLine = function(ol){
-            $price=ol.admin_price*ol.quantity;
-            $price = $price - (($scope.adminPromotion/100)*$price);
-            return Math.round($price * 100) / 100;
-        };
-        var totalUserOrderLine = function(ol){
-            $price=ol.user_price*ol.quantity;
-            $price = $price - (($scope.simplePromotion/100)*$price);
-            return Math.round($price * 100) / 100;
-        };
-        var computeOrderTotal = function () {
-            $scope.totalAdmin=0.0;
-            $scope.totalUser=0.0;
-            for (var k = 0; k < $scope.orderLines.length; k++) {
-                $scope.totalAdmin+=$scope.orderLines[k].totalAdmin;
-                $scope.totalUser+=$scope.orderLines[k].totalUser;
+                return;
             }
-            $scope.totalAdmin = Math.round($scope.totalAdmin * 100) / 100;
-            $scope.totalUser = Math.round($scope.totalUser * 100) / 100;
-
-
+            socketListennerConfirmOrderAdmin(type, client);
         };
         $scope.addNewOrderLine = function (selectedProducts) {
             var newOrder = true;
@@ -1464,209 +1506,138 @@ angular.module('livrogne-app.controllers', [])
             computeOrderTotal();
         };
 
-        $scope.persistOrder = function (type, client) {
-            if($scope.orderLines.length==0 || $scope.orderLines==undefined){
-                var alertPopup = $ionicPopup.alert({
-                    title: 'Panier vide !',
-                    buttons: [
-                        {
-                            text: '<b>OK</b>',
-                            type: 'button-default-ios'
-                        }
-                    ]
-                });
 
-                return;
-            }
+        var stopSockAdmin = function(){
+            $ionicLoading.hide();
+            SocketService.socketOff();
+            SocketService.socketListennerAuth();
+        };
+
+        var socketListennerConfirmOrderAdmin = function(type, client){
+            SocketService.socketOff();
+            $rootScope.cancel = stopSockAdmin;
 
             if(type=="someoneElse"){
                 if(client.role==="ROLE_USER"){
-                    var confirmPopup = $ionicPopup.confirm({
-                        title: 'Passer une commande',
-                        template: 'Etes-vous sûr de vouloir passer la commande pour un total de ' + $scope.totalUser + ' € ?'
+
+                    $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>Passer la commande pour un total de ' + $scope.totalUser +
+                    '€<br> pour l\'utilisateur '+client.firstname+' '+client.lastname+
+                    '? <br>En attente de la lecture d\'une carte admin...<br>'+
+                    '<br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>'
                     });
                 }
                 else{
-                    var confirmPopup = $ionicPopup.confirm({
-                        title: 'Passer une commande',
-                        template: 'Etes-vous sûr de vouloir passer la commande pour un total de ' + $scope.totalAdmin+ ' € ?'
+
+                    $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>Etes-vous sûr de vouloir passer la commande pour un total de ' + $scope.totalAdmin +
+                    '€<br>pour l\'administrateur '+client.firstname+' '+client.lastname+
+                    '? <br>En attente de la lecture d\'une carte admin...<br>'+
+                    '<br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>'
                     });
+
                 }
+
             }
             else if(type=="self"){
-                if(window.localStorage.role!="ROLE_USER"){
-                    var confirmPopup = $ionicPopup.confirm({
-                        title: 'Passer une commande',
-                        template: 'Etes-vous sûr de vouloir passer la commande pour un total de ' + $scope.totalAdmin+ ' € ?'
-                    });
-                }
-                else{
-                    var confirmPopup = $ionicPopup.confirm({
-                        title: 'Passer une commande',
-                        template: 'Etes-vous sûr de vouloir passer la commande pour un total de ' + $scope.totalUser + ' € ?'
-                    });
-                }
-            }
-            else{
-                var confirmPopup = $ionicPopup.confirm({
-                    title: 'Passer une commande',
-                    template: 'Etes-vous sûr de vouloir passer la commande pour un total de ' + $scope.totalUser + ' € ?'
-                });
-            }
 
-            confirmPopup.then(function (res) {
-                if(!res){
-                    return;
-                }
-
-                var ol = [];
-                for (var k = 0; k < $scope.orderLines.length; k++) {
-                    var l = {};
-                    l.product = $scope.orderLines[k].product.barcode;
-                    l.quantity = $scope.orderLines[k].quantity;
-                    ol[k] = l;
-                }
-
-
-                if (type == "self") {
-                    $scope.show($ionicLoading);
-                    OrderService.addSelfOrder(ol).then(function (result) {
-                        $scope.hide($ionicLoading);
-                        if(result.INSUFFICIENT_CASH==true){
-                            var alertPopup = $ionicPopup.alert({
-                                title: 'Sole disonible insuffisant !',
-                                template: 'Solde disponible :'+result.available_balance+"€. Total commande :"+result.order_total+"€",
-                                buttons: [
-                                    {
-                                        text: '<b>OK</b>',
-                                        type: 'button-default-ios'
-                                    }
-                                ]
-                            });
-                        }
-                        else {
-                            var alertPopup = $ionicPopup.alert({
-                                title: 'Commande réalisée avec succès',
-                                template: '',
-                                buttons: [
-                                    {
-                                        text: '<b>OK</b>',
-                                        type: 'button-default-ios'
-                                    }
-                                ]
-                            });
-                        }
-
-
-                    }, function (error) {
-                        $scope.hide($ionicLoading);
-                        console.log(error);
-                        var alertPopup = $ionicPopup.alert({
-                            title: 'Erreur lors de la création de la commande!',
-                            template: 'Une erreur est survenue lors de la création de la commande. Veuillez contacter un admin.',
-                            buttons: [
-                                {
-                                    text: '<b>OK</b>',
-                                    type: 'button-default-ios'
-                                }
-                            ]
-                        });
-                    }).finally(function(){
-                        ol=undefined;
-                        $scope.selectedClient=undefined;
-                        $scope.selectedProducts=undefined;
-                        $scope.orderLines = [];
-                        $scope.totalUser=0.0;
-                        $scope.totalAdmin=0.0;
-                        getInformation();
-                    });
-                }
-                else if (type == "someoneElse") {
-                    $scope.show($ionicLoading);
-                    console.log(client);
-                    OrderService.addSEOrder(client.user_accounts[0].id, ol).then(function (result) {
-                        $scope.hide($ionicLoading);
-                        if(result.INSUFFICIENT_CASH==true){
-                            var alertPopup = $ionicPopup.alert({
-                                title: 'Sole disonible insuffisant !',
-                                template: 'Solde disponible :'+result.available_balance+"€. Total commande :"+result.order_total+"€",
-                                buttons: [
-                                    {
-                                        text: '<b>OK</b>',
-                                        type: 'button-default-ios'
-                                    }
-                                ]
-                            });
-                        }
-                        else {
-                            var alertPopup = $ionicPopup.alert({
-                                title: 'Commande réalisée avec succès ',
-                                template: '',
-                                buttons: [
-                                    {
-                                        text: '<b>OK</b>',
-                                        type: 'button-default-ios'
-                                    }
-                                ]
-                            });
-                        }
-
-                    }, function (error) {
-                        $scope.hide($ionicLoading);
-                        console.log(error);
-                        var alertPopup = $ionicPopup.alert({
-                            title: 'Erreur lors de la création de la commande!',
-                            template: 'Une erreur est survenue lors de la création de la commande. Veuillez contacter un admin.',
-                            buttons: [
-                                {
-                                    text: '<b>OK</b>',
-                                    type: 'button-default-ios'
-                                }
-                            ]
-                        });
-                    }).finally(function(){
-                        ol=undefined;
-                        $scope.selectedClient=undefined;
-                        $scope.selectedProducts=undefined;
-                        $scope.orderLines = [];
-                        $scope.totalUser=0.0;
-                        $scope.totalAdmin=0.0;
-                        getInformation();
+                if(window.localStorage.role!="ROLE_USER" ){
+                    $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>Passer la commande pour un total de ' + $scope.totalUser +
+                    '€<br> pour l\'administrateur '+window.localStorage.firstName+' '+window.localStorage.lastName+
+                    '? <br>En attente de la lecture d\'une carte admin...<br>'+
+                    '<br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>'
                     });
 
                 }
                 else {
-                    $scope.show($ionicLoading);
-                    OrderService.addCashOrder( ol).then(function (result) {
-                        $scope.hide($ionicLoading);
-                        if(result.INSUFFICIENT_CASH==true){
-                            var alertPopup = $ionicPopup.alert({
-                                title: 'Sole disonible insuffisant !',
-                                template: 'Solde disponible :'+result.available_balance+"€. Total commande :"+result.order_total+"€"
-                            });
-                        }
-                        else {
-                            var alertPopup = $ionicPopup.alert({
-                                title: 'Commande réalisée avec succès ',
-                                template: '',
-                                buttons: [
-                                    {
-                                        text: '<b>OK</b>',
-                                        type: 'button-default-ios'
-                                    }
-                                ]
-                            });
-                        }
-                        $scope.selectedClient=undefined;
-                        $scope.selectedProducts=undefined;
-                        $scope.orderLines = [];
-                        getInformation();
-                    }, function (error) {
-                        $scope.hide($ionicLoading);
-                        console.log(error);
+
+                    $ionicLoading.show({
+                        template: '<ion-spinner></ion-spinner><br>Passer la commande pour un total de ' + $scope.totalAdmin +
+                        '€<br> pour l\'utilisateur ' + window.localStorage.firstName + ' ' + window.localStorage.lastName +
+                        '? <br>En attente de la lecture d\'une carte admin...<br>' +
+                        '<br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>'
+                    });
+                }
+            }
+            else{
+                $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>Passer la commande en cash pour un total de ' + $scope.totalUser +
+                '€ ?<br>En attente de la lecture d\'une carte admin...<br>'+
+                '<br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>'
+                });
+            }
+            SocketService.socketOn().on('broadcastsocketio', function (authtokenAndId) {
+                stopSockAdmin();
+                $ionicLoading.hide();
+                if (authtokenAndId.rfid_to_match != undefined) {
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte est vierge !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                else if (authtokenAndId.role != USER_ROLES.admin) {
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte n\'appartient pas a un admin !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                else{
+                    persistOrder(type,client);
+                }
+            });
+        };
+
+        var totalAdminOrderLine = function(ol){
+            $price=ol.admin_price*ol.quantity;
+            $price = $price - (($scope.adminPromotion/100)*$price);
+            return Math.round($price * 100) / 100;
+        };
+        var totalUserOrderLine = function(ol){
+            $price=ol.user_price*ol.quantity;
+            $price = $price - (($scope.simplePromotion/100)*$price);
+            return Math.round($price * 100) / 100;
+        };
+        var computeOrderTotal = function () {
+            $scope.totalAdmin=0.0;
+            $scope.totalUser=0.0;
+            for (var k = 0; k < $scope.orderLines.length; k++) {
+                $scope.totalAdmin+=$scope.orderLines[k].totalAdmin;
+                $scope.totalUser+=$scope.orderLines[k].totalUser;
+            }
+            $scope.totalAdmin = Math.round($scope.totalAdmin * 100) / 100;
+            $scope.totalUser = Math.round($scope.totalUser * 100) / 100;
+
+        };
+
+        var persistOrder = function (type, client) {
+            var ol = [];
+            for (var k = 0; k < $scope.orderLines.length; k++) {
+                var l = {};
+                l.product = $scope.orderLines[k].product.barcode;
+                l.quantity = $scope.orderLines[k].quantity;
+                ol[k] = l;
+            }
+
+
+            if (type == "self") {
+                $scope.show($ionicLoading);
+                OrderService.addSelfOrder(ol).then(function (result) {
+                    $scope.hide($ionicLoading);
+                    if(result.INSUFFICIENT_CASH==true){
                         var alertPopup = $ionicPopup.alert({
-                            title: 'Erreur lors de la création de la commande!',
-                            template: 'Une erreur est survenue lors de la création de la commande. Veuillez contacter un admin.',
+                            title: 'Sole disonible insuffisant !',
+                            template: 'Solde disponible :'+result.available_balance+"€. Total commande :"+result.order_total+"€",
                             buttons: [
                                 {
                                     text: '<b>OK</b>',
@@ -1674,22 +1645,180 @@ angular.module('livrogne-app.controllers', [])
                                 }
                             ]
                         });
-                    }).finally(function(){
-                        ol=undefined;
-                        $scope.selectedClient=undefined;
-                        $scope.selectedProducts=undefined;
-                        $scope.totalUser=0.0;
-                        $scope.totalAdmin=0.0;
-                        $scope.orderLines = [];
-                        getInformation();
+                    }
+                    else {
+                        var alertPopup = $ionicPopup.alert({
+                            title: 'Commande réalisée avec succès',
+                            template: '',
+                            buttons: [
+                                {
+                                    text: '<b>OK</b>',
+                                    type: 'button-default-ios'
+                                }
+                            ]
+                        });
+                    }
+
+
+                }, function (error) {
+                    $scope.hide($ionicLoading);
+                    console.log(error);
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Erreur lors de la création de la commande!',
+                        template: 'Une erreur est survenue lors de la création de la commande. Veuillez contacter un admin.',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
                     });
+                }).finally(function(){
+                    ol=undefined;
+                    $scope.selectedClient=undefined;
+                    $scope.selectedProducts=undefined;
+                    $scope.orderLines = [];
+                    $scope.totalUser=0.0;
+                    $scope.totalAdmin=0.0;
+                    getInformation();
+                });
+            }
+            else if (type == "someoneElse") {
+                $scope.show($ionicLoading);
+                console.log(client);
+                OrderService.addSEOrder(client.user_accounts[0].id, ol).then(function (result) {
+                    $scope.hide($ionicLoading);
+                    if(result.INSUFFICIENT_CASH==true){
+                        var alertPopup = $ionicPopup.alert({
+                            title: 'Sole disonible insuffisant !',
+                            template: 'Solde disponible :'+result.available_balance+"€. Total commande :"+result.order_total+"€",
+                            buttons: [
+                                {
+                                    text: '<b>OK</b>',
+                                    type: 'button-default-ios'
+                                }
+                            ]
+                        });
+                    }
+                    else {
+                        var alertPopup = $ionicPopup.alert({
+                            title: 'Commande réalisée avec succès ',
+                            template: '',
+                            buttons: [
+                                {
+                                    text: '<b>OK</b>',
+                                    type: 'button-default-ios'
+                                }
+                            ]
+                        });
+                    }
+
+                }, function (error) {
+                    $scope.hide($ionicLoading);
+                    console.log(error);
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Erreur lors de la création de la commande!',
+                        template: 'Une erreur est survenue lors de la création de la commande. Veuillez contacter un admin.',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                }).finally(function(){
+                    ol=undefined;
+                    $scope.selectedClient=undefined;
+                    $scope.selectedProducts=undefined;
+                    $scope.orderLines = [];
+                    $scope.totalUser=0.0;
+                    $scope.totalAdmin=0.0;
+                    getInformation();
+                });
+
+            }
+            else {
+                $scope.show($ionicLoading);
+                OrderService.addCashOrder( ol).then(function (result) {
+                    $scope.hide($ionicLoading);
+                    if(result.INSUFFICIENT_CASH==true){
+                        var alertPopup = $ionicPopup.alert({
+                            title: 'Sole disonible insuffisant !',
+                            template: 'Solde disponible :'+result.available_balance+"€. Total commande :"+result.order_total+"€"
+                        });
+                    }
+                    else {
+                        var alertPopup = $ionicPopup.alert({
+                            title: 'Commande réalisée avec succès ',
+                            template: '',
+                            buttons: [
+                                {
+                                    text: '<b>OK</b>',
+                                    type: 'button-default-ios'
+                                }
+                            ]
+                        });
+                    }
+                    $scope.selectedClient=undefined;
+                    $scope.selectedProducts=undefined;
+                    $scope.orderLines = [];
+                    getInformation();
+                }, function (error) {
+                    $scope.hide($ionicLoading);
+                    console.log(error);
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Erreur lors de la création de la commande!',
+                        template: 'Une erreur est survenue lors de la création de la commande. Veuillez contacter un admin.',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                }).finally(function(){
+                    ol=undefined;
+                    $scope.selectedClient=undefined;
+                    $scope.selectedProducts=undefined;
+                    $scope.totalUser=0.0;
+                    $scope.totalAdmin=0.0;
+                    $scope.orderLines = [];
+                    getInformation();
+                });
+            }
+
+        };
+        var getInformation = function () {
+            var promise1 = PromotionService.getPromotions();
+            var promise2 = UserService.getLimitedUsers();
+            var promise3 = ProductService.getProducts();
+            $scope.show($ionicLoading);
+            $q.all([promise1, promise2, promise3]).then(function (data) {
+                var promotions = data[0];
+                var users = data[1];
+                var products = data[2];
+                console.log(users);
+
+                for (var i = 0; i < promotions.length; i++) {
+                    if (promotions[i].promotion_name == "admin") $scope.adminPromotion = promotions[i].user_promotion;
+                    if (promotions[i].promotion_name == "simple") $scope.simplePromotion = promotions[i].user_promotion;
+                }
+                $scope.users = users;
+                for (var i = $scope.users.length - 1; i >= 0; i--) {
+                    if (window.localStorage.userId == $scope.users[i].id)
+                        $scope.users.splice(i, 1);
+                    else $scope.users[i].credential = $scope.users[i].firstname + " " + $scope.users[i].lastname;
                 }
 
+                $scope.products = products;
+                $scope.hide($ionicLoading);
+
+            }, function (error) {
+                $scope.hide($ionicLoading);
+                console.log("erreur lors de la récupération du solde de l'utilisiateur");
             })
         };
-
-
-
+        getInformation();
     })
 
     .controller('MoneyFlowCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService, ProductCategoryService, MoneyFlowService, AuthService,
@@ -1901,9 +2030,8 @@ angular.module('livrogne-app.controllers', [])
             $ionicLoading.hide();
         };
         $scope.turnBarOn = function () {
-            $scope.show($ionicLoading);
             ScriptService.turnBarOn().then(function () {
-                $scope.hide($ionicLoading);
+
             }, function (error) {
                 $scope.hide($ionicLoading);
                 var alertPopup = $ionicPopup.alert({
@@ -2168,7 +2296,7 @@ angular.module('livrogne-app.controllers', [])
     })
 
     .controller('NefewCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService, ProductCategoryService, MoneyFlowService, AuthService,
-                                           ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading, $q,SocketService,$rootScope) {
+                                       ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading, $q,SocketService,$rootScope) {
         // Set Header
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
@@ -2209,8 +2337,9 @@ angular.module('livrogne-app.controllers', [])
         }
         $scope.search_properties_users = ['firstname','lastname','role'];
 
-        $scope.patchGodfather= function(nefewId){
-            socketListennerConfirmSponsorAdmin(nefewId);
+        $scope.patchGodfather= function(nefew){
+            console.log(nefew);
+            socketListennerConfirmSponsorAdmin(nefew);
         };
         $scope.username = window.localStorage['username'];
         $scope.firstName = window.localStorage['firstName'];
@@ -2227,11 +2356,11 @@ angular.module('livrogne-app.controllers', [])
             SocketService.socketListennerAuth();
         };
 
-        var socketListennerConfirmSponsorAdmin= function(futureNefewId){
+        var socketListennerConfirmSponsorAdmin= function(futureNefew){
             console.log($scope);
             SocketService.socketOff();
             $rootScope.cancel = stopSockAdmin;
-            $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>En attente de la lecture de la carte de '+window.localStorage.firstName+' '+window.localStorage.lastName+'...<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br> Parrainage de '+futureNefew.firstname+' '+futureNefew.lastname+' <br>En attente de la lecture de la carte de '+window.localStorage.firstName+' '+window.localStorage.lastName+'...<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
             SocketService.socketOn().on('broadcastsocketio', function (authtokenAndId) {
                 console.log(authtokenAndId);
                 stopSockAdmin();
@@ -2275,7 +2404,7 @@ angular.module('livrogne-app.controllers', [])
                     return;
                 }
                 $scope.show($ionicLoading);
-                UserService.patchUserGodfather(futureNefewId).then(function (result) {
+                UserService.patchUserGodfather(futureNefew.id).then(function (result) {
                     $scope.hide($ionicLoading);
                     getInformation();
                     var alertPopup = $ionicPopup.alert({
@@ -2369,8 +2498,311 @@ angular.module('livrogne-app.controllers', [])
 
     })
 
+    .controller('UsersManagementCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService, ProductCategoryService, MoneyFlowService, AuthService,
+                                       ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading, $q,SocketService,$rootScope, PromotionService) {
+        // Set Header
+        $scope.$parent.showHeader();
+        $scope.$parent.clearFabs();
+        $scope.$parent.setHeaderFab('left');
+        $scope.promotionUser = 0.0;
+        $scope.promotionAdmin = 0.0;
+        // Delay expansion
+        $timeout(function () {
+            $scope.isExpanded = true;
+            $scope.$parent.setExpanded(true);
+        }, 300);
+
+        $scope.show = function () {
+            $ionicLoading.show({
+                template: '<p>Loading...</p><ion-spinner></ion-spinner>'
+            });
+        };
+
+        $scope.hide = function () {
+            $ionicLoading.hide();
+        };
+
+        ionicMaterialInk.displayEffect();
+        $scope.show = function () {
+            $ionicLoading.show({
+                template: '<p>Loading...</p><ion-spinner></ion-spinner>'
+            });
+        };
+        $scope.hide = function () {
+            $ionicLoading.hide();
+        };
+        $scope.doRefresh=function(){
+            getInformation();
+            $scope.$broadcast('scroll.refreshComplete');
+
+        };
+        $scope.search_properties_users = ['firstname','lastname','role'];
+
+        $scope.patchPromotions = function(promotionAdmin, promotionUser){
+            socketListennerConfirmChangePromotionsAdmin(promotionAdmin, promotionUser);
+
+        };
+
+        $scope.promoteAdmin= function(admin){
+            console.log(admin);
+            socketListennerConfirmPromoteAdmin(admin);
+        };
+        $scope.unpromote= function(admin){
+            console.log(admin);
+            socketListennerConfirmUnpromoteAdmin(admin);
+        };
+
+        var stopSockAdmin = function(){
+            $ionicLoading.hide();
+            SocketService.socketOff();
+            SocketService.socketListennerAuth();
+        };
+
+        var socketListennerConfirmChangePromotionsAdmin= function(promotionAdmin, promotionUser){
+            console.log($scope);
+            SocketService.socketOff();
+            $rootScope.cancel = stopSockAdmin;
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner> <br>En attente de la lecture de la carte superadmin pour les modifications ...' +
+            '<br>Promotion utilisateur : '+promotionUser+
+            '%<br> Promotion admin :'+promotionAdmin+
+            '%<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
+            SocketService.socketOn().on('broadcastsocketio', function (authtokenAndId) {
+                console.log(authtokenAndId);
+                stopSockAdmin();
+                if(authtokenAndId.rfid_to_match !=undefined){
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte est vierge !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                if(authtokenAndId.role!=USER_ROLES.super_admin  ) {
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte n\'appartient pas a un superadmin !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                var promise1 = PromotionService.patchPromotion("admin",promotionAdmin);
+                var promise2 = PromotionService.patchPromotion("simple",promotionUser);
+                $scope.show($ionicLoading);
+                $q.all([promise1, promise2]).then(function (data) {
+                    $scope.hide($ionicLoading);
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Promotions bien modifiées !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+
+                }, function (error) {
+                    $scope.hide($ionicLoading);
+                    stopSockAdmin();
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Erreur lors de la modifications des promotions',
+                        template: error.data.message,
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                })
+            })
+        };
+
+        var socketListennerConfirmPromoteAdmin= function(futureAdmin){
+            console.log($scope);
+            SocketService.socketOff();
+            $rootScope.cancel = stopSockAdmin;
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br> Promotion en admin de '+futureAdmin.firstname+' '+futureAdmin.lastname+' <br>En attente de la lecture de la carte superadmin ...' +
+            '<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
+            SocketService.socketOn().on('broadcastsocketio', function (authtokenAndId) {
+                console.log(authtokenAndId);
+                stopSockAdmin();
+                if(authtokenAndId.rfid_to_match !=undefined){
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte est vierge !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                if(authtokenAndId.role!=USER_ROLES.super_admin  ) {
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte n\'appartient pas a un superadmin !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                $scope.show($ionicLoading);
+                UserService.promoteAdmin(futureAdmin.id).then(function (result) {
+                    $scope.hide($ionicLoading);
+                    getInformation();
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'L\'utilisateur a bien été promu en admin !',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+
+                }, function (error) {
+                    $scope.hide($ionicLoading);
+                    stopSockAdmin();
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Erreur lors de la promotion en admin',
+                        template: error.data.message,
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                }).finally(function() {
+                    $scope.selectedAdmin = undefined;
+                });
+            })
+        };
+
+        var socketListennerConfirmUnpromoteAdmin= function(futureAdmin){
+            console.log($scope);
+            SocketService.socketOff();
+            $rootScope.cancel = stopSockAdmin;
+            $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br> Destitution en utilisateur de '+futureAdmin.firstname+' '+futureAdmin.lastname+' <br>En attente de la lecture de la carte superadmin ...' +
+            '<br><br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>' });
+            SocketService.socketOn().on('broadcastsocketio', function (authtokenAndId) {
+                console.log(authtokenAndId);
+                stopSockAdmin();
+                if(authtokenAndId.rfid_to_match !=undefined){
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte est vierge !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                if(authtokenAndId.role!=USER_ROLES.super_admin  ) {
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'La carte n\'appartient pas a un superadmin !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                    return;
+                }
+                $scope.show($ionicLoading);
+                UserService.unpromoteAdmin(futureAdmin.id).then(function (result) {
+                    $scope.hide($ionicLoading);
+                    getInformation();
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'L\'utilisateur a bien été promu en admin !',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+
+                }, function (error) {
+                    $scope.hide($ionicLoading);
+                    stopSockAdmin();
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Erreur lors de la promotion en admin',
+                        template: error.data.message,
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+                }).finally(function() {
+                    $scope.selectedAdmin = undefined;
+                });
+            })
+        };
+
+        var getInformation = function () {
+            var promise1 = UserService.getUnsponsoredUsers();
+            var promise2 = UserService.getAdmins();
+            var promise3 = PromotionService.getPromotions();
+            $scope.show($ionicLoading);
+            $q.all([promise1, promise2,promise3]).then(function (data) {
+                var admins = data[1];
+                var unsponsoredUsers = data[0];
+                console.log(data[2]);
+                $scope.unsponsoredUsers=unsponsoredUsers;
+                $scope.admins = admins;
+                $scope.promotionUser = data[2][0].user_promotion;
+                $scope.promotionAdmin = data[2][1].user_promotion;
+
+                console.log(admins);
+
+                $scope.hide($ionicLoading);
+
+            }, function (error) {
+                $scope.hide($ionicLoading);
+                var alertPopup = $ionicPopup.alert({
+                    title: 'Erreur lors de la récupération des utilisateurs',
+                    template: error.data.message,
+                    buttons: [
+                        {
+                            text: '<b>OK</b>',
+                            type: 'button-default-ios'
+                        }
+                    ]
+                });
+            })
+        };
+        getInformation();
+
+
+    })
+
     .controller('UserDetailsCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService, ProductCategoryService, MoneyFlowService, AuthService,
-                                       ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading, $q,SocketService,$rootScope) {
+                                             ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading, $q,SocketService,$rootScope) {
         // Set Header
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
@@ -2406,7 +2838,7 @@ angular.module('livrogne-app.controllers', [])
 
         };
         $scope.setLimit= function(value){
-          socketListennerConfirmChangeLimitAdmin($scope.user.user_accounts[0].id,value);
+            socketListennerConfirmChangeLimitAdmin($scope.user.user_accounts[0].id,value);
         };
 
         $scope.currentUserId=window.localStorage.userId;
@@ -2612,7 +3044,7 @@ angular.module('livrogne-app.controllers', [])
     })
 
     .controller('ProductDetailsCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService, ProductCategoryService, MoneyFlowService, AuthService,
-                                             ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading, $q,ProductService,ProductCategoryService) {
+                                                ionicMaterialMotion, ionicMaterialInk, USER_ROLES, $ionicLoading, $q,ProductService,ProductCategoryService) {
         // Set Header
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
@@ -2659,32 +3091,32 @@ angular.module('livrogne-app.controllers', [])
             };
             console.log($scope.product);
             console.log(newProduct);
-          ProductService.patchProduct($scope.product.barcode, newProduct).then(function(result){
-              $scope.hide($ionicLoading);
-              var alertPopup = $ionicPopup.alert({
-                  title: 'Les modifications ont été enregistrées !',
-                  template: '',
-                  buttons: [
-                      {
-                          text: '<b>OK</b>',
-                          type: 'button-default-ios'
-                      }
-                  ]
-              });
+            ProductService.patchProduct($scope.product.barcode, newProduct).then(function(result){
+                $scope.hide($ionicLoading);
+                var alertPopup = $ionicPopup.alert({
+                    title: 'Les modifications ont été enregistrées !',
+                    template: '',
+                    buttons: [
+                        {
+                            text: '<b>OK</b>',
+                            type: 'button-default-ios'
+                        }
+                    ]
+                });
 
-          },function(error){
-              $scope.hide($ionicLoading);
-              var alertPopup = $ionicPopup.alert({
-                  title: 'Erreur lors de la modification des informations !',
-                  template: 'Contacter un admin',
-                  buttons: [
-                      {
-                          text: '<b>OK</b>',
-                          type: 'button-default-ios'
-                      }
-                  ]
-              });
-          })
+            },function(error){
+                $scope.hide($ionicLoading);
+                var alertPopup = $ionicPopup.alert({
+                    title: 'Erreur lors de la modification des informations !',
+                    template: 'Contacter un admin',
+                    buttons: [
+                        {
+                            text: '<b>OK</b>',
+                            type: 'button-default-ios'
+                        }
+                    ]
+                });
+            })
         };
 
 
@@ -2732,6 +3164,8 @@ angular.module('livrogne-app.controllers', [])
         $scope.$parent.showHeader();
         $scope.$parent.clearFabs();
 
+        //MOTION
+
 
 
         $timeout(function () {
@@ -2747,11 +3181,12 @@ angular.module('livrogne-app.controllers', [])
         $scope.hide = function () {
             $ionicLoading.hide();
         };
-        $scope.firstName=window.localStorage.firstName;
-        $scope.lastName=window.localStorage.lastName;
+        $scope.firstName = window.localStorage.firstName;
+        $scope.lastName = window.localStorage.lastName;
 
+        $scope.show($ionicLoading);
 
-        if(window.localStorage.role!==USER_ROLES.barman && window.localStorage.role!==USER_ROLES.super_admin){
+        if (window.localStorage.role !== USER_ROLES.barman && window.localStorage.role !== USER_ROLES.super_admin) {
             var getDetails = function () {
                 var promise1 = UserAccountService.getUserPersonnalAccount();
                 $scope.show($ionicLoading);
@@ -2759,19 +3194,24 @@ angular.module('livrogne-app.controllers', [])
                     $scope.show($ionicLoading);
                     $timeout(function () {
                         $scope.hide($ionicLoading);
-                        $state.go("app.dashBoard", {"userBalance":data[0].available_balance, "moneyBalance":data[0].money_balance});
-                    }, 500);
+                        $state.go("app.dashBoard", {
+                            "userBalance": data[0].available_balance,
+                            "moneyBalance": data[0].money_balance
+                        });
+                    }, 1500);
                 });
 
             };
             getDetails();
 
         }
-        else{
-            $state.go("app.dashBoard");
+        else {
+            $timeout(function () {
+                $scope.hide($ionicLoading);
+                $state.go("app.dashBoard");
+            }, 1500);
+
         }
-
-
 
 
     })
@@ -2926,51 +3366,6 @@ angular.module('livrogne-app.controllers', [])
         ionicMaterialInk.displayEffect();
 
 
-        PromotionService.getPromotions().then(function (promotions) {
-
-            for (var i = 0; i < promotions.length; i++) {
-                if (promotions[i].promotion_name == "admin") $scope.adminPromotion = promotions[i];
-                if (promotions[i].promotion_name == "simple") $scope.simplePromotion = promotions[i];
-            }
-        });
-        $scope.simpleSponsorisedUsers = {};
-        var getSimpleSponsorisedUsers = function () {
-            UserService.getLimitedUsers().then(function (result) {
-                $scope.simpleSponsorisedUsers = result;
-                for (var i = $scope.simpleSponsorisedUsers.length - 1; i >= 0; i--) {
-                    if (currentUserId == $scope.simpleSponsorisedUsers[i].id)
-                        $scope.simpleSponsorisedUsers.splice(i, 1);
-                    else if ($scope.simpleSponsorisedUsers[i].godfather == undefined)
-                        $scope.simpleSponsorisedUsers.splice(i, 1);
-                    else if ($scope.simpleSponsorisedUsers[i].role == USER_ROLES.admin || $scope.simpleSponsorisedUsers[i].role == USER_ROLES.super_admin)
-                        $scope.simpleSponsorisedUsers.splice(i, 1);
-                    else $scope.simpleSponsorisedUsers[i].credential = $scope.simpleSponsorisedUsers[i].firstname + " " + $scope.simpleSponsorisedUsers[i].lastname;
-                }
-            });
-        };
-        if (currentUserRole != USER_ROLES.user)
-            getSimpleSponsorisedUsers();
-
-        $scope.admins = {};
-
-        var getAdmins = function () {
-            UserService.getLimitedUsers().then(function (result) {
-                $scope.admins = result;
-                for (var i = $scope.admins.length - 1; i >= 0; i--) {
-                    if ($scope.admins[i].role == USER_ROLES.user)
-                        $scope.admins.splice(i, 1);
-                    else $scope.admins[i].credential = $scope.admins[i].firstname + " " + $scope.admins[i].lastname;
-                }
-            });
-        };
-        if (currentUserRole != USER_ROLES.user)
-            getAdmins();
-        var getProductCategories = function () {
-            ProductCategoryService.getProductCategories().then(function (productCategories) {
-                $scope.productCategories = productCategories;
-            });
-        };
-        getProductCategories();
 
         $scope.updateUserDetails = function (firstname, lastname, username) {
             if (firstname == "" || firstname == undefined || lastname == undefined || lastname == "" || username == undefined || username == '') {
@@ -3014,246 +3409,6 @@ angular.module('livrogne-app.controllers', [])
             });
 
         };
-        $scope.patchPromotion = function (simplePromotionName, adminPromotionName, simplePromotionRate, adminPromotionRate) {
-            if (simplePromotionName == undefined || adminPromotionName == undefined || simplePromotionRate == undefined || adminPromotionRate == undefined ||
-                simplePromotionRate < 0 || adminPromotionRate < 0 || simplePromotionRate > 100 || adminPromotionRate > 100) {
-                var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lors du changement de réduction!',
-                    template: 'Tous les champs n\'ont pas été rempli ou vous n\'avez pas entrer un nombre entre 0 et 100',
-                    buttons: [
-                        {
-                            text: '<b>OK</b>',
-                            type: 'button-default-ios'
-                        }
-                    ]
-                });
-                return;
-            }
-            PromotionService.patchPromotion(simplePromotionName, simplePromotionRate).then(function (promotion) {
-
-            }, function (error) {
-                var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lors du changement de réduction!',
-                    template: 'Veuillez contacter un admin',
-                    buttons: [
-                        {
-                            text: '<b>OK</b>',
-                            type: 'button-default-ios'
-                        }
-                    ]
-                });
-            });
-            PromotionService.patchPromotion(adminPromotionName, adminPromotionRate).then(function (promotion) {
-                var alertPopup = $ionicPopup.alert({
-                    title: 'Réductions changées!',
-                    template: ''
-                });
-            }, function (error) {
-                var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lors du changement de réduction!',
-                    template: 'Veuillez contacter un admin',
-                    buttons: [
-                        {
-                            text: '<b>OK</b>',
-                            type: 'button-default-ios'
-                        }
-                    ]
-                });
-            })
-        };
-        $scope.patchUserRole = function (userToPromote) {
-            if (userToPromote == undefined) {
-                var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lors du changement d\'info!',
-                    template: 'Tous les champs n\'ont pas été rempli',
-                    buttons: [
-                        {
-                            text: '<b>OK</b>',
-                            type: 'button-default-ios'
-                        }
-                    ]
-                });
-                return;
-            }
-            var confirmPopup1 = $ionicPopup.confirm({
-                title: 'Voulez vous vraiment promouvoir ' + userToPromote.firstname + ' ?',
-                template: 'Cette opération est irréversible !'
-            });
-            confirmPopup1.then(function (res1) {
-                if (res1) {
-                    var confirmPopup2 = $ionicPopup.confirm({
-                        title: 'Voulez vous vraiment promouvoir ' + userToPromote.firstname + ' ?',
-                        template: 'Vous êtes-vraiment sûr ? !'
-                    });
-                    confirmPopup2.then(function (res2) {
-                        if (res2) {
-                            var confirmPopup3 = $ionicPopup.confirm({
-                                title: 'Voulez vous vraiment promouvoir ' + userToPromote.firstname + ' ?',
-                                template: 'On est d\'accord pas de regret ? !'
-                            });
-                            confirmPopup3.then(function (res3) {
-                                if (res3) {
-                                    UserService.patchUserRole(userToPromote.id).then(function (user) {
-                                        UserAccountService.postCashRegisterAccount(user.id).then(function (userAccount) {
-                                            var alertPopup = $ionicPopup.alert({
-                                                title: 'Utilisateur promu !',
-                                                template: '',
-                                                buttons: [
-                                                    {
-                                                        text: '<b>OK</b>',
-                                                        type: 'button-default-ios'
-                                                    }
-                                                ]
-                                            });
-                                        }, function (error) {
-                                            var alertPopup = $ionicPopup.alert({
-                                                title: 'Erreur lors de la promotion !',
-                                                template: 'Veuillez contacter un admin',
-                                                buttons: [
-                                                    {
-                                                        text: '<b>OK</b>',
-                                                        type: 'button-default-ios'
-                                                    }
-                                                ]
-                                            });
-
-                                        });
-                                    }, function (error) {
-                                        var alertPopup = $ionicPopup.alert({
-                                            title: 'Erreur lors de la promotion !',
-                                            template: 'Veuillez contacter un admin',
-                                            buttons: [
-                                                {
-                                                    text: '<b>OK</b>',
-                                                    type: 'button-default-ios'
-                                                }
-                                            ]
-                                        });
-                                    });
-                                }
-                            })
-                        }
-                    });
-                }
-            });
-        };
-        $scope.patchNefewGodfather = function (nefewId, godfatherId, isNew) {
-            if (nefewId == undefined || godfatherId == undefined) {
-                var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lors du changement d\'info!',
-                    template: 'Tous les champs n\'ont pas été rempli',
-                    buttons: [
-                        {
-                            text: '<b>OK</b>',
-                            type: 'button-default-ios'
-                        }
-                    ]
-                });
-                return;
-            }
-            if (isNew) {
-                var confirmPopup1 = $ionicPopup.confirm({
-                    title: 'Voulez vous vraiment effectuer le parrainage?',
-                    template: "Une fois qu'un client est parrainé, il ne peut plus devenir admin !"
-                });
-                confirmPopup1.then(function (res1) {
-                    if(!res1){
-                        return;
-                    }
-                    UserService.patchUserGodfather(nefewId, godfatherId).then(function (nefew) {
-                        var alertPopup = $ionicPopup.alert({
-                            title: 'Parrain affecté !',
-                            template: '',
-                            buttons: [
-                                {
-                                    text: '<b>OK</b>',
-                                    type: 'button-default-ios'
-                                }
-                            ]
-                        });
-                    }, function (error) {
-                        var alertPopup = $ionicPopup.alert({
-                            title: 'Erreur lors de l\'affection de parrain !',
-                            template: 'Veuillez contacter un admin',
-                            buttons: [
-                                {
-                                    text: '<b>OK</b>',
-                                    type: 'button-default-ios'
-                                }
-                            ]
-                        });
-                    });
-
-                });
-            }
-            else {
-                UserService.patchUserGodfather(nefewId, godfatherId).then(function (nefew) {
-                    var alertPopup = $ionicPopup.alert({
-                        title: 'Parrain affecté !',
-                        template: '',
-                        buttons: [
-                            {
-                                text: '<b>OK</b>',
-                                type: 'button-default-ios'
-                            }
-                        ]
-                    });
-                }, function (error) {
-                    var alertPopup = $ionicPopup.alert({
-                        title: 'Erreur lors de l\'affection de parrain !',
-                        template: 'Veuillez contacter un admin',
-                        buttons: [
-                            {
-                                text: '<b>OK</b>',
-                                type: 'button-default-ios'
-                            }
-                        ]
-                    });
-                });
-            }
-
-
-        };
-
-        $scope.postProduct = function (productCategoryId, productName, productCodebarMan) {
-            console.log("test" + productCodebarMan);
-            if (productCategoryId == undefined || productName == "" || productName == undefined || productCodebarMan == undefined || productCodebarMan == "") {
-                var alertPopup = $ionicPopup.alert({
-                    title: 'Champs incomplets !',
-                    template: '',
-                    buttons: [
-                        {
-                            text: '<b>OK</b>',
-                            type: 'button-default-ios'
-                        }
-                    ]
-                });
-                return;
-            }
-            ProductService.postProduct(productCategoryId, productName, productCodebarMan).then(function (product) {
-                var alertPopup = $ionicPopup.alert({
-                    title: 'Produit bien créé !',
-                    template: '',
-                    buttons: [
-                        {
-                            text: '<b>OK</b>',
-                            type: 'button-default-ios'
-                        }
-                    ]
-                });
-            }, function (error) {
-                var alertPopup = $ionicPopup.alert({
-                    title: 'Erreur lors de la création du produit !',
-                    template: 'Veuillez contacter un admin',
-                    buttons: [
-                        {
-                            text: '<b>OK</b>',
-                            type: 'button-default-ios'
-                        }
-                    ]
-                });
-            })
-        };
 
         $scope.updateUserEmail = function (email) {
             if (email == undefined || email == "") {
@@ -3294,9 +3449,8 @@ angular.module('livrogne-app.controllers', [])
                 });
             })
         };
-
-        $scope.updateUserPassword = function (password1, password2) {
-            if (password1 == "" || password1 == undefined || password2 == "" || password2 == undefined) {
+        $scope.updateUserPassword = function (oldPassword, password1, password2) {
+            if (oldPassword == "" || oldPassword == undefined || password2 == "" || password2 == undefined || password1 == "" || password1 == undefined) {
                 var alertPopup = $ionicPopup.alert({
                     title: 'Erreur lors du changement de mot de passe!',
                     template: 'Tous les champs n\'ont pas été rempli',
@@ -3335,22 +3489,38 @@ angular.module('livrogne-app.controllers', [])
                 });
                 return;
             }
-            UserService.patchUserPassword(password1).then(function (user) {
-                var alertPopup = $ionicPopup.alert({
-                    title: 'Mot de passe changé !',
-                    template: '',
-                    buttons: [
-                        {
-                            text: '<b>OK</b>',
-                            type: 'button-default-ios'
-                        }
-                    ]
+            console.log(oldPassword);
+            UserService.checkPassword(oldPassword).then(function(result){
+                UserService.patchUserPassword(password1).then(function (user) {
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Mot de passe changé !',
+                        template: '',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
+
+                }, function (error) {
+                    var alertPopup = $ionicPopup.alert({
+                        title: 'Erreur lors du changement de mot de passe!',
+                        template: 'Veuillez contacter un admin',
+                        buttons: [
+                            {
+                                text: '<b>OK</b>',
+                                type: 'button-default-ios'
+                            }
+                        ]
+                    });
                 });
 
-            }, function (error) {
+
+            }, function(error){
                 var alertPopup = $ionicPopup.alert({
                     title: 'Erreur lors du changement de mot de passe!',
-                    template: 'Veuillez contacter un admin',
+                    template: 'L\'ancien mot de passe ne correspond pas',
                     buttons: [
                         {
                             text: '<b>OK</b>',
@@ -3359,6 +3529,7 @@ angular.module('livrogne-app.controllers', [])
                     ]
                 });
             });
+
         };
         var stopSockNewRfid = function(){
             $ionicLoading.hide();

@@ -39,6 +39,13 @@
             <div class="card">
                 <div class="item item-divider">
                     <label class="item item-input">
+                        <span class="input-label">Ancien mot de passe: </span>
+                        <input ng-model="oldPassword" type="password">
+                    </label>
+                </div>
+
+                <div class="item item-divider">
+                    <label class="item item-input">
                         <span class="input-label">Nouveau mot de passe: </span>
                         <input ng-model="password1" type="password">
                     </label>
@@ -49,7 +56,7 @@
                         <input ng-model="password2" type="password">
                     </label>
                 </div>
-                <button ng-click ="updateUserPassword(password1,password2)" class="button button-full icon-right ion-person-stalker button-default-ios custom-button">Modifier mot-de-passe</button>
+                <button ng-click ="updateUserPassword(oldPassword, password1,password2); oldPassword=undefined; password1 = undefined; password2=unefined" class="button button-full icon-right ion-person-stalker button-default-ios custom-button">Modifier mot-de-passe</button>
             </div>
         </div>
     </ion-content>

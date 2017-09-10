@@ -1,5 +1,6 @@
 <ion-view view-title="DashBoard" cache-view="false">
     <ion-content center text-center ng-class="{expanded:$scope.isExpanded}" style="background-color: #000000">
+        <canvas id="c2"></canvas>
         <ion-refresher ng-hide="currentRole=='ROLE_BARMAN' ||currentRole=='ROLE_SUPER_ADMIN'" on-refresh="doRefresh()"
                        pulling-text="Tirez pour rafraichir.."
                        refreshing-text="Chargement!"
@@ -31,9 +32,13 @@
                         <p>Stock: {{option.amount_available_in_stock}}</p>
                     </div>
                 </button>
+                <!-- TO DO
 
-                <button ng-show="currentRole=='ROLE_SUPER_ADMIN'" ng-click="showAccounts()"class="button  icon-left ion-hammer button-block button-default-ios custom-button">
+                <button ng-show="currentRole=='ROLE_SUPER_ADMIN'" ng-click=""class="button  icon-left ion-hammer button-block button-default-ios custom-button">
                    Utilitaires
+                </button>   -->
+                <button ng-show="currentRole=='ROLE_SUPER_ADMIN'" ng-click="go()"class="button  icon-left ion-hammer button-block button-default-ios custom-button">
+                    Gestion utilisateurs
                 </button>
                 <div ng-show="accountsShown && (currentRole=='ROLE_USER' || currentRole=='ROLE_ADMIN') ">
                     <div class="card custom-card" text-center >
@@ -50,30 +55,31 @@
                         <button ng-click="goListMoneyFlowsBank('positive')" class="button button-clear  button-block icon-top ion-reply button-assertive"> Remboursements </button>
                     </div>
                 </div>
-                <button ng-hide="currentRole=='ROLE_SUPER_ADMIN'" ng-click="goOrder()" class="button icon-left ion-beer button-block button-default-ios custom-button ">
+                <button ng-hide="currentRole=='ROLE_SUPER_ADMIN' || currentRole=='ROLE_USER'" ng-click="goOrder()" class="button icon-left ion-beer button-block button-default-ios custom-button ">
                    Commande
                 </button>
-                <button ng-hide="currentRole=='ROLE_SUPER_ADMIN'"ng-click="goMoneyFlow()" class="button icon-left ion-social-usd button-block button-default-ios custom-button ">
+                <button ng-hide="currentRole=='ROLE_SUPER_ADMIN' || currentRole=='ROLE_USER' "ng-click="goMoneyFlow()" class="button icon-left ion-social-usd button-block button-default-ios custom-button ">
                     Transfert
                 </button>
-                <button ng-click="goScript()" class="button icon-left ion-social-tux button-block button-default-ios custom-button">
+                <button ng-hide="currentRole=='ROLE_USER' " ng-click="goScript()" class="button icon-left ion-social-tux button-block button-default-ios custom-button">
                     Scripts
                 </button>
-                <button ng-hide="currentRole=='ROLE_BARMAN' ||currentRole=='ROLE_SUPER_ADMIN'" ng-click="goNefew()" class="button icon-left ion-android-contacts button-block button-default-ios button-ios-light custom-button">
+                <button ng-hide="currentRole=='ROLE_SUPER_ADMIN' || currentRole=='ROLE_USER' " ng-hide="currentRole=='ROLE_BARMAN' ||currentRole=='ROLE_SUPER_ADMIN'" ng-click="goNefew()" class="button icon-left ion-android-contacts button-block button-default-ios button-ios-light custom-button">
                     Filleuls
                 </button>
-                <button class="button icon-left ion-pie-graph button-block button-default-ios custom-button">
-                    Statistiques
-                </button>
-                <button ng-click="goEdit()"  class="button icon-left  ion-gear-b button-block button-default-ios custom-button">
-                    Edition compte
-                </button>
 
-            </div>
-        </div>
-        <div class="content">
-            <div class="app-icon"></div>
+              <button class="button icon-left ion-pie-graph button-block button-default-ios custom-button">
+                  Statistiques
+              </button>
+              <button ng-click="goEdit()"  class="button icon-left  ion-gear-b button-block button-default-ios custom-button">
+                  Edition compte
+              </button>
 
-        </div>
-    </ion-content>
+          </div>
+      </div>
+      <div class="content">
+          <div class="app-icon"></div>
+
+      </div>
+  </ion-content>
 </ion-view>

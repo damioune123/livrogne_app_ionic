@@ -226,6 +226,23 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     }
                 }
             })
+            .state('app.usersManagement', {
+                url: '/usersManagement',
+                views: {
+                    'menuContent': {
+                        templateUrl: 'templates/usersManagement.html',
+                        controller: 'UsersManagementCtrl'
+                    },
+                    'fabContent': {
+                        controller: function($timeout) {
+                            $timeout(function() {
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
+                        }
+                    }
+                }
+            })
 
             .state('app.userDetails', {
                 url: '/userDetails?userId',

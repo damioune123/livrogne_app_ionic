@@ -25,7 +25,7 @@
 
         <ion-item class="item-accordion" ng-repeat="moneyFlow in moneyFlows" >
             <div class="option button button-clear text-center custom-button " ng-click="showMoneyFlow(moneyFlow.id)">
-                <h2 class="text-center"> <a class="{{classMoneyFlow(moneyFlow.isCancelled==1)}}">Transfert N° {{moneyFlow.id}}</a></h2>
+                <h2 class="text-center"> <a class="{{classMoneyFlow(moneyFlow.is_cancelled)}}">Transfert N° {{moneyFlow.id}}</a></h2>
                 <p class="text-center">Montant : {{moneyFlow.value}}€ - {{formatDate(moneyFlow.created_at)}} </p>
                 <p ng-show="barman!=undefined "class="text-center">Utilisateur : {{moneyFlow.debit_user_account[0].user.firstname}} {{moneyFlow.debit_user_account[0].user.lastname}}</p>
 

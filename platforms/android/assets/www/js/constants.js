@@ -11,10 +11,10 @@ angular.module('livrogne-app')
         user: 'ROLE_USER'
     })
 .constant('API', {
-    url: 'http://192.168.0.15/ivrogne_api_raspberry/web/app.php/api'
+    url: 'http://192.168.0.210/ivrogne_api_raspberry/web/app.php/api'
 })
 .constant('NODE', {
-   url: 'http://192.168.0.15:5000'
+   url: 'http://192.168.0.210:5000'
 });
 
 

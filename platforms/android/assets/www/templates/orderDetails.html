@@ -26,16 +26,19 @@
             <a ng-hide="order.is_ordered_by_customer" class="item">
                 Commande prise par le barman
             </a>
+            <a class="item">
+                Commande passée :  {{formatDate(order.created_at)}}{{}}
+            </a>
            <br>
             <ion-item class="item-accordion" ng-repeat="orderline in order.order_lines" >
-                <div class="item item-divider ">
+                <div >
                     Nom produit : {{orderline.product.name}} - Catégorie : {{orderline.product.product_category.category_name}}
                 </div>
-                <a class="item">
-                    Prix durant la commande pour un utilisateur par pièce: {{orderline.product_during_order_price_user}}€
+                <a ng-show="order.customer_user_account.user.role=='ROLE_USER' || order.customer_user_account.user.role=='ROLE_BARMAN'" class="item item-divider " class="item">
+                    Prix durant la commande par par pièce(prix utilisateur): {{orderline.product_during_order_price_user}}€
                 </a>
-                <a class="item">
-                    Prix durant la commande pour un administrateur par pièce : {{orderline.product_during_order_price_admin}}€
+                <a ng-hide="order.customer_user_account.user.role=='ROLE_USER' || order.customer_user_account.user.role=='ROLE_BARMAN'" class="item item-divider "class="item">
+                    Prix durant la commande par pièce (prix administrateur): {{orderline.product_during_order_price_admin}}€
                 </a>
                 <a class="item">
                     Quantité: {{orderline.quantity}}

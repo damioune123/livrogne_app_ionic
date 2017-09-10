@@ -94,7 +94,7 @@ angular.module('livrogne-app')
     })
     .run(function ($rootScope, HttpPendingRequestsService) {
         $rootScope.$on('$locationChangeSuccess', function (event, newUrl, oldUrl) {
-           /* if (newUrl !== oldUrl) {
+            /* if (newUrl !== oldUrl) {
              HttpPendingRequestsService.cancelAll();
              }*/
         })
@@ -158,6 +158,12 @@ angular.module('livrogne-app')
             },
             getUnsponsoredUsers: function(){
                 return $http({url: API.url+"/admin/limited-unsponsored-users", method: "GET"}).then(function(response){
+                    console.log(response.data);
+                    return response.data;
+                });
+            },
+            getAdmins: function(){
+                return $http({url: API.url+"/admin/admin-users", method: "GET"}).then(function(response){
                     console.log(response.data);
                     return response.data;
                 });
@@ -272,6 +278,28 @@ angular.module('livrogne-app')
                 return $http.get(API.url+"/admin/users/"+userId,{headers: {'Content-Type': 'application/json'}}).then(function(response){
                     return response.data;
                 });
+            },
+            promoteAdmin :function(userId){
+                return $http.patch(API.url+"/super-admin/users/promote-admin/"+userId).then(function(response){
+                    console.log(response.data);
+                    return response.data;
+                });
+            },
+            unpromoteAdmin :function(userId){
+                return $http.patch(API.url+"/super-admin/users/unpromote-admin/"+userId).then(function(response){
+                    console.log(response.data);
+                    return response.data;
+                });
+            },
+            checkPassword: function(password) {
+                var data = {
+                    login: window.localStorage.username,
+                    password: password
+                };
+                return $http.post(API.url + "/auth-tokens", data).then(function (response) {
+                    console.log(data);
+                    return response.data;
+                })
             }
         }
     })
@@ -412,12 +440,6 @@ angular.module('livrogne-app')
             storeSpendingAccountId: function(){
                 return $http.get(API.url+"/admin/spending-account").then(function(response){
                     window.localStorage["spendingAccountId"]= response.data.id;
-                    return response.data;
-                });
-            },
-            promoteAdmin :function(userId){
-                return $http.patch(API.url+"/super-admin/users/promote-admin/"+userId).then(function(response){
-                    console.log(response.data);
                     return response.data;
                 });
             }
@@ -567,7 +589,8 @@ angular.module('livrogne-app')
         return {
             patchPromotion: function (promotionName, promotionRate) {
                 var data = {
-                    userPromotion: promotionRate
+                    userPromotion: promotionRate,
+                    promotionName: promotionName
                 };
                 return $http.patch(API.url + "/super-admin/promotions/"+promotionName, data, {headers: {'Content-Type': 'application/json'}}).then(function (response) {
                     return response.data;

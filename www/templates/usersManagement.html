@@ -1,0 +1,54 @@
+<ion-view view-title="Gestion utilisateurs" align-title="left">
+    <ion-content ng-class="{expanded:$scope.isExpanded}">
+        <ion-refresher on-refresh="doRefresh()"
+                       pulling-text="Tirez pour rafraichir.."
+                       refreshing-text="Chargement!"
+                       refreshing-icon="ion-loading-c">
+
+        </ion-refresher>
+        <div class="hero" >
+            <div class="content">
+                <h4><a class="head">superadmin</a></h4>
+            </div>
+        </div>
+        <div class="item item-divider">
+            Liste des promotions globales
+        </div>
+        <label class="item item-input">
+            <span class="input-label">Promotion utilisateur globale (en %)</span>
+            <input ng-model="promotionUser" type="number">
+        </label>
+
+        <label class="item item-input">
+            <span class="input-label">Promotion administrateur globale (en %)</span>
+            <input ng-model="promotionAdmin" type="number">
+        </label>
+
+        <button class="button button-clear button-positive"  ng-click="patchPromotions(promotionAdmin, promotionUser)">Modifier les promotions</button>
+        <button class="button icon-left ion-person-stalker button-block button-default-ios custom-button" on-select="promoteAdmin(selectedAdmin) " on-reset="selectedAdmin=undefined" modal-select="" modal-title="Sélection de l'admin" cancel-button="Annuler" search-placeholder="Nom, prénom, admin, user, ..." ok-button="OK" ng-model="selectedAdmin" options="unsponsoredUsers" has-search="true" search-properties="search_properties_users">
+            Promouvoir un utilisateur
+            <div class="option">
+                <h2>{{option.firstname}} {{option.lastname}} </h2>
+                <p>Solde : {{option.user_accounts[0].money_balance}}€</p>
+            </div>
+        </button>
+
+        <div ng-show="admins.length==0"class="content">
+            <h4 class="light"> Pas d'administrateurs encore enregistrés </h4>
+        </div>
+
+
+        <div class="item item-divider">
+           Liste des administrateurs
+        </div>
+        <ion-item class="item-accordion" ng-repeat="admin in admins" >
+            <div  class="item option" ng-click="showAdmin(admin.id)">
+                <h2>{{admin.firstname}} {{admin.lastname}} </h2>
+                <p>Solde : {{admin.user_accounts[0].money_balance}}€- Solde disponible : {{admin.user_accounts[0].available_balance}}€</p>
+                <p>Nombre de neveux : {{admin.nefews.length}}</p>
+            </div>
+            <button class="button button-clear button-assertive"  ng-click="unpromote(admin)">Destituer</button>
+        </ion-item>
+
+    </ion-content>
+</ion-view>

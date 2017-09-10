@@ -25,7 +25,8 @@
             <div class="option" ng-click="showOrder(order.id)">
                 <h2 class="text-center"> <a class="{{classOrder(order.is_cancelled)}} text-center">Commande N° {{order.id}}</a></h2>
                 <p class="text-center">Montant : {{order.order_price}}€ - {{formatDate(order.created_at)}}<a></a> </p>
-                <p ng-show="barman=='barman'"class="text-center">Utilisateur : {{order.customer_details}} </p>
+                <p ng-hide="order.customer_details=='bar man'" ng-show="barman=='barman'"class="text-center">Utilisateur : {{order.customer_details}} </p>
+                <p ng-show="order.customer_details=='bar man'"class="text-center">Cash </p>
 
             </div >
         </ion-item>
