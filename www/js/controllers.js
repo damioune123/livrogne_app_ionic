@@ -424,6 +424,7 @@ angular.module('livrogne-app.controllers', [])
         $scope.availableMoney = undefined;
         $scope.accountsShown=false;
         $scope.currentRole=window.localStorage.role;
+        $scope.showProductsButton=false;
 
         //SCOPE FUNCTIONS
         $scope.showAccounts = function(){
@@ -431,6 +432,13 @@ angular.module('livrogne-app.controllers', [])
                 $scope.accountsShown = true;
             } else {
                 $scope.accountsShown = false;
+            }
+        };
+        $scope.showProducts = function(){
+            if (!$scope.showProductsButton) {
+                $scope.showProductsButton = true;
+            } else {
+                $scope.showProductsButton = false;
             }
         };
         $scope.goListOrders= function(){
@@ -469,8 +477,10 @@ angular.module('livrogne-app.controllers', [])
 
         };
         $scope.goUsersManagement= function(){
-            console.log("yo");
             $state.go('app.usersManagement');
+        };
+        $scope.goStats= function(){
+            $state.go('app.stats');
         };
         //MOTION
         var refreshIntervalId;
@@ -607,6 +617,18 @@ angular.module('livrogne-app.controllers', [])
             var promise = ProductService.getProducts();
             $scope.show($ionicLoading);
             $q.all([promise]).then(function (data) {
+                console.log(data);
+                $scope.productsComplete = [];
+                $scope.productsIncomplete = [];
+
+                for(var i = 0; i <data[0].length;i++){
+                    if(data[0][i].is_complete){
+                        $scope.productsComplete.push(data[0][i]);
+                    }
+                    else{
+                        $scope.productsIncomplete.push(data[0][i]);
+                    }
+                }
                 $scope.products = data[0];
                 $scope.hide($ionicLoading);
 
@@ -1522,7 +1544,7 @@ angular.module('livrogne-app.controllers', [])
 
                     $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>Passer la commande pour un total de ' + $scope.totalUser +
                     '€<br> pour l\'utilisateur '+client.firstname+' '+client.lastname+
-                    '? <br>En attente de la lecture d\'une carte admin...<br>'+
+                    '? <br>En attente de la lecture d\'une carte admin ou barman...<br>'+
                     '<br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>'
                     });
                 }
@@ -1542,7 +1564,7 @@ angular.module('livrogne-app.controllers', [])
                 if(window.localStorage.role!="ROLE_USER" ){
                     $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>Passer la commande pour un total de ' + $scope.totalUser +
                     '€<br> pour l\'administrateur '+window.localStorage.firstName+' '+window.localStorage.lastName+
-                    '? <br>En attente de la lecture d\'une carte admin...<br>'+
+                    '? <br>En attente de la lecture d\'une carte admin ou barman...<br>'+
                     '<br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>'
                     });
 
@@ -1552,14 +1574,14 @@ angular.module('livrogne-app.controllers', [])
                     $ionicLoading.show({
                         template: '<ion-spinner></ion-spinner><br>Passer la commande pour un total de ' + $scope.totalAdmin +
                         '€<br> pour l\'utilisateur ' + window.localStorage.firstName + ' ' + window.localStorage.lastName +
-                        '? <br>En attente de la lecture d\'une carte admin...<br>' +
+                        '? <br>En attente de la lecture d\'une carte admin ou barman...<br>' +
                         '<br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>'
                     });
                 }
             }
             else{
                 $ionicLoading.show({ template: '<ion-spinner></ion-spinner><br>Passer la commande en cash pour un total de ' + $scope.totalUser +
-                '€ ?<br>En attente de la lecture d\'une carte admin...<br>'+
+                '€ ?<br>En attente de la lecture d\'une carte admin ou barman...<br>'+
                 '<br><spanc lass=" button-inner" style="line-height: normal; min-height: 0; min-width: 0;" ng-click="$root.cancel()"><i class="ion-close-circled"></i>Annuler</span>'
                 });
             }
@@ -1579,9 +1601,9 @@ angular.module('livrogne-app.controllers', [])
                     });
                     return;
                 }
-                else if (authtokenAndId.role != USER_ROLES.admin) {
+                else if (authtokenAndId.role != USER_ROLES.admin && authtokenAndId.role != USER_ROLES.barman) {
                     var alertPopup = $ionicPopup.alert({
-                        title: 'La carte n\'appartient pas a un admin !',
+                        title: 'La carte n\'appartient pas a un admin ou un barman  !',
                         template: '',
                         buttons: [
                             {
@@ -1592,6 +1614,7 @@ angular.module('livrogne-app.controllers', [])
                     });
                     return;
                 }
+
                 else{
                     persistOrder(type,client);
                 }
@@ -3087,7 +3110,9 @@ angular.module('livrogne-app.controllers', [])
                 "productPromotionAdmin": $scope.product.product_promotion_admin,
                 "productPromotionUser": $scope.product.product_promotion_user,
                 "productRealPrice": $scope.product.product_real_price,
-                "amountAvailableInStock": $scope.product.amount_available_in_stock
+                "amountAvailableInStock": $scope.product.amount_available_in_stock,
+                "productQuantityCl" : $scope.product.product_quantity_cl,
+                "productAlcoolPercentage" : $scope.product.product_alcool_percentage
             };
             console.log($scope.product);
             console.log(newProduct);
@@ -3216,7 +3241,7 @@ angular.module('livrogne-app.controllers', [])
 
     })
 
-    .controller('StatisticCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService,
+    .controller('StatsCtrl', function ($scope, $state, $stateParams, $ionicPopup, $timeout, UserService, UserAccountService, OrderService,
                                            ionicMaterialMotion, ionicMaterialInk, USER_ROLES, AuthService, $q, $ionicLoading) {
         // Set Header
         $scope.$parent.showHeader();
@@ -3246,88 +3271,11 @@ angular.module('livrogne-app.controllers', [])
         $scope.hide = function () {
             $ionicLoading.hide();
         };
-        var getAllUnsponsoredUsers = function () {
-            $scope.show($ionicLoading);
-            UserService.getUsers().then(function (users) {
-                for (var i = users.length - 1; i >= 0; i--) {
-                    if (users[i].role != USER_ROLES.user) {
-                        users.splice(i, 1);
-                    }
-                    else if (users[i].godfather != undefined) {
-                        users.splice(i, 1);
-                    }
-                    else {
-                        users[i].totalDebt = $scope.getPersonnalAccount(users[i].user_accounts).money_balance;
-                        if (users[i].totalDebt >= 0) $scope.totalPositiveBalance += users[i].totalDebt;
-                        else $scope.totalNegativeBalance += users[i].totalDebt;
-                        $scope.allUnsponsoredUsers = users;
-                    }
-                }
-                $scope.hide($ionicLoading);
-            });
-        };
+        /*
+        $scope.goListOrders = function(client){
+            $state
+        }*/
 
-        var getGodFathers = function () {
-            $scope.show($ionicLoading);
-            UserService.getUsers().then(function (users) {
-                $scope.allGodfathers = users;
-                for (var i = $scope.allGodfathers.length - 1; i >= 0; i--) {
-                    if ($scope.allGodfathers[i].role == USER_ROLES.user) {
-                        $scope.allGodfathers.splice(i, 1);
-                    }
-                    else {
-                        var totalDebt = $scope.getPersonnalAccount($scope.allGodfathers[i].user_accounts).money_balance;
-                        for (var j = 0; j < $scope.allGodfathers[i].nefews.length; j++) {
-                            totalDebt += $scope.allGodfathers[i].nefews[j].user_accounts[0].money_balance;
-                        }
-                        $scope.allGodfathers[i].totalDebt = totalDebt;
-                        if (totalDebt >= 0) $scope.totalPositiveBalance += totalDebt;
-                        else $scope.totalNegativeBalance += totalDebt
-                    }
-                }
-                $scope.totalNegativeBalance = Math.abs($scope.totalNegativeBalance);
-                $scope.hide($ionicLoading);
-            });
-        };
-        if (currentUserRole != USER_ROLES.user) {
-            getGodFathers();
-            getAllUnsponsoredUsers();
-        }
-
-
-        $scope.toggleGroup = function (group) {
-            if ($scope.isGroupShown(group)) {
-                $scope.shownGroup = null;
-            } else {
-                $scope.shownGroup = group;
-            }
-        };
-        $scope.isGroupShown = function (group) {
-            return $scope.shownGroup === group;
-        };
-
-        $scope.toggleOtherGroup = function (group) {
-            if ($scope.isOtherGroupShown(group)) {
-                $scope.shownGroup = null;
-            } else {
-                $scope.shownGroup = group;
-            }
-        };
-        $scope.isOtherGroupShown = function (group) {
-            return $scope.shownGroup === group;
-        };
-
-
-        $scope.toggleUnderGroup = function (group) {
-            if ($scope.isUnderGroupShown(group)) {
-                $scope.shownUnderGroup = null;
-            } else {
-                $scope.shownUnderGroup = group;
-            }
-        };
-        $scope.isUnderGroupShown = function (group) {
-            return $scope.shownUnderGroup === group;
-        };
 
     })
 

@@ -1,6 +1,6 @@
 <ion-view view-title="Détails Produit" cache-view="false">
 
-    <ion-content  ng-class="{expanded:$scope.isExpanded}">
+    <ion-content ng-class="{expanded:$scope.isExpanded}">
         <ion-refresher on-refresh="doRefresh()"
                        pulling-text="Tirez pour rafraichir.."
                        refreshing-text="Chargement!"
@@ -8,47 +8,75 @@
         </ion-refresher>
         <h4 class="border-top"><i class="icon ion-navicon-round"></i> Détails du produit {{product.name}} </h4>
         <div class="list">
-            <button ng-click="patchProduct()" class="button button-clear button-positive "> Changer les informations</button>
+            <button ng-click="patchProduct()" class="button button-clear button-positive "> Changer les informations
+            </button>
             <div class="item item-divider">
                 Prix de base de la catégorie {{product.category.category_name}} {{product.product_category.price}}€
             </div>
 
-            <div  class="item item-divider">
-                <label class="item item-input">
-                    <span class="input-label"> Prix utilisateur en €:</span>
-                    <input ng-model="product.price_with_promotion_user" type="number">
-                </label>
+            <div ng-hide="{{product.is_complete}}" class="card">
+                <div class="item item-divider">
+                    Informations incomplètes :
+                </div>
+                    {{product.missing_info}}
             </div>
-            <div  class="item item-divider">
-                Promotion utilisateur en % : {{calculPromoUtilisateur()}}
-            </div>
+            <div ng-show="{{product.is_complete}}" class="card">
+                    <div class="item item-divider">
+                        Informations complètes
+                    </div>
+                </div>
 
-            <div  class="item item-divider">
-                <label class="item item-input">
-                    <span class="input-label"> Prix administrateur en €:</span>
-                    <input ng-model="product.price_with_promotion_admin" type="number">
-                </label>
-            </div>
-            <div  class="item item-divider">
-                Promotion administrateur en % : {{calculPromoAdmin()}}
-            </div>
+                <div class="item item-divider">
+                    <label class="item item-input">
+                        <span class="input-label"> Prix utilisateur en €:</span>
+                        <input ng-model="product.price_with_promotion_user" type="number">
+                    </label>
+                </div>
+                <div class="item item-divider">
+                    Promotion utilisateur en % : {{calculPromoUtilisateur()}}
+                </div>
 
-
-            <div  class="item item-divider">
-                <label class="item item-input">
-                    <span class="input-label"> Prix magasin en €:</span>
-                    <input ng-model="product.product_real_price" type="number">
-                </label>
-            </div>
-
-            <div  class="item item-divider">
-                <label class="item item-input">
-                    <span class="input-label"> Quantié en stock :</span>
-                    <input ng-model="product.amount_available_in_stock" type="number">
-                </label>
-            </div>
+                <div class="item item-divider">
+                    <label class="item item-input">
+                        <span class="input-label"> Prix administrateur en €:</span>
+                        <input ng-model="product.price_with_promotion_admin" type="number">
+                    </label>
+                </div>
+                <div class="item item-divider">
+                    Promotion administrateur en % : {{calculPromoAdmin()}}
+                </div>
 
 
+                <div class="item item-divider">
+                    <label class="item item-input">
+                        <span class="input-label"> Prix magasin en €:</span>
+                        <input ng-model="product.product_real_price" type="number">
+                    </label>
+                </div>
+
+                <div class="item item-divider">
+                    <label class="item item-input">
+                        <span class="input-label"> Quantié en stock :</span>
+                        <input ng-model="product.amount_available_in_stock" type="number">
+                    </label>
+                </div>
+
+                <div class="item item-divider">
+                    <label class="item item-input">
+                        <span class="input-label"> Pourcentage d'alcool:</span>
+                        <input ng-model="product.product_alcool_percentage" type="number">
+                    </label>
+                </div>
+
+                <div class="item item-divider">
+                    <label class="item item-input">
+                        <span class="input-label"> Quantité (en cl):</span>
+                        <input ng-model="product. product_quantity_cl" type="number">
+                    </label>
+                </div>
+
+
+            </div>
         </div>
     </ion-content>
 </ion-view>

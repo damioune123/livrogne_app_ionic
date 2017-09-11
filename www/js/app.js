@@ -226,6 +226,24 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     }
                 }
             })
+
+            .state('app.stats', {
+                url: '/stats',
+                views: {
+                    'menuContent': {
+                        templateUrl: 'templates/stats.html',
+                        controller: 'StatsCtrl'
+                    },
+                    'fabContent': {
+                        controller: function($timeout) {
+                            $timeout(function() {
+                                if(document.getElementById('fab-logout')!=undefined)
+                                    document.getElementById('fab-logout').classList.toggle('off');
+                            }, 0);
+                        }
+                    }
+                }
+            })
             .state('app.usersManagement', {
                 url: '/usersManagement',
                 views: {
@@ -268,24 +286,6 @@ angular.module('livrogne-app', ['ionic', 'ionic-material', 'ionMdInput', 'livrog
                     'menuContent': {
                         templateUrl: 'templates/productDetails.html',
                         controller: 'ProductDetailsCtrl'
-                    },
-                    'fabContent': {
-                        controller: function($timeout) {
-                            $timeout(function() {
-                                if(document.getElementById('fab-logout')!=undefined)
-                                    document.getElementById('fab-logout').classList.toggle('off');
-                            }, 0);
-                        }
-                    }
-                }
-            })
-
-            .state('app.statistic', {
-                url: '/statistic',
-                views: {
-                    'menuContent': {
-                        templateUrl: 'templates/statistic.html',
-                        controller: 'StatisticCtrl'
                     },
                     'fabContent': {
                         controller: function($timeout) {

@@ -22,16 +22,31 @@
                 <button ng-hide="currentRole=='ROLE_SUPER_ADMIN'" ng-click="showAccounts()"class="button  icon-left ion-ios-list button-block button-default-ios custom-button">
                     Mes comptes
                 </button>
-                <button ng-show="currentRole=='ROLE_SUPER_ADMIN'" class="button  icon-left ion-nuclear button-block button-default-ios custom-button" modal-select="" modal-title="Sélection du produit" cancel-button="Back" ok-button="OK"  hide-reset="true" search-placeholder="Leffe, cara, ..."   on-select="goProductDetails(selectedProduct)" ng-model="selectedProduct" options="products" has-search="true">
-                    Gestion produits
-                    <div class="option">
-                        <h2>{{option.name}} - Catégorie :{{option.product_category.category_name}} </h2>
-                        <p>Prix admin : {{option.price_with_promotion_admin}}€</p>
-                        <p>Prix utilisateur : {{option.price_with_promotion_user}}€</p>
-                        <p>Prix magasin : {{option.product_real_price}}€</p>
-                        <p>Stock: {{option.amount_available_in_stock}}</p>
-                    </div>
-                </button>
+                <button ng-show="currentRole=='ROLE_SUPER_ADMIN'" ng-click="showProducts()"class="button  icon-left ion-nuclear button-block button-default-ios custom-button" >Gestion Produits</button>
+                <div class="card custom-card" text-center >
+                    <button ng-show="currentRole=='ROLE_SUPER_ADMIN' && showProductsButton" class="button button-clear button-block icon-top ion-checkmark-round button-calm" modal-select="" modal-title="Sélection du produit" cancel-button="Back" ok-button="OK"  hide-reset="true" search-placeholder="Leffe, cara, ..."   on-select="goProductDetails(selectedProduct)" ng-model="selectedProduct" options="productsComplete" has-search="true">
+                        Infos complètes
+                        <div class="option">
+                            <h2>{{option.name}} - Catégorie :{{option.product_category.category_name}} </h2>
+                            <p>Prix admin : {{option.price_with_promotion_admin}}€</p>
+                            <p>Prix utilisateur : {{option.price_with_promotion_user}}€</p>
+                            <p>Prix magasin : {{option.product_real_price}}€</p>
+                            <p>Stock: {{option.amount_available_in_stock}}</p>
+
+                        </div>
+                    </button>
+                    <button ng-show="currentRole=='ROLE_SUPER_ADMIN' && showProductsButton" class="button button-clear button-block icon-top ion-alert-circled button-assertive" modal-select="" modal-title="Sélection du produit" cancel-button="Back" ok-button="OK"  hide-reset="true" search-placeholder="Leffe, cara, ..."   on-select="goProductDetails(selectedProduct)" ng-model="selectedProduct" options="productsIncomplete" has-search="true">
+                        Infos incomplètes
+                        <div class="option">
+                            <h2>{{option.name}} - Catégorie :{{option.product_category.category_name}} </h2>
+                            <p>Prix admin : {{option.price_with_promotion_admin}}€</p>
+                            <p>Prix utilisateur : {{option.price_with_promotion_user}}€</p>
+                            <p>Prix magasin : {{option.product_real_price}}€</p>
+                            <p>Stock: {{option.amount_available_in_stock}}</p>
+                        </div>
+                    </button>
+                </div>
+
                 <!-- TO DO
 
                 <button ng-show="currentRole=='ROLE_SUPER_ADMIN'" ng-click=""class="button  icon-left ion-hammer button-block button-default-ios custom-button">
@@ -64,14 +79,14 @@
                 <button ng-hide="currentRole=='ROLE_USER' " ng-click="goScript()" class="button icon-left ion-social-tux button-block button-default-ios custom-button">
                     Scripts
                 </button>
-                <button ng-hide="currentRole=='ROLE_SUPER_ADMIN' || currentRole=='ROLE_USER' " ng-hide="currentRole=='ROLE_BARMAN' ||currentRole=='ROLE_SUPER_ADMIN'" ng-click="goNefew()" class="button icon-left ion-android-contacts button-block button-default-ios button-ios-light custom-button">
+                <button ng-show="currentRole=='ROLE_ADMIN'"  ng-click="goNefew()" class="button icon-left ion-android-contacts button-block button-default-ios button-ios-light custom-button">
                     Filleuls
                 </button>
 
-                <button class="button icon-left ion-pie-graph button-block button-default-ios custom-button">
+                <button ng-click="goStats()"  class="button icon-left ion-pie-graph button-block button-default-ios custom-button">
                   Statistiques
                 </button>
-              <button ng-click="goEdit()"  class="button icon-left  ion-gear-b button-block button-default-ios custom-button">
+              <button  ng-click="goEdit()"  class="button icon-left  ion-gear-b button-block button-default-ios custom-button">
                   Edition compte
               </button>
 
